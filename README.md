@@ -1,2 +1,2 @@
 # elorest
-Laravel eloquest RESTAPI package for webcore platform
+Laravel eloquent RESTAPI package for webcore platform

@@ -1,0 +1,24 @@
+{
+    "name": "dandisy/webcore-elorest",
+    "description": "Eloguent RESTAPI package for webcore platform",
+    "authors": [
+        {
+            "name": "dandi",
+            "email": "dandi@redbuzz.co.id"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Webcore\\Elorest\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webcore\\Elorest\\ElorestServiceProvider"
+            ]
+        }
+    }
+}
