@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 | Example :
 | api/JSON/Page?query[a][command]=where&query[a][column]=name&query[a][operator]=%3D&query[a][value]=arrival&query[b][command]=get
 |
-| not yet included sub query support, next will be copy subquery support from FrontController
+| not yet included sub query support, next will be copy subquery support from webcore-eloqui
 |
 */
 Route::get('JSON/{model}/{id?}', function(Request $request, $model, $id = NULL) {
