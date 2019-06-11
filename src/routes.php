@@ -4,114 +4,69 @@ use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
-| Global API for direct model class under Models directory
+| EloREST - Using Password Grant
 |--------------------------------------------------------------------------
 |
-| URL encode :
-| %3D for =
-| %3E for >
-| %3C for <
-| %21 for !
-| %25 for %
+| Borrowing laravel eloquent commands syntax (methodes name & params),
+| including laravel pagination.
 |
-| Example :
-| api/JSON/Page?query[a][command]=where&query[a][column]=name&query[a][operator]=%3D&query[a][value]=arrival&query[b][command]=get
+| Please, check again laravel documentation
 |
-| not yet included sub query support, next will be copy subquery support from webcore-eloqui
+| Example API query :
+| https://your-domain-name/JSON/Post?leftJoin=comments,posts.id,comments.post_id&whereIn=category_id,[2,4,5]&select=*&get=
+| https://your-domain-name/JSON/Post?join[]=authors,posts.id,authors.author_id&join[]=comments,posts.id,comments.post_id&whereIn=category_id,[2,4,5]&select=posts.*,authors.name as author_name,comments.title as comment_title&get=
+| https://your-domain-name/JSON/Post?&with=author,comment&select=*&get=
+| https://your-domain-name/JSON/Post?paginate=10&page=1
 |
 */
 Route::get('JSON/{model}/{id?}', function(Request $request, $model, $id = NULL) {
+    $paginate = null;
+    $query = $request->all();
     $modelNameSpace = 'App\Models\\'.$model;
     $data = new $modelNameSpace();
+
+    if($id == 'columns') {
+        return $data->getTableColumns();
+    }
 
     if($id) {
         return $data->find($id);
     }
-
-    if(array_key_exists('query', $request->all())) {
-        foreach($request->all()['query'] as $query) {
-            $queryFunc = $query['command'];
-
-            if($queryFunc === 'latest') {
-                $data = $data->latest();
-            } else if(
-                    $queryFunc === 'select' || 
-                    $queryFunc === 'addSelect' || 
-                    $queryFunc === 'groupBy' || 
-                    $queryFunc === 'whereNull' || 
-                    $queryFunc === 'whereNotNull' || 
-                    $queryFunc === 'avg' || 
-                    $queryFunc === 'max'
-                ) {
-                if(count(explode(',', $query['column'])) > 1) {
-                    $data = $data->$queryFunc(explode(',', $query['column']));
-                } else {
-                    $data = $data->$queryFunc($query['column']);
-                }
-            } else if(
-                    $queryFunc === 'where' || 
-                    $queryFunc === 'orWhere' ||  
-                    $queryFunc === 'whereDate' ||  
-                    $queryFunc === 'whereMonth' ||  
-                    $queryFunc === 'whereDay' ||  
-                    $queryFunc === 'whereYear' ||  
-                    $queryFunc === 'whereTime' ||  
-                    $queryFunc === 'whereColumn' || 
-                    $queryFunc === 'having'
-                ) {
-                $data = $data->$queryFunc(
-                    $query['column'], 
-                    $query['operator'], 
-                    $query['value']
-                );
-            } else if(
-                    $queryFunc === 'whereIn' || 
-                    $queryFunc === 'whereNotIn' || 
-                    $queryFunc === 'whereBetween' || 
-                    $queryFunc === 'whereNotBetween'
-                ) {
-                $data = $data->$queryFunc($query['column'], explode(',', $query['value']));
-            } else if($queryFunc === 'orderBy') {
-                $data = $data->$queryFunc($query['column'], $query['value']);
-            } else if(
-                    $queryFunc === 'selectRaw' || 
-                    $queryFunc === 'offset' || 
-                    $queryFunc === 'limit' || 
-                    $queryFunc === 'with' ||
-                    $queryFunc === 'whereRaw' ||
-                    $queryFunc === 'orWhereRaw' ||
-                    $queryFunc === 'orderByRaw' ||
-                    $queryFunc === 'havingRaw'
-                ) {
-                $data = $data->$queryFunc($query['value']);
-            } else if(
-                    $queryFunc === 'join' ||
-                    $queryFunc === 'leftJoin'
-                ) {
-                $value = explode(',', $query['value']);
-                $data = $data->$queryFunc($value[0], $value[1], '=', $value[2]);
-            }
-        }
-
-        $lastQuery = end($request->all()['query'])['command'];
-
-        if($lastQuery === 'first') {
-            $data = $data->first();
-        } else if($lastQuery === 'inRandomOrder') {
-            $data = $data->inRandomOrder();
-        } else if($lastQuery === 'count') {
-            $data = $data->count();
-        } else if($lastQuery === 'max') {
-            $data = $data->max(explode(',', end($request->all()['query'])['column']));
-        } else if($lastQuery === 'avg') {
-            $data = $data->avg(explode(',', end($request->all()['query'])['column']));
-        } else {
-            $data = $data->get();
-        }
-    } else {
-        $data = $data->get();
+    if(!$query) {
+        return $data->get();
     }
 
+    foreach($query as $key => $val) {
+        if($key === 'paginate') {
+            $paginate = $val;
+        }
+        if($key !== 'page') {
+            $vals = [];
+
+            if(is_array($val)) {
+                $vals = $val;
+            } else {
+                array_push($vals, $val);
+            }
+
+            foreach($vals as $item) {                    
+                if(preg_match('/\[(.*?)\]/', $item, $match)) { // due to whereIn, the $val using [...] syntax
+                    $item = str_replace(','.$match[0], '', $item);
+                    $item = explode(',', $item);
+                    array_push($item, explode(',',$match[1]));
+                } else {
+                    $item = explode(',', $item);
+                }
+
+                $data = call_user_func_array(array($data,$key), $item);
+            }
+
+            if($key === 'paginate') {
+                $data->appends(['paginate' => $paginate])->links();
+            }
+        }
+    }
+    
     return $data;
 })->middleware('auth:api');
 
