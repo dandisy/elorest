@@ -20,31 +20,47 @@ class Elorest
         | Please, check again laravel documentation
         |
         | Example API query :
-        | https://your-domain-name/JSON/Post?leftJoin=comments,posts.id,comments.post_id&whereIn=category_id,[2,4,5]&select=*&get=
-        | https://your-domain-name/JSON/Post?join[]=authors,posts.id,authors.author_id&join[]=comments,posts.id,comments.post_id&whereIn=category_id,[2,4,5]&select=posts.*,authors.name as author_name,comments.title as comment_title&get=
-        | https://your-domain-name/JSON/Post?&with=author,comment&get=*
-        | https://your-domain-name/JSON/Post?&with=author(where=name,like,%dandisy%),comment&get=*
+        | https://your-domain-name/api/elorest/Models/Post?leftJoin=comments,posts.id,comments.post_id&whereIn=category_id,[2,4,5]&select=*&get=
+        | https://your-domain-name/api/elorest/Models/Post?join[]=authors,posts.id,authors.author_id&join[]=comments,posts.id,comments.post_id&whereIn=category_id,[2,4,5]&select=posts.*,authors.name as author_name,comments.title as comment_title&get=
+        | https://your-domain-name/api/elorest/Models/Post?&with=author,comment&get=*
+        | https://your-domain-name/api/elorest/Models/Post?&with=author(where=name,like,%dandisy%),comment&get=*
         | multi first nested closure deep
-        | https://your-domain-name/JSON/Post?&with=author(where=name,like,%dandisy%)(where=nick,like,%dandisy%),comment&get=*
+        | https://your-domain-name/api/elorest/Models/Post?&with=author(where=name,like,%dandisy%)(where=nick,like,%dandisy%),comment&get=*
         | second nested closure deep
-        | https://your-domain-name/JSON/Post?&with=author(with=city(where=name,like,%jakarta%)),comment&get=*
-        | https://your-domain-name/JSON/Post?&with[]=author(where=name,like,%dandisy%)&with[]=comment(where=title,like,%test%)&get=*
-        | https://your-domain-name/JSON/Post?paginate=10&page=1
+        | https://your-domain-name/api/elorest/Models/Post?&with=author(with=city(where=name,like,%jakarta%)),comment&get=*
+        | https://your-domain-name/api/elorest/Models/Post?&with[]=author(where=name,like,%dandisy%)&with[]=comment(where=title,like,%test%)&get=*
+        | https://your-domain-name/api/elorest/Models/Post?paginate=10&page=1
+        | class at App namespace
+        | https://your-domain-name/api/elorest/User?paginate=10&page=1
         |
         */
-        $get = Route::get('JSON/{model}/{id?}', function(Request $request, $model, $id = NULL) {
+        $get = Route::get('elorest/{model}/{id?}/{identity?}', function(Request $request, $model, $id = NULL, $identity = NULL) {
             $paginate = null;
             $query = $request->all();
-            $modelNameSpace = 'App\Models\\'.$model;
-            $data = new $modelNameSpace();
+            $modelNameSpace = 'App\\'.$model;
 
             if($id == 'columns') {
+                $data = new $modelNameSpace();
                 return $data->getTableColumns();
             }
-
-            if($id) {
+            if(is_numeric($id)) {
+                $data = new $modelNameSpace();
                 return $data->find($id);
             }
+            if($id) {
+                $modelNameSpace .= '\\'.$id;
+                $data = new $modelNameSpace();
+
+                if($identity == 'columns') {
+                    return $data->getTableColumns();
+                }
+                if(is_numeric($identity)) {
+                    return $data->find($id);
+                }
+            } else {
+                $data = new $modelNameSpace();
+            }
+
             if(!$query) {
                 return $data->get();
             }
@@ -89,8 +105,8 @@ class Elorest
             return $service->getDataQuery($query, $data);
         });//->middleware('auth:api', 'throttle:60,1');
 
-        $post = Route::post('JSON/{model}', function(Request $request, $model) {
-            $modelNameSpace = 'App\Models\\'.$model;
+        $post = Route::post('elorest/{model}', function(Request $request, $model) {
+            $modelNameSpace = 'App\\'.$model;
             $data = new $modelNameSpace();
 
             if($request->all()) {
@@ -105,8 +121,8 @@ class Elorest
                 ->header('Content-Type', 'application/json');
         });//->middleware('auth:api', 'throttle:60,1');
 
-        $put = Route::put('JSON/{model}/{id}', function(Request $request, $model, $id) {
-            $modelNameSpace = 'App\Models\\'.$model;
+        $put = Route::put('elorest/{model}/{id}', function(Request $request, $model, $id) {
+            $modelNameSpace = 'App\\'.$model;
             $data = new $modelNameSpace();
 
             if($request->all()) {
@@ -129,8 +145,8 @@ class Elorest
                 ->header('Content-Type', 'application/json');
         });//->middleware('auth:api', 'throttle:60,1');
 
-        $patch = Route::patch('JSON/{model}/{id}', function(Request $request, $model, $id) {
-            $modelNameSpace = 'App\Models\\'.$model;
+        $patch = Route::patch('elorest/{model}/{id}', function(Request $request, $model, $id) {
+            $modelNameSpace = 'App\\'.$model;
             $data = new $modelNameSpace();
 
             if($request->all()) {
@@ -155,8 +171,8 @@ class Elorest
                 ->header('Content-Type', 'application/json');
         });//->middleware('auth:api', 'throttle:60,1');
 
-        $delete = Route::delete('JSON/{model}/{id}', function(Request $request, $model, $id) {
-            $modelNameSpace = 'App\Models\\'.$model;
+        $delete = Route::delete('elorest/{model}/{id}', function(Request $request, $model, $id) {
+            $modelNameSpace = 'App\\'.$model;
             $data = new $modelNameSpace();
 
             if($request->all()) {
