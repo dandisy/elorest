@@ -1,6 +1,6 @@
 {
-    "name": "dandisy/webcore-elorest",
-    "description": "Elorest package for webcore platform",
+    "name": "dandisy/elorest",
+    "description": "REST API using the laravel eloquest (methods and params)",
     "authors": [
         {
             "name": "dandi",
