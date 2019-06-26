@@ -30,11 +30,11 @@ Example queries :
 
 ### Usage
 
-Add elorest route in your route
+Add elorest route in your laravel project (routes/api.php)
 
     Elorest::routes();
 
-or using middleware
+    or with middleware
 
     Elorest::routes([
         'middleware' => ['auth:api', 'throttle:60,1'],
