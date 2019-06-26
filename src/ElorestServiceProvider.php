@@ -13,7 +13,7 @@ class ElorestServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        require __DIR__.'/routes.php';
+        //
     }
 
     /**

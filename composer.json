@@ -1,6 +1,6 @@
 {
     "name": "dandisy/webcore-elorest",
-    "description": "Eloguent RESTAPI package for webcore platform",
+    "description": "Elorest package for webcore platform",
     "authors": [
         {
             "name": "dandi",
