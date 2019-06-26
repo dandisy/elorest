@@ -27,10 +27,6 @@ class ElorestService
     */
     protected function getQuery($input, $data) {
         foreach($input as $key => $val) {
-            if($key === 'paginate') {
-                $paginate = $val;
-            }
-    
             if($key !== 'page') {
                 $vals = [];
     
@@ -79,15 +75,21 @@ class ElorestService
                         } else {
                             $param = explode(',', trim($param));
                         }
-    
-                        $data = call_user_func_array(array($data,$key), count($param) == 1 ? [$param] : $param);
+
+                        // if($key === 'paginate') {
+                        //     $data = call_user_func_array(array($data,$key), $param);
+                        // } else {
+                        //     $data = call_user_func_array(array($data,$key), count($param) == 1 ? [$param] : $param);
+                        // }
+                        $data = $this->processQuery($data, $key, $param);
                     }
     
                 }
-    
-                if($key === 'paginate') {
-                    $data->appends(['paginate' => $paginate])->links();
-                }
+            }
+
+            if($key === 'paginate') {
+                // $data->appends(['paginate' => $paginate])->links();
+                $this->paginateLink($val, $data);
             }
         }
     
@@ -95,6 +97,24 @@ class ElorestService
         //     'param' => $param,
         //     'data' => $data
         // ];
+        return $data;
+    }
+
+    protected function paginateLink($input, $data) {
+        return $data->appends(['paginate' => $input])->links();
+    }
+
+    protected function paginate($data, $key, $param) {
+        return call_user_func_array(array($data,$key), $param);
+    }
+
+    protected function processQuery($data, $key, $param) {
+        if($key === 'paginate') {
+            $data = $this->paginate($data, $key, $param);
+        } else {
+            $data = call_user_func_array(array($data,$key), count($param) == 1 ? [$param] : $param);
+        }
+
         return $data;
     }
     

@@ -16,6 +16,14 @@ class Elorest
         'delete'
     ];
 
+    protected function register($routes) {
+        if(is_array($routes)) {
+            array_merge(self::$routes, $routes);
+        } else {
+            array_push(self::$routes, $routes);
+        }
+    }
+
     static function routes(array $middleware = null) {
         $routes = self::$routes;
 
@@ -24,7 +32,8 @@ class Elorest
             {
                 foreach($middleware['only'] as $route) {
                     if(in_array($route, $routes)) {
-                        self::$route()->middleware($middleware['middleware']);
+                        // self::$route()->middleware($middleware['middleware']); // for laravel only
+                        self::middleware($route, $middleware['middleware']);
                     }
                 }
 
@@ -37,7 +46,7 @@ class Elorest
             {
                 $only = array_diff($routes, $middleware['except']);
                 foreach($only as $route) {
-                    self::$route()->middleware($middleware['middleware']);
+                    self::middleware($route, $middleware['middleware']);
                 }
                 foreach($middleware['except'] as $route) {
                     self::$route();
@@ -46,7 +55,7 @@ class Elorest
             else
             {
                 foreach($routes as $route) {
-                    self::$route()->middleware($middleware['middleware']);
+                    self::middleware($route, $middleware['middleware']);
                 }
             }
         } else {
@@ -56,14 +65,14 @@ class Elorest
         }
     }
 
-    protected function register($routes) {
-        array_push(self::$routes, $routes);
+    protected static function middleware($route, $middleware) {
+        self::$route()->middleware($middleware);
     }
 
     protected static function get() {
         /*
         |--------------------------------------------------------------------------
-        | EloREST - Using Password Grant
+        | EloREST
         |--------------------------------------------------------------------------
         |
         | Borrowing laravel eloquent commands syntax (methodes name & params),
@@ -87,8 +96,6 @@ class Elorest
         |
         */
         return Route::get('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = NULL, $id = NULL) {
-            $paginate = null;
-            $input = $request->all();
             $modelNameSpace = 'App\\'.$namespaceOrModel;
 
             if($idOrModel == 'columns') {
@@ -110,11 +117,14 @@ class Elorest
                     return $data->find($id);
                 }
             } else {
-                $data = new $model();
+                $data = new $modelNameSpace();
             }
 
+            // $input = $request->all();
+            $input = self::requestAll($request);
             if(!$input) {
-                return $data->get();
+                // return $data->get();
+                return self::getAll($data);
             }
 
             // foreach($input as $key => $val) {
@@ -153,6 +163,7 @@ class Elorest
 
             // return $data;
 
+            // $elorestQuery = new ElorestService($input, $data);
             $elorestQuery = new ElorestService($input, $data);
             return $elorestQuery->invoke();
         });//->middleware('auth:api', 'throttle:60,1');
@@ -169,16 +180,19 @@ class Elorest
                 $data = new $modelNameSpace();
             }
 
-            if($request->all()) {
+            // if($request->all()) {
+            if(self::requestAll($request)) {
                 // return $data->insert($request->all());
-                return $data->create($request->all());
+                // return $data->create($request->all());
+                return self::createData(self::requestAll($request), $data);
             }
 
-            return response(json_encode([
-                "status" => "error",
-                "message" => "data input not valid"
-            ], 200))
-                ->header('Content-Type', 'application/json');
+            // return response(json_encode([
+            //     "status" => "error",
+            //     "message" => "data input not valid"
+            // ], 200))
+            //     ->header('Content-Type', 'application/json');
+            return self::responsJson("error", "data input not valid", 400);
         });//->middleware('auth:api', 'throttle:60,1');
     }
 
@@ -193,24 +207,29 @@ class Elorest
                 $data = new $modelNameSpace();
             }
 
-            if($request->all()) {
+            // if($request->all()) {
+            if(self::requestAll($request)) {
                 if($id) {
-                    $data = $data->find($id);
+                    // $data = $data->find($id);
+                    $data = self::findById($id, $data);
                 } else {
-                    $elorestQuery = new ElorestService($request->all(), $data);
+                    // $elorestQuery = new ElorestService($request->all(), $data);
+                    $elorestQuery = new ElorestService(self::requestAll($request), $data);
                     $data = $elorestQuery->invoke()->first();
                 }
 
                 if($data) {
-                    return $data->update($request->all());
+                    // return $data->update($request->all());
+                    return self::updateData(self::requestAll($request), $data);
                 }
             }
 
-            return response(json_encode([
-                "status" => "error",
-                "message" => "data input not valid"
-            ], 200))
-                ->header('Content-Type', 'application/json');
+            // return response(json_encode([
+            //     "status" => "error",
+            //     "message" => "data input not valid"
+            // ], 200))
+            //     ->header('Content-Type', 'application/json');
+            return self::responsJson("error", "data input not valid", 400);
         });//->middleware('auth:api', 'throttle:60,1');
     }
 
@@ -225,26 +244,32 @@ class Elorest
                 $data = new $modelNameSpace();
             }
 
-            if($request->all()) {
+            // if($request->all()) {
+            if(self::requestAll($request)) {
                 if($id) {
-                    $data = $data->find($id);
+                    // $data = $data->find($id);
+                    $data = self::findById($id, $data);
                 } else {
-                    $elorestQuery = new ElorestService($request->all(), $data);
+                    // $elorestQuery = new ElorestService($request->all(), $data);
+                    $elorestQuery = new ElorestService(self::requestAll($request), $data);
                     $data = $elorestQuery->invoke()->first();
                 }
 
                 if($data) {
-                    $data->delete();
+                    // return $data->delete();
+                    self::deleteData($data);
 
-                    return $data->insert($request->all());
+                    // return $data->insert($request->all());
+                    return self::insertData(self::requestAll($request), $data);
                 }
             }
 
-            return response(json_encode([
-                "status" => "error",
-                "message" => "data input not valid"
-            ], 200))
-                ->header('Content-Type', 'application/json');
+            // return response(json_encode([
+            //     "status" => "error",
+            //     "message" => "data input not valid"
+            // ], 200))
+            //     ->header('Content-Type', 'application/json');
+            return self::responsJson("error", "data input not valid", 400);
         });//->middleware('auth:api', 'throttle:60,1');
     }
 
@@ -261,22 +286,63 @@ class Elorest
 
             if($request->all()) {
                 if($id) {
-                    $data = $data->find($id);
+                    // $data = $data->find($id);
+                    $data = self::findById($id, $data);
                 } else {
-                    $elorestQuery = new ElorestService($request->all(), $data);
+                    // $elorestQuery = new ElorestService($request->all(), $data);
+                    $elorestQuery = new ElorestService(self::requestAll($request), $data);
                     $data = $elorestQuery->invoke()->first();
                 }
 
                 if($data) {
-                    return $data->delete();
+                    // return $data->delete();
+                    return self::deleteData($data);
                 }
             }
 
-            return response(json_encode([
-                "status" => "error",
-                "message" => "data input not valid"
-            ], 200))
-                ->header('Content-Type', 'application/json');
+            // return response(json_encode([
+            //     "status" => "error",
+            //     "message" => "data input not valid"
+            // ], 200))
+            //     ->header('Content-Type', 'application/json');
+            return self::responsJson("error", "data input not valid", 400);
         });//->middleware('auth:api', 'throttle:60,1');
+    }
+
+    protected static function requestAll($request) {
+        return $request->all();
+    }
+
+    protected static function findById($id, $data) {
+        return $data->find($id);
+    }
+
+    protected static function getAll($data) {
+        return $data->get();
+    }
+
+    protected static function createData($requestAll, $data) {
+        return $data->create($requestAll);
+    }
+
+    protected static function insertData($requestAll, $data) {
+        return $data->insert($requestAll);
+    }
+
+    protected static function updateData($requestAll, $data) {
+        return $data->update($requestAll);
+    }
+
+    protected static function deleteData($data) {
+        return $data->delete();
+    }
+
+    protected static function responsJson($status, $message, $code = 200, $data = null) {
+        return response(json_encode([
+            "status" => $status,
+            "message" => $message,
+            "data" => $data
+        ], $code))
+            ->header('Content-Type', 'application/json');
     }
 }
