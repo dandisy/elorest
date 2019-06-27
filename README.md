@@ -171,6 +171,6 @@ Update Where
 
 ### Extensible
 
-    - create your classes inherit from the Elorest classes
-    - override or extend the methods
-    - register your route methods
+    - create your classes inherit or implement from the Elorest artifacts
+    - override or create new methods
+    - register your route
