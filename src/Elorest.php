@@ -2,6 +2,7 @@
 
 namespace Webcore\Elorest;
 
+use Illuminate\Container\Container;
 use Webcore\Elorest\Http\Middleware\LaravelMiddleware;
 use Webcore\Elorest\Http\Request\LaravelRequest;
 use Webcore\Elorest\Http\Response\LaravelResponse;
@@ -15,6 +16,12 @@ class Elorest
         self::processRoute($middleware);
     }
 
+    /*
+     * Procesing the route object methods and middleware
+     *
+     * @param Array $middleware
+     * @return void
+     */
     protected static function processRoute($middleware) {
         $routes = self::getRegisteredRoute();
 
@@ -62,12 +69,23 @@ class Elorest
         return self::routeObject()->getRoute();
     }
 
+    /*
+     * Call the route object methods with middleware
+     *
+     * @param string $route
+     * #param Array $middleware
+     * @return void
+     */
     protected static function middleware($route, $middleware) {
         // return self::middlewareObject()->middleware($route, $middleware);
         self::middlewareObject()->middleware($route, $middleware);
     }
 
-    // TODO : to be loose coupling use strategy pattern
+    /*
+     * Create route object
+     *
+     * @return Object Route
+     */
     protected static function routeObject() {
         return new LaravelRoute(
             new LaravelRequest(),
@@ -75,13 +93,33 @@ class Elorest
             new LaravelResponse(),
             new LaravelService()
         );
+
+        // This make tight coupling with Laravel Framework
+        // and must register ElorestServiceProvide to Laravel config/app.php if installed manually
+        // // return resolve('Webcore\Elorest\Route\LaravelRoute');
+        // return Container::getInstance()->make(LaravelRoute::class);
     }
 
-    // TODO : to be loose coupling use strategy pattern
+    /*
+     * Wrapper route object with middleware
+     *
+     * @return Object Route
+     */
     protected static function middlewareObject() {
         return new LaravelMiddleware(self::routeObject());
+
+        // This make tight coupling with Laravel Framework
+        // and must register ElorestServiceProvide to Laravel config/app.php if installed manually
+        // // return Container::getInstance()->make(LaravelMiddleware::class);
+        // return resolve('LaravelMiddleware');
     }
 
+    /*
+     * Call the route object methods
+     *
+     * @param string $route
+     * @return void
+     */
     protected static function routeObjInvoke($route) {
         // return self::routeObject()->$route();        
         self::routeObject()->$route();

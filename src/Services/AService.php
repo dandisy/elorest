@@ -6,11 +6,27 @@ use Webcore\Elorest\Helper\RecursiveParam;
 use Webcore\Elorest\Helper\RecursiveQuery;
 
 abstract class AService
-{    
+{
+    /*
+     * Call methods to object model
+     *
+     * @param Object Model $data
+     * @param $key
+     * @param $param
+     * @return Object query result
+     */
     protected function callUserFuncArray($data, $key, $param) {
         return call_user_func_array(array($data,$key), $param);
     }
 
+    /*
+     * Invoke query of object model
+     *
+     * @param Object Model $data
+     * @param $key
+     * @param $vals
+     * @return Object query result
+     */
     protected function invokeQuery($data, $key, $vals) {
         foreach($vals as $param) {
             // if(preg_match_all('/\((.*?)\)/', $request->test, $match)) { // multi occurence
@@ -67,11 +83,34 @@ abstract class AService
         return $data;
     }
 
+    /*
+     * Get query result
+     *
+     * @param Object Request $input
+     * @param Object Model $data
+     * @return Object query result
+     */
     abstract public function getQuery($input, $data);
 
     abstract protected function appendsPaginateLinks($input, $data);
-    
+
+    /*
+     * Call pagination method of object model
+     *
+     * @param Object Model $data
+     * @param $key
+     * @param $param
+     * @return Object query result
+     */
     abstract protected function paginate($data, $key, $param);
-    
+
+    /*
+     * Procesing queries including pagination to object model
+     *
+     * @param Object Model $data
+     * @param $key
+     * @param $param
+     * @return Object query result
+     */
     abstract protected function processQuery($data, $key, $param);
 }

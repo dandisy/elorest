@@ -2,7 +2,7 @@
 
 namespace Webcore\Elorest\Http\Middleware;
 
-use Webcore\Elorest\Http\Middleware\IMiddleware;
+// use Webcore\Elorest\Http\Middleware\IMiddleware;
 
 class LaravelMiddleware implements IMiddleware
 {

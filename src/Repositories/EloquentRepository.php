@@ -2,7 +2,7 @@
 
 namespace Webcore\Elorest\Repository;
 
-use Webcore\Elorest\Repository\IRepository;
+// use Webcore\Elorest\Repository\IRepository;
 
 class EloquentRepository implements IRepository
 {

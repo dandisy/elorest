@@ -9,6 +9,12 @@ class RecursiveParam
         //
     }
 
+    /*
+     * Parsing parentheses in url parameter recursively
+     *
+     * $param string $param
+     * @return Array $arrayParam
+     */
     public function invoke($param) {
         $layer = 0;
         $arrayParam = [];

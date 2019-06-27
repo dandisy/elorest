@@ -3,7 +3,7 @@
 namespace Webcore\Elorest\Http\Response;
 
 use Illuminate\Http\Response;
-use Webcore\Elorest\Http\Response\IResponse;
+// use Webcore\Elorest\Http\Response\IResponse;
 
 class LaravelResponse implements IResponse
 {

@@ -2,7 +2,7 @@
 
 namespace Webcore\Elorest\Service;
 
-use Webcore\Elorest\Service\AService;
+// use Webcore\Elorest\Service\AService;
 
 class LaravelService extends AService
 {

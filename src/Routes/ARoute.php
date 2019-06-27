@@ -43,33 +43,38 @@ abstract class ARoute
     }
 
     /*
-    * Define how the framework get url segments and http requests for get http method
-    *
-    */
+     * Define how the framework get url segments and http requests for get http method
+     *
+     * @return Object Route
+     */
     abstract public function get();
     
     /*
-    * Define how the framework get url segments and http requests for post http method
-    *
-    */
+     * Define how the framework get url segments and http requests for post http method
+     *
+     * @return Object Route
+     */
     abstract public function post();
-    
+
     /*
-    * Define how the framework get url segments and http requests for put http method
-    *
-    */
+     * Define how the framework get url segments and http requests for put http method
+     *
+     * @return Object Route
+     */
     abstract public function put();
-    
+
     /*
-    * Define how the framework get url segments and http requests for patch http method
-    *
-    */
+     * Define how the framework get url segments and http requests for patch http method
+     *
+     * @return Object Route
+     */
     abstract public function patch();
-    
+
     /*
-    * Define how the framework get url segments and http requests for delete http method
-    *
-    */
+     * Define how the framework get url segments and http requests for delete http method
+     *
+     * @return Object Route
+     */
     abstract public function delete();
 
     abstract protected function getProcess($request, $namespaceOrModel, $idOrModel, $id);

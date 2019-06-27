@@ -9,6 +9,16 @@ class RecursiveQuery
         //
     }
 
+    /*
+     * Invoke methods of object model
+     *
+     * @param Object Model $data
+     * @param $key
+     * @param $param
+     * @param $matches
+     * @param $arrayParam
+     * @return Collection $data
+     */
     public function invoke($data, $key, $param, $matches, $arrayParam) {
         // $arr = [
         //     "with=phone(where=city_code,021),where=city_code,021",
@@ -64,6 +74,13 @@ class RecursiveQuery
         return $data;
     }
 
+    /*
+     * Handling nested query (closure) recursively in object model
+     *
+     * @param $query
+     * @param $items
+     * @return void
+     */
     protected function recursiveClosure($query, $items) {
         foreach($items as $idx => $val) {
             if($idx < count($items)-2) {

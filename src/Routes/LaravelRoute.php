@@ -7,15 +7,15 @@ use Illuminate\Support\Facades\Route;
 use Webcore\Elorest\Http\Request\IRequest;
 use Webcore\Elorest\Http\Response\IResponse;
 use Webcore\Elorest\Repository\IRepository;
-use Webcore\Elorest\Route\ARoute;
+// use Webcore\Elorest\Route\ARoute;
 use Webcore\Elorest\Service\AService;
 
 class LaravelRoute extends ARoute
 {
-    public function __construct(IRequest $requestObj, IRepository $repositoryObj, IResponse $responseObj, AService $serviceObj)
-    {
-        parent::__construct($requestObj, $repositoryObj, $responseObj, $serviceObj);
-    }
+    // public function __construct(IRequest $requestObj, IRepository $repositoryObj, IResponse $responseObj, AService $serviceObj)
+    // {
+    //     parent::__construct($requestObj, $repositoryObj, $responseObj, $serviceObj);
+    // }
 
     public function get() {
         return Route::get('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = NULL, $id = NULL) {
