@@ -110,9 +110,29 @@ Get Multi With and Where (multi nested closure)
     ->with('comment')
     ->get(*);
 
-Update Where ID    
+Update By ID
 
-    PUT /webcore/public/api/elorest/User?where=id,2&amp;select=*&amp;first= HTTP/1.1
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "http://localhost/webcore/public/api/elorest/User/2",
+        "method": "PUT",
+        "headers": {
+            "content-type": "application/json",
+            "cache-control": "no-cache",
+            "postman-token": "833c6c7e-87f7-e527-e1ba-62a21aa39aff"
+        },
+        "processData": false,
+        "data": {votes: 1}
+    }
+
+    $.ajax(settings).done(function (response) {
+        console.log(response);
+    });
+
+Update Where
+
+    PUT /webcore/public/api/elorest/User?where=email,dandi.setiyawan@redtech.co.id&amp;select=*&amp;first= HTTP/1.1
     Host: localhost
     Content-Type: application/json
     Cache-Control: no-cache
@@ -137,7 +157,7 @@ Update Where ID
         }
     });
 
-    xhr.open("PUT", "http://localhost/webcore/public/api/elorest/User?where=id,2&select=*&first=");
+    xhr.open("PUT", "http://localhost/webcore/public/api/elorest/User?where=email,dandi.setiyawan@redtech.co.id&select=*&first=");
     xhr.setRequestHeader("content-type", "application/json");
     xhr.setRequestHeader("cache-control", "no-cache");
     xhr.setRequestHeader("postman-token", "0ea7fa6a-b7d2-73e2-81e6-10ca983de686");
@@ -146,7 +166,7 @@ Update Where ID
 
     for
 
-    App\Models\Author::where('id', 7)
+    App\Models\Author::where('email', 'dandi.setiyawan@redtech.co.id')
         ->update(['votes' => 1]);
 
 ### Extensible
