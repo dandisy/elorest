@@ -94,7 +94,21 @@ Get WhereIn
     for
 
     App\Models\Author::whereNotIn('id', [1, 2, 3])
-        ->get();
+        ->get(*);
+
+Get Multi With and Where (multi nested closure)
+
+    https://your-domain-name/api/elorest/Models/Post?&with=author(with=city(where=name,like,%jakarta%)),comment&get=*
+
+    for
+
+    App\Models\Post::with(['author' => function($query) {
+        $query->with(['city' => function($query) {
+            $query->where('name', 'like', %jakarta%)
+        }]);
+    }])
+    ->with('comment')
+    ->get(*);
 
 Update Where ID    
 
