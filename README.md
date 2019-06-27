@@ -42,8 +42,101 @@ Add elorest route in your laravel project (routes/api.php)
         'except' => ['get']
     ]);
 
+### Documentation
+
+Get All
+
+    https://your-domain-name/api/elorest/Models/Post
+
+    for
+
+    App\Models\Post::all();
+
+Find By ID
+
+    https://your-domain-name/api/elorest/Models/Post/7
+
+    for
+
+    App\Models\Post::find(7);
+
+Get Where and First
+
+    https://your-domain-name/api/elorest/Models/Author?where=name,like,%dandi setiyawan%&select=*&first=
+
+    for
+
+    App\Models\Author::where('name', 'like', '%dandi setiyawan%')->first();
+
+Get Count (aggregate)
+
+    https://your-domain-name/api/elorest/Models/Author?count=*
+
+    for
+
+    App\Models\Author::count();
+
+Get Join (multi join)
+
+    https://your-domain-name/api/elorest/Models/User?join[]=contacts,users.id,contacts.user_id&join[]=orders,users.id,orders.user_id&select=users.*,contacts.phone as user_phone,orders.price as order_price&get=
+
+    for
+
+    App\Model\User::join('contacts', 'users.id', '=', 'contacts.user_id')
+        ->join('orders', 'users.id', '=', 'orders.user_id')
+        ->select('users.*', 'contacts.phone', 'orders.price')
+        ->get();
+
+Get WhereIn
+
+    https://your-domain-name/api/elorest/Models/Author?whereIn=id,[1,2,3]&get=*
+
+    for
+
+    App\Models\Author::whereNotIn('id', [1, 2, 3])
+        ->get();
+
+Update Where ID    
+
+    PUT /webcore/public/api/elorest/User?where=id,2&amp;select=*&amp;first= HTTP/1.1
+    Host: localhost
+    Content-Type: application/json
+    Cache-Control: no-cache
+    Postman-Token: fa3347b0-1f44-8622-a078-42b1369bbdd7
+
+    {
+        "votes": 1
+    }
+
+    or
+
+    var data = JSON.stringify({
+        "votes": 1
+    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            console.log(this.responseText);
+        }
+    });
+
+    xhr.open("PUT", "http://localhost/webcore/public/api/elorest/User?where=id,2&select=*&first=");
+    xhr.setRequestHeader("content-type", "application/json");
+    xhr.setRequestHeader("cache-control", "no-cache");
+    xhr.setRequestHeader("postman-token", "0ea7fa6a-b7d2-73e2-81e6-10ca983de686");
+
+    xhr.send(data);
+
+    for
+
+    App\Models\Author::where('id', 7)
+        ->update(['votes' => 1]);
+
 ### Extensible
 
-    - create class inherit from Webcore\Elorest\Elorest class
-    - override or create static route methods
+    - create your classes inherit from the Elorest classes
+    - override or extend the methods
     - register your route methods
