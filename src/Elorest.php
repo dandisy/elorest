@@ -11,7 +11,7 @@ use Webcore\Elorest\Service\LaravelService;
 
 class Elorest
 {
-    static function routes(array $middleware = null) {
+    public static function routes(array $middleware = null) {
         self::processRoute($middleware);
     }
 

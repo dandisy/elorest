@@ -22,7 +22,7 @@ abstract class ARoute
         'delete'
     ];
 
-    function __construct(IRequest $requestObj, IRepository $repositoryObj, IResponse $responseObj, AService $serviceObj)
+    public function __construct(IRequest $requestObj, IRepository $repositoryObj, IResponse $responseObj, AService $serviceObj)
     {
         $this->requestObj = $requestObj;
         $this->repositoryObj = $repositoryObj;
@@ -30,7 +30,7 @@ abstract class ARoute
         $this->serviceObj = $serviceObj;
     }
 
-    function register($routes) {
+    public function register($routes) {
         if(is_array($routes)) {
             array_merge(self::$routes, $routes);
         } else {
@@ -38,7 +38,7 @@ abstract class ARoute
         }
     }
 
-    function getRoute() {
+    public function getRoute() {
         return $this->routes;
     }
 
@@ -46,31 +46,31 @@ abstract class ARoute
     * Define how the framework get url segments and http requests for get http method
     *
     */
-    abstract function get();
+    abstract public function get();
     
     /*
     * Define how the framework get url segments and http requests for post http method
     *
     */
-    abstract function post();
+    abstract public function post();
     
     /*
     * Define how the framework get url segments and http requests for put http method
     *
     */
-    abstract function put();
+    abstract public function put();
     
     /*
     * Define how the framework get url segments and http requests for patch http method
     *
     */
-    abstract function patch();
+    abstract public function patch();
     
     /*
     * Define how the framework get url segments and http requests for delete http method
     *
     */
-    abstract function delete();
+    abstract public function delete();
 
     abstract protected function getProcess($request, $namespaceOrModel, $idOrModel, $id);
 
