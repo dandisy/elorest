@@ -18,31 +18,36 @@ class LaravelRoute extends ARoute
     }
 
     public function get() {
-        return Route::get('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = NULL, $id = NULL) {
+        // return 
+        Route::get('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = NULL, $id = NULL) {
             return $this->getProcess($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
 
     public function post() {
-        return Route::post('elorest/{namespaceOrModel}/{model?}', function(Request $request, $namespaceOrModel, $model = null) {
+        // return 
+        Route::post('elorest/{namespaceOrModel}/{model?}', function(Request $request, $namespaceOrModel, $model = null) {
             return $this->postProcess($request, $namespaceOrModel, $model);
         });
     }
 
     public function put() {
-        return Route::put('elorest/{namespaceOrModel}/{idOrModel}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel, $id = null) {
+        // return 
+        Route::put('elorest/{namespaceOrModel}/{idOrModel}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel, $id = null) {
             return $this->putProcess($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
 
     public function patch() {
-        return Route::patch('elorest/{namespaceOrModel}/{idOrModel}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel, $id = null) {
+        // return 
+        Route::patch('elorest/{namespaceOrModel}/{idOrModel}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel, $id = null) {
             return $this->patchProcess($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
 
     public function delete() {
-        return Route::delete('elorest/{namespaceOrModel}/{idOrModel}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel, $id = null) {
+        // return 
+        Route::delete('elorest/{namespaceOrModel}/{idOrModel}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel, $id = null) {
             return $this->deleteProcess($request, $namespaceOrModel, $idOrModel, $id);
         });
     }

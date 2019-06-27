@@ -14,6 +14,6 @@ class LaravelMiddleware implements IMiddleware
     }
 
     public function middleware($route, $middleware) {
-        $this->routeObj->$route()->middleware($middleware);
+        return $this->routeObj->$route()->middleware($middleware);
     }
 }

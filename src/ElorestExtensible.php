@@ -63,7 +63,8 @@ class ElorestExtensible
     }
 
     protected static function middleware($route, $middleware) {
-       self::middlewareObject()->middleware($route, $middleware);
+        // return self::middlewareObject()->middleware($route, $middleware);
+        self::middlewareObject()->middleware($route, $middleware);
     }
 
     // TODO : to be loose coupling use strategy pattern
@@ -82,7 +83,8 @@ class ElorestExtensible
     }
 
     protected static function routeObjInvoke($route) {
-        return self::routeObject()->$route();
+        // return self::routeObject()->$route();        
+        self::routeObject()->$route();
     }
 
     // protected static function get() {

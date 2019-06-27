@@ -34,7 +34,8 @@ class LaravelService extends AService
     }
 
     protected function appendsPaginateLinks($input, $data) {
-        return $data->appends(['paginate' => $input])->links();
+        // return $data->appends(['paginate' => $input])->links();
+        $data->appends(['paginate' => $input])->links();
     }
 
     protected function paginate($data, $key, $param) {
