@@ -2,7 +2,7 @@
 
 namespace Webcore\Elorest;
 
-use Illuminate\Container\Container;
+// use Illuminate\Container\Container;
 use Webcore\Elorest\Http\Middleware\LaravelMiddleware;
 use Webcore\Elorest\Http\Request\LaravelRequest;
 use Webcore\Elorest\Http\Response\LaravelResponse;
