@@ -30,19 +30,19 @@ class LaravelRoute extends ARoute
     }
 
     public function put() {
-        return Route::put('elorest/{namespaceOrModel}/{idOrModel}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel, $id = null) {
+        return Route::put('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = null, $id = null) {            
             return $this->putProcess($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
 
     public function patch() {
-        return Route::patch('elorest/{namespaceOrModel}/{idOrModel}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel, $id = null) {
+        return Route::patch('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = null, $id = null) {
             return $this->patchProcess($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
 
     public function delete() {
-        return Route::delete('elorest/{namespaceOrModel}/{idOrModel}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel, $id = null) {
+        return Route::delete('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = null, $id = null) {
             return $this->deleteProcess($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
@@ -136,24 +136,30 @@ class LaravelRoute extends ARoute
 
     protected function putProcess($request, $namespaceOrModel, $idOrModel, $id) {
         $modelNameSpace = 'App\\'.$namespaceOrModel;
-
-        if(is_numeric($idOrModel)) {
-            $data = new $modelNameSpace();
-        } else {
-            $modelNameSpace .= '\\'.$idOrModel;
-            $data = new $modelNameSpace();
-        }
+        $data = new $modelNameSpace();
 
         $input = $this->requestObj->requestAll($request);
         if($input) {
-            if($id) {
-                $data = $this->repositoryObj->findById($id, $data);
+            if($idOrModel) {
+                if(is_numeric($idOrModel)) {
+                    $data = $this->repositoryObj->findById($idOrModel, $data);
+                } else {
+                    $modelNameSpace .= '\\'.$idOrModel;
+                    $data = new $modelNameSpace();
+
+                    if($id && is_numeric($id)) {
+                        $data = $this->repositoryObj->findById($id, $data);
+                    } else {
+                        $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+                    }
+                }
             } else {
-                $data = $this->serviceObj->invoke()->first();
+                $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
             }
 
             if($data) {
-                return $this->repositoryObj->updateData($input, $data);
+                $data = $this->repositoryObj->updateData($input, $data);
+                return $this->responseObj->responsJson("success", "data has been updated successfully", 200, $data);
             }
         }
 
@@ -162,26 +168,32 @@ class LaravelRoute extends ARoute
 
     protected function patchProcess($request, $namespaceOrModel, $idOrModel, $id) {
         $modelNameSpace = 'App\\'.$namespaceOrModel;
-
-        if(is_numeric($idOrModel)) {
-            $data = new $modelNameSpace();
-        } else {
-            $modelNameSpace .= '\\'.$idOrModel;
-            $data = new $modelNameSpace();
-        }
+        $data = new $modelNameSpace();
 
         $input = $this->requestObj->requestAll($request);
         if($input) {
-            if($id) {
-                $data = $this->repositoryObj->findById($id, $data);
+            if($idOrModel) {
+                if(is_numeric($idOrModel)) {
+                    $data = $this->repositoryObj->findById($idOrModel, $data);
+                } else {
+                    $modelNameSpace .= '\\'.$idOrModel;
+                    $data = new $modelNameSpace();
+
+                    if($id && is_numeric($id)) {
+                        $data = $this->repositoryObj->findById($id, $data);
+                    } else {
+                        $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+                    }
+                }
             } else {
-                $data = $this->serviceObj->invoke()->first();
+                $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
             }
 
             if($data) {
                 $this->repositoryObj->deleteData($data);
 
-                return $this->repositoryObj->insertData($input, $data);
+                $data = $this->repositoryObj->insertData($input, $data);
+                return $this->responseObj->responsJson("success", "data has been updated successfully", 200, $data);
             }
         }
 
@@ -190,24 +202,30 @@ class LaravelRoute extends ARoute
 
     protected function deleteProcess($request, $namespaceOrModel, $idOrModel, $id) {
         $modelNameSpace = 'App\\'.$namespaceOrModel;
-
-        if(is_numeric($idOrModel)) {
-            $data = new $modelNameSpace();
-        } else {
-            $modelNameSpace .= '\\'.$idOrModel;
-            $data = new $modelNameSpace();
-        }
+        $data = new $modelNameSpace();
 
         $input = $this->requestObj->requestAll($request);
         if($input) {
-            if($id) {
-                $data = $this->repositoryObj->findById($id, $data);
+            if($idOrModel) {
+                if(is_numeric($idOrModel)) {
+                    $data = $this->repositoryObj->findById($idOrModel, $data);
+                } else {
+                    $modelNameSpace .= '\\'.$idOrModel;
+                    $data = new $modelNameSpace();
+
+                    if($id && is_numeric($id)) {
+                        $data = $this->repositoryObj->findById($id, $data);
+                    } else {
+                        $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+                    }
+                }
             } else {
-                $data = $this->serviceObj->invoke()->first();
+                $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
             }
 
             if($data) {
-                return $this->repositoryObj->deleteData($data);
+                $data = $this->repositoryObj->deleteData($data);
+                return $this->responseObj->responsJson("success", "data has been deleted successfully", 200, $data);
             }
         }
 

@@ -12,12 +12,22 @@ class LaravelRequest implements IRequest
     }
 
     /*
-    * Get http request object using Laravel Framework
+    * Get form input using Laravel Framework
     *
     * @param Request $request
     * @return Collection $request
     */
     public function requestAll($request) {
         return $request->all();
+    }
+
+    /*
+    * Get URL parameters using Laravel Framework
+    *
+    * @param Request $request
+    * @return Collection $request
+    */
+    public function requestParamAll($request) {
+        return $request->query();
     }
 }
