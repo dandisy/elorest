@@ -158,6 +158,7 @@ class LaravelRoute extends ARoute
             }
 
             if($data) {
+                // todo : use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                 $data = $this->repositoryObj->updateData($input, $data);
                 return $this->responseObj->responsJson("success", "data has been updated successfully", 200, $data);
             }
@@ -192,6 +193,7 @@ class LaravelRoute extends ARoute
             if($data) {
                 $this->repositoryObj->deleteData($data);
 
+                // todo : use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                 $data = $this->repositoryObj->insertData($input, $data);
                 return $this->responseObj->responsJson("success", "data has been updated successfully", 200, $data);
             }
