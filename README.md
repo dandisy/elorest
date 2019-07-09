@@ -30,7 +30,7 @@ Example queries :
 
 ### Usage
 
-Paste it, elorest route in your laravel project (routes/api.php)
+##### Paste it (elorest route) to your laravel project (routes/api.php)
 
     Elorest::routes();
 
@@ -43,19 +43,24 @@ Paste it, elorest route in your laravel project (routes/api.php)
     ]);
 
 
-Exception handling 
+##### Exception handling 
+
 Using laravel errors handler (https://laravel.com/docs/5.8/errors)
-Publidh exception hendler class to your laravel webcore project
+
+Publish exception hendler class to your laravel webcore project
 
     php artisan vendor:publish --provider="Webcore\Elorest\ElorestServiceProvider" --force
 
-Authentication
+##### Authentication
+  
 Using laravel passport (https://laravel.com/docs/5.8/passport)
 
-Authorization
+##### Authorization
+
 Using laravel gates & policies (https://laravel.com/docs/5.8/authorization)
 
-Formatable JSON response (Beta)
+##### Formatable JSON response (Beta)
+
 see the sample/response_format.blade.php file
 
 ### Documentation
