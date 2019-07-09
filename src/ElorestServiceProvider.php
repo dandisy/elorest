@@ -23,7 +23,9 @@ class ElorestServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->publishes([
+            __DIR__.'../Exceptions' => app_path('Exceptions'),
+        ]);
     }
 
     /**

@@ -35,7 +35,6 @@ class LaravelService extends AService
             if(substr($key, 0, 1) === "$") {
                 $k = substr($key, 1);
 
-                // todo : forach must included in processQueryRecursive() for suporting array many method, in second level like $totalCount = {...,...,......}
                 // foreach($val as $q1k => $q1v) { // second level
                     $this->processQueryRecursive($model, $val, $k, $result);
                 // }

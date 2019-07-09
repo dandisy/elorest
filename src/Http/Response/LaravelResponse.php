@@ -12,12 +12,8 @@ class LaravelResponse implements IResponse
         //
     }
 
-    public function responsJson($status, $message, $code = 200, $data = null) {
-        return (new Response(json_encode([
-            "status" => $status,
-            "message" => $message,
-            "data" => $data
-        ]), $code))
-            ->header('Content-Type', 'application/json');
+    public function response($data = null, $code = 200, $type = 'application/json') {
+        return (new Response(json_encode($data), $code))
+            ->header('Content-Type', $type);
     }
 }

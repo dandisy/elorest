@@ -4,5 +4,5 @@ namespace Webcore\Elorest\Http\Response;
 
 interface IResponse
 {
-    function responsJson($status, $message, $code, $data);
+    function response($data, $code, $type);
 }

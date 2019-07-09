@@ -30,7 +30,7 @@ Example queries :
 
 ### Usage
 
-Add elorest route in your laravel project (routes/api.php)
+Paste it, elorest route in your laravel project (routes/api.php)
 
     Elorest::routes();
 
@@ -41,6 +41,19 @@ Add elorest route in your laravel project (routes/api.php)
         // 'only' => ['post', 'put', 'patch', 'delete'],
         'except' => ['get']
     ]);
+
+
+Exception handling 
+Using laravel errors handler (https://laravel.com/docs/5.8/errors)
+Publidh exception hendler class to your laravel webcore project
+
+    php artisan vendor:publish --provider="Webcore\Elorest\ElorestServiceProvider" --force
+
+Authentication
+Using laravel passport (https://laravel.com/docs/5.8/passport)
+
+Authorization
+Using laravel gates & policies (https://laravel.com/docs/5.8/authorization)
 
 ### Documentation
 

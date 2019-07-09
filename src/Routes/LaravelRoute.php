@@ -4,11 +4,13 @@ namespace Webcore\Elorest\Route;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 use Webcore\Elorest\Http\Request\IRequest;
 use Webcore\Elorest\Http\Response\IResponse;
 use Webcore\Elorest\Repository\IRepository;
 // use Webcore\Elorest\Route\ARoute;
 use Webcore\Elorest\Service\AService;
+use Illuminate\Support\Facades\URL;
 
 class LaravelRoute extends ARoute
 {
@@ -47,20 +49,75 @@ class LaravelRoute extends ARoute
         });
     }
 
+    // 404	Not Found (page or other resource doesn’t exist)
+    // 401	Not authorized (not logged in)
+    // 403	Logged in but access to requested area is forbidden
+    // 400	Bad request (something wrong with URL or parameters)
+    // 422	Unprocessable Entity (validation failed)
+    // 500	General server error
     protected function getProcess($request, $namespaceOrModel, $idOrModel, $id) {
+        // $user = $request->user();
+
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
         if($idOrModel == 'columns') {
-            $data = new $modelNameSpace();
+            // if(class_exists($modelNameSpace)) {
+                $data = new $modelNameSpace();
+            // } else {
+            //     return $this->responseObj->response([
+            //         "message" => "Not found",
+            //         "error" => [
+            //             "code" => 102404,
+            //             "detail" => "The resource was not found"
+            //         ],
+            //         "status" => 404,
+            //         "params" => $input,
+            //         "links" => [
+            //             "self" => URL::current()
+            //         ]
+            //     ], 404);
+            // }
+
             return $this->repositoryObj->getTableColumns($data);
         }
         if(is_numeric($idOrModel)) {
-            $data = new $modelNameSpace();
+            // if(class_exists($modelNameSpace)) {
+                $data = new $modelNameSpace();
+            // } else {
+            //     return $this->responseObj->response([
+            //         "message" => "Not found",
+            //         "error" => [
+            //             "code" => 102404,
+            //             "detail" => "The resource was not found"
+            //         ],
+            //         "status" => 404,
+            //         "params" => $input,
+            //         "links" => [
+            //             "self" => URL::current()
+            //         ]
+            //     ], 404);
+            // }
+
             return $this->repositoryObj->findById($idOrModel, $data);
         }
         if($idOrModel) {
             $modelNameSpace .= '\\'.$idOrModel;
-            $data = new $modelNameSpace();
+            // if(class_exists($modelNameSpace)) {
+                $data = new $modelNameSpace();
+            // } else {
+            //     return $this->responseObj->response([
+            //         "message" => "Not found",
+            //         "error" => [
+            //             "code" => 102404,
+            //             "detail" => "The resource was not found"
+            //         ],
+            //         "status" => 404,
+            //         "params" => $input,
+            //         "links" => [
+            //             "self" => URL::current()
+            //         ]
+            //     ], 404);
+            // }
 
             if($id == 'columns') {
                 return $this->repositoryObj->getTableColumns($data);
@@ -69,7 +126,23 @@ class LaravelRoute extends ARoute
                 return $this->repositoryObj->findById($idOrModel, $data);
             }
         } else {
-            $data = new $modelNameSpace();
+            // if(class_exists($modelNameSpace)) {
+                $data = new $modelNameSpace();
+            // } else {
+            //     // throw new \Illuminate\Database\Eloquent\ModelNotFoundException('Resource not found');
+            //     return $this->responseObj->response([
+            //         "message" => "Not found",
+            //         "error" => [
+            //             "code" => 102404,
+            //             "detail" => "The resource was not found"
+            //         ],
+            //         "status" => 404,
+            //         "params" => $input,
+            //         "links" => [
+            //             "self" => URL::current()
+            //         ]
+            //     ], 404);
+            // }
         }
 
         $input = $this->requestObj->requestAll($request);
@@ -117,120 +190,472 @@ class LaravelRoute extends ARoute
     }
 
     protected function postProcess($request, $namespaceOrModel, $model) {
+        $user = $request->user();
+
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
         if(!$model) {
-            $data = new $modelNameSpace();
+            // if(class_exists($modelNameSpace)) {
+                $data = new $modelNameSpace();
+            // } else {
+            //     return $this->responseObj->response([
+            //         "message" => "Not found",
+            //         "error" => [
+            //             "code" => 102404,
+            //             "detail" => "The resource was not found"
+            //         ],
+            //         "status" => 404,
+            //         "params" => $input,
+            //         "links" => [
+            //             "self" => URL::current()
+            //         ]
+            //     ], 404);
+            // }
         } else {
             $modelNameSpace .= '\\'.$model;
-            $data = new $modelNameSpace();
+            // if(class_exists($modelNameSpace)) {
+                $data = new $modelNameSpace();
+            // } else {
+            //     return $this->responseObj->response([
+            //         "message" => "Not found",
+            //         "error" => [
+            //             "code" => 102404,
+            //             "detail" => "The resource was not found"
+            //         ],
+            //         "status" => 404,
+            //         "params" => $input,
+            //         "links" => [
+            //             "self" => URL::current()
+            //         ]
+            //     ], 404);
+            // }
         }
+
+        $request->validate($modelNameSpace::$rules);
 
         $input = $this->requestObj->requestAll($request);
-        if($input) {
-            return $this->repositoryObj->createData($input, $data);
-        }
 
-        return $this->responseObj->responsJson("error", "data input not valid", 400);
+        // todo : authorization
+        if(class_exists($modelNameSpace.'Policy')) {
+            if ($user->can('create', $modelNameSpace)) {
+                return $this->responseObj->response([
+                    "message" => "The entity has been created",
+                    "data" => $this->repositoryObj->createData($input, $data),
+                    "status" => 201
+                ]);
+            } else {
+                return $this->responseObj->response([
+                    "message" => "Not authorized",
+                    "error" => [
+                        "code" => 102422,
+                        "detail" => "User has no authorization to create entity"
+                    ],
+                    "status" => 422,
+                    "params" => $input,
+                    "links" => [
+                        "self" => URL::current()
+                    ]
+                ], 422);
+            }
+        } else {
+            return $this->responseObj->response([
+                "message" => "The entity has been created",
+                "data" => $this->repositoryObj->createData($input, $data),
+                "status" => 201
+            ]);
+        }
     }
 
     protected function putProcess($request, $namespaceOrModel, $idOrModel, $id) {
+        $user = $request->user();
+
         $modelNameSpace = 'App\\'.$namespaceOrModel;
-        $data = new $modelNameSpace();
+        // if(class_exists($modelNameSpace)) {
+            $data = new $modelNameSpace();
+        // } else {
+        //     return $this->responseObj->response([
+        //         "message" => "Not found",
+        //         "error" => [
+        //             "code" => 102404,
+        //             "detail" => "The resource was not found"
+        //         ],
+        //         "status" => 404,
+        //         "params" => $input,
+        //         "links" => [
+        //             "self" => URL::current()
+        //         ]
+        //     ], 404);
+        // }
+
+        $request->validate($modelNameSpace::$rules);
 
         $input = $this->requestObj->requestAll($request);
-        if($input) {
-            if($idOrModel) {
-                if(is_numeric($idOrModel)) {
-                    $data = $this->repositoryObj->findById($idOrModel, $data);
-                } else {
-                    $modelNameSpace .= '\\'.$idOrModel;
-                    $data = new $modelNameSpace();
 
-                    if($id && is_numeric($id)) {
-                        $data = $this->repositoryObj->findById($id, $data);
-                    } else {
-                        $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
-                    }
+        if($idOrModel) {
+            if(is_numeric($idOrModel)) {
+                $data = $this->repositoryObj->findById($idOrModel, $data);
+            } else {
+                $modelNameSpace .= '\\'.$idOrModel;
+                // if(class_exists($modelNameSpace)) {
+                    $data = new $modelNameSpace();
+                // } else {
+                //     return $this->responseObj->response([
+                //         "message" => "Not found",
+                //         "error" => [
+                //             "code" => 102404,
+                //             "detail" => "The resource was not found"
+                //         ],
+                //         "status" => 404,
+                //         "params" => $input,
+                //         "links" => [
+                //             "self" => URL::current()
+                //         ]
+                //     ], 404);
+                // }
+
+                if($id && is_numeric($id)) {
+                    $data = $this->repositoryObj->findById($id, $data);
+                } else {
+                    $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+                }
+            }
+        } else {
+            $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+        }
+
+        if($data) {
+            // todo : authorization
+            if(class_exists($modelNameSpace.'Policy')) {
+                if ($user->can('update', $data)) {
+                    // todo : use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
+                    $data = $this->repositoryObj->updateData($input, $data);
+                    return $this->responseObj->response([
+                        "message" => "The entity has been updated",
+                        "data" => $data,
+                        "status" => 200
+                    ]);
+                } else {
+                    return $this->responseObj->response([
+                        "message" => "Not authorized",
+                        "error" => [
+                            "code" => 102422,
+                            "detail" => "User has no authorization to update this entity"
+                        ],
+                        "status" => 422,
+                        "params" => $input,
+                        "links" => [
+                            "self" => URL::current()
+                        ]
+                    ], 422);
                 }
             } else {
-                $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
-            }
-
-            if($data) {
                 // todo : use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                 $data = $this->repositoryObj->updateData($input, $data);
-                return $this->responseObj->responsJson("success", "data has been updated successfully", 200, $data);
+                return $this->responseObj->response([
+                    "message" => "The entity has been updated",
+                    "data" => $data,
+                    "status" => 200
+                ]);
             }
         }
 
-        return $this->responseObj->responsJson("error", "data input not valid", 400);
+        return $this->responseObj->response([
+            "message" => "Not found",
+            "error" => [
+                "code" => 102422,
+                "detail" => "The entity was not found"
+            ],
+            "status" => 422,
+            "params" => $input,
+            "links" => [
+                "self" => URL::current()
+            ]
+        ], 422);
     }
 
     protected function patchProcess($request, $namespaceOrModel, $idOrModel, $id) {
+        $user = $request->user();
+
         $modelNameSpace = 'App\\'.$namespaceOrModel;
-        $data = new $modelNameSpace();
+        // if(class_exists($modelNameSpace)) {
+            $data = new $modelNameSpace();
+        // } else {
+        //     return $this->responseObj->response([
+        //         "message" => "Not found",
+        //         "error" => [
+        //             "code" => 102404,
+        //             "detail" => "The resource was not found"
+        //         ],
+        //         "status" => 404,
+        //         "params" => $input,
+        //         "links" => [
+        //             "self" => URL::current()
+        //         ]
+        //     ], 404);
+        // }
+
+        $request->validate($modelNameSpace::$rules);
 
         $input = $this->requestObj->requestAll($request);
-        if($input) {
-            if($idOrModel) {
-                if(is_numeric($idOrModel)) {
-                    $data = $this->repositoryObj->findById($idOrModel, $data);
-                } else {
-                    $modelNameSpace .= '\\'.$idOrModel;
-                    $data = new $modelNameSpace();
 
-                    if($id && is_numeric($id)) {
-                        $data = $this->repositoryObj->findById($id, $data);
-                    } else {
-                        $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
-                    }
+        if($idOrModel) {
+            if(is_numeric($idOrModel)) {
+                $data = $this->repositoryObj->findById($idOrModel, $data);
+            } else {
+                $modelNameSpace .= '\\'.$idOrModel;
+                // if(class_exists($modelNameSpace)) {
+                    $data = new $modelNameSpace();
+                // } else {
+                //     return $this->responseObj->response([
+                //         "message" => "Not found",
+                //         "error" => [
+                //             "code" => 102404,
+                //             "detail" => "The resource was not found"
+                //         ],
+                //         "status" => 404,
+                //         "params" => $input,
+                //         "links" => [
+                //             "self" => URL::current()
+                //         ]
+                //     ], 404);
+                // }
+
+                if($id && is_numeric($id)) {
+                    $data = $this->repositoryObj->findById($id, $data);
+                } else {
+                    $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+                }
+            }
+        } else {
+            $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+        }
+
+        if($data) {
+            // todo : authorization
+            if(class_exists($modelNameSpace.'Policy')) {
+                if ($user->can('update', $data)) {
+                    $this->repositoryObj->deleteData($data);
+
+                    // todo : use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
+                    $data = $this->repositoryObj->insertData($input, $data);
+                    return $this->responseObj->response([
+                        "message" => "The entity has been updated",
+                        "data" => $data,
+                        "status" => 201
+                    ]);
+                } else {
+                    return $this->responseObj->response([
+                        "message" => "Not authorized",
+                        "error" => [
+                            "code" => 102422,
+                            "detail" => "User has no authorization to update entity"
+                        ],
+                        "status" => 422,
+                        "params" => $input,
+                        "links" => [
+                            "self" => URL::current()
+                        ]
+                    ], 422);
                 }
             } else {
-                $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
-            }
-
-            if($data) {
                 $this->repositoryObj->deleteData($data);
 
                 // todo : use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                 $data = $this->repositoryObj->insertData($input, $data);
-                return $this->responseObj->responsJson("success", "data has been updated successfully", 200, $data);
+                return $this->responseObj->response([
+                    "message" => "The entity has been updated",
+                    "data" => $data,
+                    "status" => 201
+                ]);
             }
         }
 
-        return $this->responseObj->responsJson("error", "data input not valid", 400);
+        return $this->responseObj->response([
+            "message" => "Not found",
+            "error" => [
+                "code" => 102422,
+                "detail" => "The entity was not found"
+            ],
+            "status" => 422,
+            "params" => $input,
+            "links" => [
+                "self" => URL::current()
+            ]
+        ], 422);
     }
 
     protected function deleteProcess($request, $namespaceOrModel, $idOrModel, $id) {
+        $user = $request->user();
+
         $modelNameSpace = 'App\\'.$namespaceOrModel;
-        $data = new $modelNameSpace();
+
+        // $request->validate($modelNameSpace::$rules);
 
         $input = $this->requestObj->requestAll($request);
-        if($input) {
-            if($idOrModel) {
-                if(is_numeric($idOrModel)) {
-                    $data = $this->repositoryObj->findById($idOrModel, $data);
-                } else {
-                    $modelNameSpace .= '\\'.$idOrModel;
-                    $data = new $modelNameSpace();
 
+        if($idOrModel) {
+            if(is_numeric($idOrModel)) {
+                // todo : check if $id exist and numeric
+                // if(class_exists($modelNameSpace)) {
+                    $data = new $modelNameSpace();
+                // } else {
+                //     // abort(404); // todo : custom message
+                //     return $this->responseObj->response([
+                //         "message" => "Not found",
+                //         "error" => [
+                //             "code" => 102404,
+                //             "detail" => "The resource was not found"
+                //         ],
+                //         "status" => 404,
+                //         "params" => $input,
+                //         "links" => [
+                //             "self" => URL::current()
+                //         ]
+                //     ], 404);
+                // }
+
+                $data = $this->repositoryObj->findById($idOrModel, $data);
+            } else {
+                $modelNameSpace .= '\\'.$idOrModel;
+                // if(class_exists($modelNameSpace)) {
+                    $data = new $modelNameSpace();
+                // } else {
+                //     // abort(404); // todo : custom message
+                //     return $this->responseObj->response([
+                //         "message" => "Not found",
+                //         "error" => [
+                //             "code" => 102404,
+                //             "detail" => "The resource was not found"
+                //         ],
+                //         "status" => 404,
+                //         "params" => $input,
+                //         "links" => [
+                //             "self" => URL::current()
+                //         ]
+                //     ], 404);
+                // }
+
+                $ns = explode('\\', $modelNameSpace);
+                $nsCount = count($ns);
+                $policy = '';
+                foreach($ns as $key => $item) {
+                    if($key == $nsCount-1) {
+                        $policy .= '\Policies\\' . $item . 'Policy';
+                    } else {
+                        $policy .= '\\' . $item;
+                    }
+                }
+
+                // todo : authorization
+                if(class_exists($policy)) {
+                    if ($user->can('delete', $data)) {
+                        if($id && is_numeric($id)) {
+                            $data = $this->repositoryObj->findById($id, $data);
+                        } else {
+                            $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+                        }
+                    } else {
+                        return $this->responseObj->response([
+                            "message" => "Not authorized",
+                            "error" => [
+                                "code" => 102403,
+                                "detail" => "User has no authorization to delete entity"
+                            ],
+                            "status" => 403,
+                            "params" => $input,
+                            "links" => [
+                                "self" => URL::current()
+                            ]
+                        ], 403);
+                    }
+                } else {
                     if($id && is_numeric($id)) {
                         $data = $this->repositoryObj->findById($id, $data);
                     } else {
                         $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
                     }
                 }
-            } else {
-                $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+            }
+        } else {
+            // todo : check if $id exist and numeric
+            // if(class_exists($modelNameSpace)) {
+                $data = new $modelNameSpace();
+            // } else {
+            //     // abort(404); // todo : custom message
+            //     return $this->responseObj->response([
+            //         "message" => "Not found",
+            //         "error" => [
+            //             "code" => 102404,
+            //             "detail" => "The resource was not found"
+            //         ],
+            //         "status" => 404,
+            //         "params" => $input,
+            //         "links" => [
+            //             "self" => URL::current()
+            //         ]
+            //     ], 404);
+            // }
+
+            $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+        }
+
+        if($data) {
+            $ns = explode('\\', $modelNameSpace);
+            $nsCount = count($ns);
+            $policy = '';
+            foreach($ns as $key => $item) {
+                if($key == $nsCount-1) {
+                    $policy .= '\Policies\\' . $item . 'Policy';
+                } else {
+                    $policy .= '\\' . $item;
+                }
             }
 
-            if($data) {
+            // todo : authorization
+            if(class_exists($policy)) {
+                if ($user->can('delete', $data)) {
+                    $data = $this->repositoryObj->deleteData($data);
+                    return $this->responseObj->response([
+                        "message" => "The entity has been deleted",
+                        "data" => $data,
+                        "status" => 200
+                    ]);
+                } else {
+                    return $this->responseObj->response([
+                        "message" => "Not authorized",
+                        "errors" => [
+                            "code" => 102403,
+                            "detail" => "User has no authorization to delete entity"
+                        ],
+                        "status" => 403,
+                        "params" => $input,
+                        "links" => [
+                            "self" => URL::current()
+                        ]
+                    ], 403);
+                }
+            } else {
                 $data = $this->repositoryObj->deleteData($data);
-                return $this->responseObj->responsJson("success", "data has been deleted successfully", 200, $data);
+                return $this->responseObj->response([
+                    "message" => "The entity has been deleted",
+                    "data" => $data,
+                    "status" => 200
+                ]);
             }
         }
 
-        return $this->responseObj->responsJson("error", "data input not valid", 400);
+        // abort(404);
+        return $this->responseObj->response([
+            "message" => "Not found",
+            "error" => [
+                "code" => 102422,
+                "detail" => "The entity was not found"
+            ],
+            "status" => 422,
+            "params" => $input,
+            "links" => [
+                "self" => URL::current()
+            ]
+        ], 422);
     }
 }
