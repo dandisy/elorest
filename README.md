@@ -55,6 +55,9 @@ Using laravel passport (https://laravel.com/docs/5.8/passport)
 Authorization
 Using laravel gates & policies (https://laravel.com/docs/5.8/authorization)
 
+Formatable JSON response (Beta)
+see the sample/response_format.blade.php file
+
 ### Documentation
 
 Get All
