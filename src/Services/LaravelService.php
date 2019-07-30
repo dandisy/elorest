@@ -18,7 +18,8 @@ class LaravelService extends AService
     }
 
     public function getQuery($input, $data) {
-        $model = new \App\User();
+        // $model = new \App\User();
+        $model = $data;
 
         $resFormat = false;
         foreach($input as $key => $val) {
@@ -35,6 +36,7 @@ class LaravelService extends AService
             if(substr($key, 0, 1) === "$") {
                 $k = substr($key, 1);
 
+                // todo : forach must included in processQueryRecursive() for suporting array many method, in second level like $totalCount = {...,...,......} 
                 // foreach($val as $q1k => $q1v) { // second level
                     $this->processQueryRecursive($model, $val, $k, $result);
                 // }
@@ -43,7 +45,7 @@ class LaravelService extends AService
                     // for Http GET verb
                     // if $key is not a method exist in $model, system will be error
                     $model = $this->runInvokeQuery($model, $key, $val);
-
+    
                     $i++;
                     if(count($input) == $i) {
                         $result = $model;
@@ -86,7 +88,7 @@ class LaravelService extends AService
                                                 // if(is_numeric($q5k)) {
                                                 if(array_values($q4v) === $q4v) { // check array indexed not array associative, like $summary in $data
                                                     $m6 = $model;
-                                                    foreach($q5v as $q6k => $q6v) {
+                                                    foreach($q5v as $q6k => $q6v) {        
                                                         $m6 = $this->runInvokeQuery($m6, $q6k, $q6v, $value);
                                                     }
 
@@ -115,7 +117,7 @@ class LaravelService extends AService
                                     } else { // for like "$key" = "$this.name"
                                         if(substr($q4v, 0, 6) === '$this.') {
                                             $v = substr($q4v, 6);
-
+                    
                                             $result[$k][$idx][$kq1] = $value->$v;
                                         } else {
                                             // string in value in group can only begin with $this.
