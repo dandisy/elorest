@@ -60,8 +60,8 @@ class LaravelRoute extends ARoute
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
-        if($idOrModel == 'columns') {
-            // if(class_exists($modelNameSpace)) {
+        if($idOrModel == 'columns') {     
+            // if(class_exists($modelNameSpace)) {       
                 $data = new $modelNameSpace();
             // } else {
             //     return $this->responseObj->response([
@@ -358,7 +358,7 @@ class LaravelRoute extends ARoute
                 ]);
             }
         }
-
+        
         return $this->responseObj->response([
             "message" => "Not found",
             "error" => [
@@ -397,7 +397,7 @@ class LaravelRoute extends ARoute
         $request->validate($modelNameSpace::$rules);
 
         $input = $this->requestObj->requestAll($request);
-
+        
         if($idOrModel) {
             if(is_numeric($idOrModel)) {
                 $data = $this->repositoryObj->findById($idOrModel, $data);
@@ -469,7 +469,7 @@ class LaravelRoute extends ARoute
                 ]);
             }
         }
-
+        
         return $this->responseObj->response([
             "message" => "Not found",
             "error" => [
@@ -492,7 +492,7 @@ class LaravelRoute extends ARoute
         // $request->validate($modelNameSpace::$rules);
 
         $input = $this->requestObj->requestAll($request);
-
+        
         if($idOrModel) {
             if(is_numeric($idOrModel)) {
                 // todo : check if $id exist and numeric
@@ -643,7 +643,7 @@ class LaravelRoute extends ARoute
                 ]);
             }
         }
-
+   
         // abort(404);
         return $this->responseObj->response([
             "message" => "Not found",
