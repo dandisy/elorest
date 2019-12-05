@@ -14,6 +14,7 @@ abstract class ARoute
     protected $responseObj;
     protected $serviceObj; 
 
+    // TODO: seharusnya ini ada di config file elorest.php
     protected $routes = [
         'get',
         'post',
@@ -30,6 +31,11 @@ abstract class ARoute
         $this->serviceObj = $serviceObj;
     }
 
+    /*
+     * Register additional route type
+     *
+     * @return Object Route
+     */
     public function register($routes) {
         if(is_array($routes)) {
             array_merge(self::$routes, $routes);
@@ -43,47 +49,47 @@ abstract class ARoute
     }
 
     /*
-     * Define how the framework get url segments and http requests for get http method
+     * Define how the framework get url segments and http requests for get http request type
      *
      * @return Object Route
      */
     abstract public function get();
     
     /*
-     * Define how the framework get url segments and http requests for post http method
+     * Define how the framework get url segments and http requests for post http request type
      *
      * @return Object Route
      */
     abstract public function post();
 
     /*
-     * Define how the framework get url segments and http requests for put http method
+     * Define how the framework get url segments and http requests for put http request type
      *
      * @return Object Route
      */
     abstract public function put();
 
     /*
-     * Define how the framework get url segments and http requests for patch http method
+     * Define how the framework get url segments and http requests for patch http request type
      *
      * @return Object Route
      */
     abstract public function patch();
 
     /*
-     * Define how the framework get url segments and http requests for delete http method
+     * Define how the framework get url segments and http requests for delete http request type
      *
      * @return Object Route
      */
     abstract public function delete();
 
-    abstract protected function getProcess($request, $namespaceOrModel, $idOrModel, $id);
+    abstract protected function routeGet($request, $namespaceOrModel, $idOrModel, $id);
 
-    abstract protected function postProcess($request, $namespaceOrModel, $model);
+    abstract protected function routePost($request, $namespaceOrModel, $model);
 
-    abstract protected function putProcess($request, $namespaceOrModel, $idOrModel, $id);
+    abstract protected function routePut($request, $namespaceOrModel, $idOrModel, $id);
 
-    abstract protected function patchProcess($request, $namespaceOrModel, $idOrModel, $id);
+    abstract protected function routePatch($request, $namespaceOrModel, $idOrModel, $id);
 
-    abstract protected function deleteProcess($request, $namespaceOrModel, $idOrModel, $id);
+    abstract protected function routeDelete($request, $namespaceOrModel, $idOrModel, $id);
 }

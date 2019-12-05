@@ -21,46 +21,41 @@ class LaravelRoute extends ARoute
 
     public function get() {
         return Route::get('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = NULL, $id = NULL) {
-            return $this->getProcess($request, $namespaceOrModel, $idOrModel, $id);
+            return $this->routeGet($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
 
     public function post() {
         return Route::post('elorest/{namespaceOrModel}/{model?}', function(Request $request, $namespaceOrModel, $model = null) {
-            return $this->postProcess($request, $namespaceOrModel, $model);
+            return $this->routePost($request, $namespaceOrModel, $model);
         });
     }
 
     public function put() {
         return Route::put('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = null, $id = null) {            
-            return $this->putProcess($request, $namespaceOrModel, $idOrModel, $id);
+            return $this->routePut($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
 
     public function patch() {
         return Route::patch('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = null, $id = null) {
-            return $this->patchProcess($request, $namespaceOrModel, $idOrModel, $id);
+            return $this->routePatch($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
 
     public function delete() {
         return Route::delete('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = null, $id = null) {
-            return $this->deleteProcess($request, $namespaceOrModel, $idOrModel, $id);
+            return $this->routeDelete($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
 
-    // 404	Not Found (page or other resource doesn’t exist)
-    // 401	Not authorized (not logged in)
-    // 403	Logged in but access to requested area is forbidden
-    // 400	Bad request (something wrong with URL or parameters)
-    // 422	Unprocessable Entity (validation failed)
-    // 500	General server error
-    protected function getProcess($request, $namespaceOrModel, $idOrModel, $id) {
+    protected function routeGet($request, $namespaceOrModel, $idOrModel, $id) {
         // $user = $request->user();
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
-        if($idOrModel == 'columns') {     
+        if($idOrModel == 'columns') {
+            // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {       
                 $data = new $modelNameSpace();
             // } else {
@@ -81,6 +76,7 @@ class LaravelRoute extends ARoute
             return $this->repositoryObj->getTableColumns($data);
         }
         if(is_numeric($idOrModel)) {
+            // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
             // } else {
@@ -102,6 +98,7 @@ class LaravelRoute extends ARoute
         }
         if($idOrModel) {
             $modelNameSpace .= '\\'.$idOrModel;
+            // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
             // } else {
@@ -126,6 +123,7 @@ class LaravelRoute extends ARoute
                 return $this->repositoryObj->findById($id, $data);
             }
         } else {
+            // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
             // } else {
@@ -189,12 +187,14 @@ class LaravelRoute extends ARoute
         return $this->serviceObj->getQuery($input, $data);
     }
 
-    protected function postProcess($request, $namespaceOrModel, $model) {
+    // route post hanya punya 1 atau 2 url segment saja (namesapace dan tau model), sedangkan ruote lain bs 3 url segment
+    protected function routePost($request, $namespaceOrModel, $model) {
         $user = $request->user();
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
         if(!$model) {
+            // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
             // } else {
@@ -213,6 +213,7 @@ class LaravelRoute extends ARoute
             // }
         } else {
             $modelNameSpace .= '\\'.$model;
+            // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
             // } else {
@@ -235,50 +236,56 @@ class LaravelRoute extends ARoute
 
         $input = $this->requestObj->requestAll($request);
 
-        // todo : authorization
+        // TODO: authorization
         if(class_exists($modelNameSpace.'Policy')) {
             if ($user->can('create', $modelNameSpace)) {
                 return $this->responseObj->response([
-                    "message" => "The entity has been created",
-                    "data" => $this->repositoryObj->createData($input, $data),
-                    "status" => 201
-                ]);
+                    "code" => 201,
+                    "status" => true,
+                    "message" => "Data saved successfully",
+                    "data" => $this->repositoryObj->createData($input, $data)
+                ], 201);
             } else {
                 return $this->responseObj->response([
+                    "code" => 403,
+                    "status" => false,
                     "message" => "Not authorized",
                     "error" => [
-                        "code" => 102422,
-                        "detail" => "User has no authorization to create entity"
+                        "code" => 102403,
+                        "detail" => "You do not have permission to save data"
                     ],
-                    "status" => 422,
                     "params" => $input,
                     "links" => [
                         "self" => URL::current()
                     ]
-                ], 422);
+                ], 403);
             }
         } else {
             return $this->responseObj->response([
-                "message" => "The entity has been created",
-                "data" => $this->repositoryObj->createData($input, $data),
-                "status" => 201
-            ]);
+                "code" => 201,
+                "status" => true,
+                "message" => "Data saved successfully",
+                "data" => $this->repositoryObj->createData($input, $data)
+            ], 201);
         }
     }
 
-    protected function putProcess($request, $namespaceOrModel, $idOrModel, $id) {
+    protected function routePut($request, $namespaceOrModel, $idOrModel, $id) {
         $user = $request->user();
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
         if($idOrModel) {
-            if(is_numeric($idOrModel)) {    
+            if(is_numeric($idOrModel)) {                
+                $data = new $modelNameSpace();
+
                 $request->validate($modelNameSpace::$rules);        
                 $input = $this->requestObj->requestAll($request);
 
                 $data = $this->repositoryObj->findById($idOrModel, $data);
             } else {
                 $modelNameSpace .= '\\'.$idOrModel;
+                // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
                 // if(class_exists($modelNameSpace)) {
                     $data = new $modelNameSpace();
                 // } else {
@@ -306,6 +313,7 @@ class LaravelRoute extends ARoute
                 }
             }
         } else {
+            // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
             // } else {
@@ -330,56 +338,60 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
-            // todo : authorization
+            // TODO: authorization
             if(class_exists($modelNameSpace.'Policy')) {
                 if ($user->can('update', $data)) {
-                    // todo : use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
+                    // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                     $data = $this->repositoryObj->updateData($input, $data);
                     return $this->responseObj->response([
-                        "message" => "The entity has been updated",
-                        "data" => $data,
-                        "status" => 200
+                        "code" => 200,
+                        "status" => true,
+                        "message" => "Data updated successfully",
+                        "data" => $data
                     ]);
                 } else {
                     return $this->responseObj->response([
+                        "code" => 403,
+                        "status" => false,
                         "message" => "Not authorized",
                         "error" => [
-                            "code" => 102422,
-                            "detail" => "User has no authorization to update this entity"
+                            "code" => 102403,
+                            "detail" => "You do not have permission to update data"
                         ],
-                        "status" => 422,
                         "params" => $input,
                         "links" => [
                             "self" => URL::current()
                         ]
-                    ], 422);
+                    ], 403);
                 }
             } else {
-                // todo : use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
+                // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                 $data = $this->repositoryObj->updateData($input, $data);
                 return $this->responseObj->response([
-                    "message" => "The entity has been updated",
-                    "data" => $data,
-                    "status" => 200
+                    "code" => 200,
+                    "status" => true,
+                    "message" => "Data updated successfully",
+                    "data" => $data
                 ]);
             }
         }
         
         return $this->responseObj->response([
+            "code" => 410,
+            "status" => false,
             "message" => "Not found",
             "error" => [
-                "code" => 102422,
-                "detail" => "The entity was not found"
+                "code" => 102410,
+                "detail" => "Data not available"
             ],
-            "status" => 422,
             "params" => $input,
             "links" => [
                 "self" => URL::current()
             ]
-        ], 422);
+        ], 410);
     }
 
-    protected function patchProcess($request, $namespaceOrModel, $idOrModel, $id) {
+    protected function routePatch($request, $namespaceOrModel, $idOrModel, $id) {
         $user = $request->user();
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
@@ -394,6 +406,7 @@ class LaravelRoute extends ARoute
                 $data = $this->repositoryObj->findById($idOrModel, $data);
             } else {
                 $modelNameSpace .= '\\'.$idOrModel;
+                // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
                 // if(class_exists($modelNameSpace)) {
                     $data = new $modelNameSpace();
                 // } else {
@@ -421,6 +434,7 @@ class LaravelRoute extends ARoute
                 }
             }
         } else {
+            // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
             // } else {
@@ -445,67 +459,72 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
-            // todo : authorization
+            // TODO: authorization
             if(class_exists($modelNameSpace.'Policy')) {
                 if ($user->can('update', $data)) {
                     $this->repositoryObj->deleteData($data);
 
-                    // todo : use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
+                    // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                     $data = $this->repositoryObj->insertData($input, $data);
                     return $this->responseObj->response([
-                        "message" => "The entity has been updated",
-                        "data" => $data,
-                        "status" => 201
+                        "code" => 200,
+                        "status" => true,
+                        "message" => "Data updated successfully",
+                        "data" => $data
                     ]);
                 } else {
                     return $this->responseObj->response([
+                        "code" => 403,
+                        "status" => false,
                         "message" => "Not authorized",
                         "error" => [
-                            "code" => 102422,
-                            "detail" => "User has no authorization to update entity"
+                            "code" => 102403,
+                            "detail" => "You do not have permission to update data"
                         ],
-                        "status" => 422,
                         "params" => $input,
                         "links" => [
                             "self" => URL::current()
                         ]
-                    ], 422);
+                    ], 403);
                 }
             } else {
                 $this->repositoryObj->deleteData($data);
 
-                // todo : use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
+                // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                 $data = $this->repositoryObj->insertData($input, $data);
                 return $this->responseObj->response([
-                    "message" => "The entity has been updated",
-                    "data" => $data,
-                    "status" => 201
+                    "code" => 200,
+                    "status" => true,
+                    "message" => "Data updated successfully",
+                    "data" => $data
                 ]);
             }
         }
         
         return $this->responseObj->response([
+            "code" => 410,
+            "status" => false,
             "message" => "Not found",
             "error" => [
-                "code" => 102422,
-                "detail" => "The entity was not found"
+                "code" => 102410,
+                "detail" => "Data not available"
             ],
-            "status" => 422,
             "params" => $input,
             "links" => [
                 "self" => URL::current()
             ]
-        ], 422);
+        ], 410);
     }
 
-    protected function deleteProcess($request, $namespaceOrModel, $idOrModel, $id) {
+    protected function routeDelete($request, $namespaceOrModel, $idOrModel, $id) {
         $user = $request->user();
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
         
         if($idOrModel) {
             if(is_numeric($idOrModel)) {
-                // todo : check if $id exist and numeric
+                // TODO: check if $id exist and numeric
+                // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
                 // if(class_exists($modelNameSpace)) {
                     $data = new $modelNameSpace();
                 // } else {
@@ -524,12 +543,11 @@ class LaravelRoute extends ARoute
                 //     ], 404);
                 // }
 
-                // $request->validate($modelNameSpace::$rules);
-                $input = $this->requestObj->requestAll($request);
-
+                // tidak ada request body utk route delete
                 $data = $this->repositoryObj->findById($idOrModel, $data);
             } else {
                 $modelNameSpace .= '\\'.$idOrModel;
+                // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
                 // if(class_exists($modelNameSpace)) {
                     $data = new $modelNameSpace();
                 // } else {
@@ -548,9 +566,8 @@ class LaravelRoute extends ARoute
                 //     ], 404);
                 // }
 
-                // $request->validate($modelNameSpace::$rules);
-                $input = $this->requestObj->requestAll($request);
-
+                // tidak ada request body utk route delete
+                
                 $ns = explode('\\', $modelNameSpace);
                 $nsCount = count($ns);
                 $policy = '';
@@ -562,7 +579,7 @@ class LaravelRoute extends ARoute
                     }
                 }
 
-                // todo : authorization
+                // TODO: authorization
                 if(class_exists($policy)) {
                     if ($user->can('delete', $data)) {
                         if($id && is_numeric($id)) {
@@ -572,12 +589,13 @@ class LaravelRoute extends ARoute
                         }
                     } else {
                         return $this->responseObj->response([
+                            "code" => 403,
+                            "status" => false,
                             "message" => "Not authorized",
                             "error" => [
                                 "code" => 102403,
-                                "detail" => "User has no authorization to delete entity"
+                                "detail" => "You do not have permission to delete data"
                             ],
-                            "status" => 403,
                             "params" => $input,
                             "links" => [
                                 "self" => URL::current()
@@ -593,7 +611,8 @@ class LaravelRoute extends ARoute
                 }
             }
         } else {
-            // todo : check if $id exist and numeric
+            // TODO: check if $id exist and numeric
+            // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
             // } else {
@@ -612,9 +631,8 @@ class LaravelRoute extends ARoute
             //     ], 404);
             // }
 
-            // $request->validate($modelNameSpace::$rules);
-            $input = $this->requestObj->requestAll($request);
-
+            // tidak ada request body utk route delete
+            
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
         }
 
@@ -630,23 +648,25 @@ class LaravelRoute extends ARoute
                 }
             }
 
-            // todo : authorization
+            // TODO: authorization
             if(class_exists($policy)) {
                 if ($user->can('delete', $data)) {
                     $data = $this->repositoryObj->deleteData($data);
                     return $this->responseObj->response([
-                        "message" => "The entity has been deleted",
-                        "data" => $data,
-                        "status" => 200
+                        "code" => 200,
+                        "status" => true,
+                        "message" => "Data deleted successfully",
+                        "data" => $data
                     ]);
                 } else {
                     return $this->responseObj->response([
+                        "code" => 403,
+                        "status" => false,
                         "message" => "Not authorized",
-                        "errors" => [
+                        "error" => [
                             "code" => 102403,
-                            "detail" => "User has no authorization to delete entity"
+                            "detail" => "You do not have permission to delete data"
                         ],
-                        "status" => 403,
                         "params" => $input,
                         "links" => [
                             "self" => URL::current()
@@ -656,25 +676,27 @@ class LaravelRoute extends ARoute
             } else {
                 $data = $this->repositoryObj->deleteData($data);
                 return $this->responseObj->response([
-                    "message" => "The entity has been deleted",
-                    "data" => $data,
-                    "status" => 200
+                    "code" => 200,
+                    "status" => true,
+                    "message" => "Data deleted successfully",
+                    "data" => $data
                 ]);
             }
         }
    
         // abort(404);
         return $this->responseObj->response([
+            "code" => 410,
+            "status" => false,
             "message" => "Not found",
             "error" => [
-                "code" => 102422,
-                "detail" => "The entity was not found"
+                "code" => 102410,
+                "detail" => "Data not available"
             ],
-            "status" => 422,
             "params" => $input,
             "links" => [
                 "self" => URL::current()
             ]
-        ], 422);
+        ], 410);
     }
 }

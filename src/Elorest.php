@@ -12,12 +12,48 @@ use Webcore\Elorest\Service\LaravelService;
 
 class Elorest
 {
+    /*
+     * Create route object
+     *
+     * @return Object Route
+     */
+    protected static function routeObject() {
+        // TODO: ini seharusnya tidak hardcode buta instant dr konkrit class disini, biasa dgn DI
+        return new LaravelRoute(
+            new LaravelRequest(),
+            new EloquentRepository(),
+            new LaravelResponse(),
+            new LaravelService()
+        );
+
+        // This make tight coupling with Laravel Framework
+        // and must register ElorestServiceProvide to Laravel config/app.php if installed manually
+        // // return resolve('Webcore\Elorest\Route\LaravelRoute');
+        // return Container::getInstance()->make(LaravelRoute::class);
+    }
+
+    /*
+     * Wrapping route object with middleware
+     *
+     * @return Object Route
+     */
+    protected static function middlewareObject() {
+        // TODO: ini seharusnya tidak hardcode buta instant dr konkrit class disini, biasa dgn DI
+        return new LaravelMiddleware(self::routeObject());
+
+        // This make tight coupling with Laravel Framework
+        // and must register ElorestServiceProvide to Laravel config/app.php if installed manually
+        // // return Container::getInstance()->make(LaravelMiddleware::class);
+        // return resolve('LaravelMiddleware');
+    }
+
+    // TODO: seharusnya ini tidak static, nantinya akan dipanggil menggunkan facade saja
     public static function routes(array $middleware = null) {
         self::processRoute($middleware);
     }
 
     /*
-     * Procesing the route object methods and middleware
+     * Prepering the route with its middleware
      *
      * @param Array $middleware
      * @return void
@@ -28,12 +64,15 @@ class Elorest
         if($middleware) {
             if(isset($middleware['only']))
             {
+                // handling route asigned middleware
                 foreach($middleware['only'] as $route) {
+                    // TODO: seharusnya pakai try catch untuk handling ketika route tdk terdaftar
                     if(in_array($route, $routes)) {
                         self::middleware($route, $middleware['middleware']);
                     }
                 }
 
+                // handling route not asigned middleware
                 $except = array_diff($routes, $middleware['only']);
                 foreach($except as $route) {
                     // self::$route();
@@ -42,10 +81,13 @@ class Elorest
             } 
             else if(isset($middleware['except'])) 
             {
+                // handling route asigned middleware
                 $only = array_diff($routes, $middleware['except']);
                 foreach($only as $route) {
                     self::middleware($route, $middleware['middleware']);
                 }
+
+                // handling route not asigned middleware
                 foreach($middleware['except'] as $route) {
                     // self::$route();
                     self::routeObjInvoke($route);
@@ -77,70 +119,30 @@ class Elorest
      * @return void
      */
     protected static function middleware($route, $middleware) {
-        // return self::middlewareObject()->middleware($route, $middleware);
         self::middlewareObject()->middleware($route, $middleware);
     }
 
     /*
-     * Create route object
-     *
-     * @return Object Route
-     */
-    protected static function routeObject() {
-        return new LaravelRoute(
-            new LaravelRequest(),
-            new EloquentRepository(),
-            new LaravelResponse(),
-            new LaravelService()
-        );
-
-        // This make tight coupling with Laravel Framework
-        // and must register ElorestServiceProvide to Laravel config/app.php if installed manually
-        // // return resolve('Webcore\Elorest\Route\LaravelRoute');
-        // return Container::getInstance()->make(LaravelRoute::class);
-    }
-
-    /*
-     * Wrapper route object with middleware
-     *
-     * @return Object Route
-     */
-    protected static function middlewareObject() {
-        return new LaravelMiddleware(self::routeObject());
-
-        // This make tight coupling with Laravel Framework
-        // and must register ElorestServiceProvide to Laravel config/app.php if installed manually
-        // // return Container::getInstance()->make(LaravelMiddleware::class);
-        // return resolve('LaravelMiddleware');
-    }
-
-    /*
-     * Call the route object methods
+     * Printing the route object methods
      *
      * @param string $route
      * @return void
      */
-    protected static function routeObjInvoke($route) {
-        // return self::routeObject()->$route();        
+    protected static function routeObjInvoke($route) {      
         self::routeObject()->$route();
     }
-
     // protected static function get() {
     //     return self::routeObject()->get();
     // }
-
     // protected static function post() {
     //     return self::routeObject()->post();
     // }
-
     // protected static function put() {
     //     return self::routeObject()->put();
     // }
-
     // protected static function patch() {
     //     return self::routeObject()->patch();
     // }
-
     // protected static function delete() {
     //     return self::routeObject()->delete();
     // }

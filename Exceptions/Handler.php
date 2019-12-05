@@ -112,6 +112,12 @@ class Handler extends ExceptionHandler
                     'code' => $exception->getCode()
                 ];
                 break;
+            case 410:
+                $response['message'] = 'Gone';
+                $response['errors'] = [
+                    'code' => $exception->getCode()
+                ];
+                break;
             case 422:
                 $response['message'] = $exception->original['message'];
                 $response['errors'] = $exception->original['errors'];

@@ -195,3 +195,18 @@ Update Where
     - create your classes inherit or implement from the Elorest artifacts
     - override or create new methods
     - register your route
+
+### Notes
+
+    add header Accept: application/json in request
+
+### Refs
+
+    - 201	New resource has been created successfully
+    - 400	Bad request (something wrong with URL or parameters)
+    - 401	Not authorized (not logged in)
+    - 403	Logged in but access to requested area is forbidden
+    - 404	Not Found (page or other resource doesn’t exist)
+    - 410	Resource not avalibale
+    - 422	Unprocessable Entity (validation failed)
+    - 500	General server error
