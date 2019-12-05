@@ -44,7 +44,13 @@ class LaravelService extends AService
                 if(!$resFormat) {
                     // for Http GET verb
                     // if $key is not a method exist in $model, system will be error
-                    $model = $this->runInvokeQuery($model, $key, $val);
+                    if(is_array($val)) {
+                        foreach($val as $v) {                            
+                            $model = $this->runInvokeQuery($model, $key, $v);
+                        }
+                    } else {
+                        $model = $this->runInvokeQuery($model, $key, $val);
+                    }
     
                     $i++;
                     if(count($input) == $i) {
