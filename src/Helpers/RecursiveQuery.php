@@ -56,11 +56,19 @@ class RecursiveQuery
                 } else {
                     $item = $matches[1][$i];
     
-                    $data = $data->$key([$param => function($query) use ($item) {
-                        $params = explode('=', trim($item));
-    
-                        call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
-                    }]);
+                    if($key == 'whereHas' || $key == 'whereDoesntHave') {
+                        $data = $data->$key($param, function($query) use ($item) {
+                            $params = explode('=', trim($item));
+        
+                            call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                        });
+                    } else {
+                        $data = $data->$key([$param => function($query) use ($item) {
+                            $params = explode('=', trim($item));
+        
+                            call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                        }]);
+                    }
                 }
             } else {
                 $data = call_user_func_array(array($data,$key), [$param]);

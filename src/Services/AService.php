@@ -29,7 +29,7 @@ abstract class AService
      */
     protected function invokeQuery($data, $key, $vals, $gValue) {
         // for "with" of eloquent command
-        if($key == 'with') {
+        if($key == 'with' || $key == 'whereHas' || $key == 'whereDoesntHave') {
             // $params = explode(',', $vals);
             $param = $vals;
 
@@ -72,7 +72,7 @@ abstract class AService
                 }
             // }
         } else {
-            if(preg_match('/\[(.*?)\]/', $vals, $arrParamMatch)) { // handling whereIn, due to whereIn params using whereIn('field', ['val_1', 'val_2', 'val_n']) syntax
+            if(preg_match('/\[(.*?)\]/', $vals, $arrParamMatch)) { // handling whereIn / whereNotIn / others with same syntax, due to whereIn params using whereIn('field', ['val_1', 'val_2', 'val_n']) syntax
                 $params = str_replace(','.$arrParamMatch[0], '', $vals);
                 $params = explode(',', trim($params));
                 array_push($params, explode(',', trim($arrParamMatch[1])));
