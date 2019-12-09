@@ -30,9 +30,10 @@ abstract class AService
     protected function invokeQuery($data, $key, $vals, $gValue) {
         // for "with" of eloquent command
         if($key == 'with') {
-            $params = explode(',', $vals);
+            // $params = explode(',', $vals);
+            $param = $vals;
 
-            foreach($params as $param) {
+            // foreach($params as $param) {
                 // if(preg_match_all('/\((.*?)\)/', $request->test, $match)) { // multi occurence
                 //     return $match;
                 // }
@@ -66,9 +67,10 @@ abstract class AService
                         $data = $recursiveQuery->invoke($data, $key, $param, $closureMatch, $arrayParam);//['data'];
                     }
                 } else {
+                    $params = explode(',', $param);
                     $data = $this->processQuery($data, $key, $param);
                 }
-            }
+            // }
         } else {
             if(preg_match('/\[(.*?)\]/', $vals, $arrParamMatch)) { // handling whereIn, due to whereIn params using whereIn('field', ['val_1', 'val_2', 'val_n']) syntax
                 $params = str_replace(','.$arrParamMatch[0], '', $vals);
