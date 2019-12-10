@@ -191,6 +191,79 @@ class LaravelRoute extends ARoute
     protected function routePost($request, $namespaceOrModel, $model) {
         $user = $request->user();
 
+        if($namespaceOrModel == 'upload') {
+            // $mainDir = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
+            $mainDir = './app/public/uploads/';
+            // $dir = str_replace('./','',$mainDir).$user->id;
+            $dir = str_replace('./','',$mainDir).$request->created_by;
+
+            // if (!realpath('..'.DIRECTORY_SEPARATOR.$dir)) {
+            //     mkdir('..'.DIRECTORY_SEPARATOR.$dir, 0777, true);
+            // }
+            if (!storage_path($dir)) {
+                mkdir(storage_path($dir), 0777, true);
+            }
+
+            $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
+            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$request->extention;
+            $name = $request->created_by.'_'.$request->model.'_'.time().'.'.$request->extention;
+            $path = $dir.DIRECTORY_SEPARATOR.$name;
+            // $path = $dir.$name;
+            // $destinationPath = '..'.DIRECTORY_SEPARATOR.$dir;
+            $destinationPath = storage_path($dir);
+            
+            if($request->hasFile('file')) {
+                // if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json'); 
+                }
+
+                $file = $request->file('file');
+                $file->move($destinationPath, $name);
+                
+                // if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
+                if (realpath(storage_path($path))) {
+                    return response([
+                        "code" => 201,
+                        "status" => true,
+                        "message" => "file saved successfully",
+                        // "data" => str_replace(DIRECTORY_SEPARATOR,'/',str_replace('public'.DIRECTORY_SEPARATOR,'',$path))
+                        "data" => url('/').str_replace('storage/app/public','/storage',str_replace(DIRECTORY_SEPARATOR,'/',$path))
+                    ], 201)
+                        ->header('Content-Type', 'application/json');
+                }
+            } else {
+                if($request->file) {
+                    $data = base64_decode($request->file);
+                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),$data);
+                }
+
+                // if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
+                if (realpath(storage_path($path))) {
+                    return response([
+                        "code" => 201,
+                        "status" => true,
+                        "message" => "file saved successfully",
+                        // "data" => str_replace(DIRECTORY_SEPARATOR,'/',str_replace('public'.DIRECTORY_SEPARATOR,'',$path))
+                        "data" => url('/').str_replace('storage/app/public','/storage',str_replace(DIRECTORY_SEPARATOR,'/',$path))
+                    ], 201)
+                        ->header('Content-Type', 'application/json');
+                }
+            }
+
+            return response(json_encode([
+                "code" => 200,
+                "status" => false,
+                "message" => "data input not valid"
+            ], 200))
+                ->header('Content-Type', 'application/json');
+        }
+
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
         if(!$model) {
@@ -212,88 +285,24 @@ class LaravelRoute extends ARoute
             //     ], 404);
             // }
         } else {
-            if($model == 'upload') {
-                // $mainDir = env('SAVE_PATH');
-                $mainDir = './storage/app/public/uploads/';
-                $dir = str_replace('./','',$mainDir).$request->created_by;
-
-                if (!realpath('..'.DIRECTORY_SEPARATOR.$dir)) {
-                    mkdir('..'.DIRECTORY_SEPARATOR.$dir, 0777, true);
-                }
-
-                $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
-                $name = $request->created_by.'_'.$request->model.'_'.time().'.'.$request->extention;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
-                // $path = $dir.$name;
-                $destinationPath = '..'.DIRECTORY_SEPARATOR.$dir;
-                
-                if($request->hasFile('file')) {
-                    if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
-                        return response(json_encode([
-                            "code" => 200,
-                            "status" => false,
-                            "message" => "file already exist"
-                        ], 200))
-                            ->header('Content-Type', 'application/json'); 
-                    }
-
-                    $file = $request->file('file');
-                    $file->move($destinationPath, $name);
-                    
-                    if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
-                        return response([
-                            "code" => 201,
-                            "status" => true,
-                            "message" => "file saved successfully",
-                            // "data" => str_replace(DIRECTORY_SEPARATOR,'/',str_replace('public'.DIRECTORY_SEPARATOR,'',$path))
-                            "data" => url('/').str_replace('storage/app/public','/storage',str_replace(DIRECTORY_SEPARATOR,'/',$path))
-                        ], 201)
-                            ->header('Content-Type', 'application/json');
-                    }
-                } else {
-                    if($request->file) {
-                        $data = base64_decode($request->file);
-                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),$data);
-                    }
-
-                    if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
-                        return response([
-                            "code" => 201,
-                            "status" => true,
-                            "message" => "file saved successfully",
-                            // "data" => str_replace(DIRECTORY_SEPARATOR,'/',str_replace('public'.DIRECTORY_SEPARATOR,'',$path))
-                            "data" => url('/').str_replace('storage/app/public','/storage',str_replace(DIRECTORY_SEPARATOR,'/',$path))
-                        ], 201)
-                            ->header('Content-Type', 'application/json');
-                    }
-                }
-
-                return response(json_encode([
-                    "code" => 200,
-                    "status" => false,
-                    "message" => "data input not valid"
-                ], 200))
-                    ->header('Content-Type', 'application/json');
-            } else {
-                $modelNameSpace .= '\\'.$model;
-                // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
-                // if(class_exists($modelNameSpace)) {
-                    $data = new $modelNameSpace();
-                // } else {
-                //     return $this->responseObj->response([
-                //         "message" => "Not found",
-                //         "error" => [
-                //             "code" => 102404,
-                //             "detail" => "The resource was not found"
-                //         ],
-                //         "status" => 404,
-                //         "params" => $input,
-                //         "links" => [
-                //             "self" => URL::current()
-                //         ]
-                //     ], 404);
-                // }
-            }
+            $modelNameSpace .= '\\'.$model;
+            // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
+            // if(class_exists($modelNameSpace)) {
+                $data = new $modelNameSpace();
+            // } else {
+            //     return $this->responseObj->response([
+            //         "message" => "Not found",
+            //         "error" => [
+            //             "code" => 102404,
+            //             "detail" => "The resource was not found"
+            //         ],
+            //         "status" => 404,
+            //         "params" => $input,
+            //         "links" => [
+            //             "self" => URL::current()
+            //         ]
+            //     ], 404);
+            // }
         }
 
         $request->validate($modelNameSpace::$rules);
