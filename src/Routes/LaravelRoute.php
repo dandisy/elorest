@@ -32,7 +32,7 @@ class LaravelRoute extends ARoute
     }
 
     public function put() {
-        return Route::put('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = null, $id = null) {            
+        return Route::put('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = null, $id = null) {    
             return $this->routePut($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
@@ -351,8 +351,9 @@ class LaravelRoute extends ARoute
         if($idOrModel) {
             if(is_numeric($idOrModel)) {                
                 $data = new $modelNameSpace();
-
-                $request->validate($modelNameSpace::$rules);        
+                
+                // in put, error if run validate if reuired fields not available
+                // $request->validate($modelNameSpace::$rules);        
                 $input = $this->requestObj->requestAll($request);
 
                 $data = $this->repositoryObj->findById($idOrModel, $data);
@@ -376,7 +377,8 @@ class LaravelRoute extends ARoute
                 //     ], 404);
                 // }
     
-                $request->validate($modelNameSpace::$rules);        
+                // in put, error if run validate if reuired fields not available
+                // $request->validate($modelNameSpace::$rules);        
                 $input = $this->requestObj->requestAll($request);
 
                 if($id && is_numeric($id)) {
@@ -404,7 +406,8 @@ class LaravelRoute extends ARoute
             //     ], 404);
             // }
     
-            $request->validate($modelNameSpace::$rules);    
+            // in put, error if run validate if reuired fields not available
+            // $request->validate($modelNameSpace::$rules);    
             $input = $this->requestObj->requestAll($request);
 
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
@@ -473,7 +476,8 @@ class LaravelRoute extends ARoute
             if(is_numeric($idOrModel)) {
                 $data = new $modelNameSpace();
 
-                $request->validate($modelNameSpace::$rules);        
+                // in patch, error if run validate if reuired fields not available
+                // $request->validate($modelNameSpace::$rules);        
                 $input = $this->requestObj->requestAll($request);
 
                 $data = $this->repositoryObj->findById($idOrModel, $data);
@@ -497,7 +501,8 @@ class LaravelRoute extends ARoute
                 //     ], 404);
                 // }
     
-                $request->validate($modelNameSpace::$rules);        
+                // in patch, error if run validate if reuired fields not available
+                // $request->validate($modelNameSpace::$rules);        
                 $input = $this->requestObj->requestAll($request);
 
                 if($id && is_numeric($id)) {
@@ -525,7 +530,8 @@ class LaravelRoute extends ARoute
             //     ], 404);
             // }
     
-            $request->validate($modelNameSpace::$rules);    
+            // in patch, error if run validate if reuired fields not available
+            // $request->validate($modelNameSpace::$rules);    
             $input = $this->requestObj->requestAll($request);
 
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
