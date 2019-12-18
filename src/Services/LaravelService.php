@@ -234,7 +234,12 @@ class LaravelService extends AService
             $data = $this->paginate($data, $key, $param);
         } else {
             if(is_array($param)) {
-                $data = $this->callUserFuncArray($data, $key, count($param) == 1 ? [$param] : $param);
+                if($key === 'selectRaw' || $key === 'whereRaw' || $key === 'orWhereRaw' || $key === 'havingRaw' || $key === 'orHavingRaw') {
+                    // $data = $data->selectRaw(implode(',', $param), $param);
+                    $data = $this->callUserFuncArray($data, $key, [implode(',', $param), $param]);
+                } else {
+                    $data = $this->callUserFuncArray($data, $key, count($param) == 1 ? [$param] : $param);
+                }
             } else {
                 $data = $this->callUserFuncArray($data, $key, [$param]);
             }
