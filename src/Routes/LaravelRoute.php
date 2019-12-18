@@ -190,12 +190,13 @@ class LaravelRoute extends ARoute
     // route post hanya punya 1 atau 2 url segment saja (namesapace dan tau model), sedangkan ruote lain bs 3 url segment
     protected function routePost($request, $namespaceOrModel, $model) {
         $user = $request->user();
+        $userId = isset($user->id) ? $user->id : ($request->created_by ? : 0);
 
         if($namespaceOrModel == 'upload') {
             // $mainDir = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
             $mainDir = './app/public/uploads/';
             // $dir = str_replace('./','',$mainDir).$user->id;
-            $dir = str_replace('./','',$mainDir).$request->created_by;
+            $dir = str_replace('./','',$mainDir).$userId;
 
             // if (!realpath('..'.DIRECTORY_SEPARATOR.$dir)) {
             //     mkdir('..'.DIRECTORY_SEPARATOR.$dir, 0777, true);
@@ -206,7 +207,7 @@ class LaravelRoute extends ARoute
 
             $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
             // $name = $user->id.'_'.$request->model.'_'.time().'.'.$request->extention;
-            $name = $request->created_by.'_'.$request->model.'_'.time().'.'.$request->extention;
+            $name = $userId.'_'.$request->model.'_'.time().'.'.$request->extention;
             $path = $dir.DIRECTORY_SEPARATOR.$name;
             // $path = $dir.$name;
             // $destinationPath = '..'.DIRECTORY_SEPARATOR.$dir;
@@ -308,10 +309,11 @@ class LaravelRoute extends ARoute
         $request->validate($modelNameSpace::$rules);
 
         $input = $this->requestObj->requestAll($request);
-
-        // TODO: authorization
-        if(class_exists($modelNameSpace.'Policy')) {
-            if ($user->can('create', $modelNameSpace)) {
+        
+        $modelName = explode('\\', $modelNameSpace);
+        $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
+        if($checkPolicy) {
+            if($user->can('create', $modelNameSpace)) {
                 return $this->responseObj->response([
                     "code" => 201,
                     "status" => true,
@@ -414,9 +416,12 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
-            // TODO: authorization
-            if(class_exists($modelNameSpace.'Policy')) {
-                if ($user->can('update', $data)) {
+            $input['updated_by'] = $user->id;
+            
+            $modelName = explode('\\', $modelNameSpace);
+            $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
+            if($checkPolicy) {
+                if($user->can('update', $data)) {
                     // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                     $data = $this->repositoryObj->updateData($input, $data);
                     return $this->responseObj->response([
@@ -538,8 +543,11 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
-            // TODO: authorization
-            if(class_exists($modelNameSpace.'Policy')) {
+            $input['updated_by'] = $user->id;
+            
+            $modelName = explode('\\', $modelNameSpace);
+            $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
+            if($checkPolicy) {
                 if ($user->can('update', $data)) {
                     $this->repositoryObj->deleteData($data);
 
@@ -647,20 +655,11 @@ class LaravelRoute extends ARoute
 
                 // tidak ada request body utk route delete
                 
-                $ns = explode('\\', $modelNameSpace);
-                $nsCount = count($ns);
-                $policy = '';
-                foreach($ns as $key => $item) {
-                    if($key == $nsCount-1) {
-                        $policy .= '\Policies\\' . $item . 'Policy';
-                    } else {
-                        $policy .= '\\' . $item;
-                    }
-                }
-
-                // TODO: authorization
-                if(class_exists($policy)) {
-                    if ($user->can('delete', $data)) {
+                
+                $modelName = explode('\\', $modelNameSpace);
+                $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
+                if($checkPolicy) {
+                    if($user->can('delete', $data)) {
                         if($id && is_numeric($id)) {
                             $data = $this->repositoryObj->findById($id, $data);
                         } else {
@@ -715,20 +714,10 @@ class LaravelRoute extends ARoute
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
         }
 
-        if($data) {
-            $ns = explode('\\', $modelNameSpace);
-            $nsCount = count($ns);
-            $policy = '';
-            foreach($ns as $key => $item) {
-                if($key == $nsCount-1) {
-                    $policy .= '\Policies\\' . $item . 'Policy';
-                } else {
-                    $policy .= '\\' . $item;
-                }
-            }
-
-            // TODO: authorization
-            if(class_exists($policy)) {
+        if($data) {            
+            $modelName = explode('\\', $modelNameSpace);
+            $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
+            if($checkPolicy) {
                 if ($user->can('delete', $data)) {
                     $data = $this->repositoryObj->deleteData($data);
                     return $this->responseObj->response([
