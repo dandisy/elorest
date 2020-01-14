@@ -55,7 +55,12 @@
                     if(i in loadOptions && isNotEmpty(loadOptions[i])) 
                         params[i] = JSON.stringify(loadOptions[i]);
                 });
-                $.getJSON("{{url('dxDatagrid/User')}}", params)
+                // params['related'] for group by in filter, added by dandisy
+                params['related'] = {
+                    'category' : 'category.name'
+                };
+                // $.getJSON("{{url('api/dxDatagrid/test-datagrid-service')}}", params)
+                $.getJSON("{{url('api/dxDatagrid/User')}}", params)
                     .done(function(result) {
                         console.log(result);
                         d.resolve(result.data, { 

@@ -13,6 +13,15 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::get('dxDatagrid/test-datagrid-service', function(Request $request) {
+    $modelNS = \App\Models\Test::select('tests.*', 'categories.name as category')
+        ->join('categories', 'categories.id', '=', 'tests.category_id');
+
+    $dx = new \App\Services\DatagridService($modelNS);
+
+    return $dx->invoke($request);
+});
+
 Route::get('dxDatagrid/{model}', function($model, Request $request) {
     $res['info'] = [];
     $res['info']['request'] = $request->all();

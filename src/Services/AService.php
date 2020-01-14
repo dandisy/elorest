@@ -77,7 +77,10 @@ abstract class AService
                 $params = explode(',', trim($params));
                 array_push($params, explode(',', trim($arrParamMatch[1])));
             } else {
-                $params = explode(',', trim($vals));
+                $params = $vals;
+                if(strpos(trim($vals), ',')) {
+                    $params = explode(',', trim($vals));
+                }
 
                 if($gValue) {
                     $params = array_map(function($valsVal) use ($gValue) {

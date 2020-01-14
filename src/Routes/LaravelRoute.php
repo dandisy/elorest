@@ -32,7 +32,7 @@ class LaravelRoute extends ARoute
     }
 
     public function put() {
-        return Route::put('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = null, $id = null) {    
+        return Route::put('elorest/{namespaceOrModel}/{idOrModel?}/{id?}', function(Request $request, $namespaceOrModel, $idOrModel = null, $id = null) {
             return $this->routePut($request, $namespaceOrModel, $idOrModel, $id);
         });
     }
@@ -50,13 +50,13 @@ class LaravelRoute extends ARoute
     }
 
     protected function routeGet($request, $namespaceOrModel, $idOrModel, $id) {
-        // $user = $request->user();
+        $user = $request->user();
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
         if($idOrModel == 'columns') {
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
-            // if(class_exists($modelNameSpace)) {       
+            // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
             // } else {
             //     return $this->responseObj->response([
@@ -72,6 +72,24 @@ class LaravelRoute extends ARoute
             //         ]
             //     ], 404);
             // }
+
+            if(method_exists($user, 'can')) {
+                if(!$user->can('viewAny', $modelNameSpace)) {
+                    return $this->responseObj->response([
+                        "code" => 403,
+                        "status" => false,
+                        "message" => "Not authorized",
+                        "error" => [
+                            "code" => 102403,
+                            "detail" => "You do not have permission to access this resource"
+                        ],
+                        "params" => $this->requestObj->requestAll($request),
+                        "links" => [
+                            "self" => URL::current()
+                        ]
+                    ], 403);
+                }
+            }
 
             return $this->repositoryObj->getTableColumns($data);
         }
@@ -94,7 +112,43 @@ class LaravelRoute extends ARoute
             //     ], 404);
             // }
 
-            return $this->repositoryObj->findById($idOrModel, $data);
+            $data = $this->repositoryObj->findById($idOrModel, $data);
+
+            if(!$data) {
+                return $this->responseObj->response([
+                    "code" => 410,
+                    "status" => false,
+                    "message" => "Not found",
+                    "error" => [
+                        "code" => 102410,
+                        "detail" => "Data not available"
+                    ],
+                    "params" => $this->requestObj->requestAll($request),
+                    "links" => [
+                        "self" => URL::current()
+                    ]
+                ], 410);
+            }
+
+            if(method_exists($user, 'can')) {
+                if(!$user->can('view', $data)) {
+                    return $this->responseObj->response([
+                        "code" => 403,
+                        "status" => false,
+                        "message" => "Not authorized",
+                        "error" => [
+                            "code" => 102403,
+                            "detail" => "You do not have permission to access this resource"
+                        ],
+                        "params" => $this->requestObj->requestAll($request),
+                        "links" => [
+                            "self" => URL::current()
+                        ]
+                    ], 403);
+                }
+            }
+
+            return $data;
         }
         if($idOrModel) {
             $modelNameSpace .= '\\'.$idOrModel;
@@ -117,10 +171,64 @@ class LaravelRoute extends ARoute
             // }
 
             if($id == 'columns') {
+                if(method_exists($user, 'can')) {
+                    if(!$user->can('viewAny', $modelNameSpace)) {
+                        return $this->responseObj->response([
+                            "code" => 403,
+                            "status" => false,
+                            "message" => "Not authorized",
+                            "error" => [
+                                "code" => 102403,
+                                "detail" => "You do not have permission to access this resource"
+                            ],
+                            "params" => $this->requestObj->requestAll($request),
+                            "links" => [
+                                "self" => URL::current()
+                            ]
+                        ], 403);
+                    }
+                }
+
                 return $this->repositoryObj->getTableColumns($data);
             }
             if(is_numeric($id)) {
-                return $this->repositoryObj->findById($id, $data);
+                $data = $this->repositoryObj->findById($id, $data);
+
+                if(!$data) {
+                    return $this->responseObj->response([
+                        "code" => 410,
+                        "status" => false,
+                        "message" => "Not found",
+                        "error" => [
+                            "code" => 102410,
+                            "detail" => "Data not available"
+                        ],
+                        "params" => $this->requestObj->requestAll($request),
+                        "links" => [
+                            "self" => URL::current()
+                        ]
+                    ], 410);
+                }
+
+                if(method_exists($user, 'can')) {
+                    if(!$user->can('view', $data)) {
+                        return $this->responseObj->response([
+                            "code" => 403,
+                            "status" => false,
+                            "message" => "Not authorized",
+                            "error" => [
+                                "code" => 102403,
+                                "detail" => "You do not have permission to access this resource"
+                            ],
+                            "params" => $this->requestObj->requestAll($request),
+                            "links" => [
+                                "self" => URL::current()
+                            ]
+                        ], 403);
+                    }
+                }
+
+                return $data;
             }
         } else {
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
@@ -184,7 +292,61 @@ class LaravelRoute extends ARoute
 
         // return $data;
 
-        return $this->serviceObj->getQuery($input, $data);
+        $data = $this->serviceObj->getQuery($input, $data);
+
+        if(!$data) {
+            return $this->responseObj->response([
+                "code" => 410,
+                "status" => false,
+                "message" => "Not found",
+                "error" => [
+                    "code" => 102410,
+                    "detail" => "Data not available"
+                ],
+                "params" => $input,
+                "links" => [
+                    "self" => URL::current()
+                ]
+            ], 410);
+        }
+
+        if(method_exists($user, 'can')) {
+            if(isset($data->id)) {
+                if(!$user->can('view', $data)) {
+                    return $this->responseObj->response([
+                        "code" => 403,
+                        "status" => false,
+                        "message" => "Not authorized",
+                        "error" => [
+                            "code" => 102403,
+                            "detail" => "You do not have permission to access this resource"
+                        ],
+                        "params" => $input,
+                        "links" => [
+                            "self" => URL::current()
+                        ]
+                    ], 403);
+                }
+            } else {
+                if(!$user->can('viewAny', $modelNameSpace)) {
+                    return $this->responseObj->response([
+                        "code" => 403,
+                        "status" => false,
+                        "message" => "Not authorized",
+                        "error" => [
+                            "code" => 102403,
+                            "detail" => "You do not have permission to access this resource"
+                        ],
+                        "params" => $input,
+                        "links" => [
+                            "self" => URL::current()
+                        ]
+                    ], 403);
+                }
+            }
+        }
+
+        return $data;
     }
 
     // route post hanya punya 1 atau 2 url segment saja (namesapace dan tau model), sedangkan ruote lain bs 3 url segment
@@ -212,7 +374,7 @@ class LaravelRoute extends ARoute
             // $path = $dir.$name;
             // $destinationPath = '..'.DIRECTORY_SEPARATOR.$dir;
             $destinationPath = storage_path($dir);
-            
+
             if($request->hasFile('file')) {
                 // if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
                 if (realpath(storage_path($path))) {
@@ -221,12 +383,12 @@ class LaravelRoute extends ARoute
                         "status" => false,
                         "message" => "file already exist"
                     ], 200))
-                        ->header('Content-Type', 'application/json'); 
+                        ->header('Content-Type', 'application/json');
                 }
 
                 $file = $request->file('file');
                 $file->move($destinationPath, $name);
-                
+
                 // if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
                 if (realpath(storage_path($path))) {
                     return response([
@@ -309,40 +471,57 @@ class LaravelRoute extends ARoute
         $request->validate($modelNameSpace::$rules);
 
         $input = $this->requestObj->requestAll($request);
-        
-        $modelName = explode('\\', $modelNameSpace);
-        $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
-        if($checkPolicy) {
-            if($user->can('create', $modelNameSpace)) {
-                return $this->responseObj->response([
-                    "code" => 201,
-                    "status" => true,
-                    "message" => "Data saved successfully",
-                    "data" => $this->repositoryObj->createData($input, $data)
-                ], 201);
-            } else {
+
+        if(method_exists($user, 'can')) {
+            if(!$user->can('create', $modelNameSpace)) {
                 return $this->responseObj->response([
                     "code" => 403,
                     "status" => false,
                     "message" => "Not authorized",
                     "error" => [
                         "code" => 102403,
-                        "detail" => "You do not have permission to save data"
+                        "detail" => "You do not have permission to access this resource"
                     ],
-                    "params" => $input,
+                    "params" => $this->requestObj->requestAll($request),
                     "links" => [
                         "self" => URL::current()
                     ]
                 ], 403);
             }
-        } else {
+        }
+        // $modelName = explode('\\', $modelNameSpace);
+        // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
+        // if($checkPolicy) {
+        //     if($user->can('create', $modelNameSpace)) {
+        //         return $this->responseObj->response([
+        //             "code" => 201,
+        //             "status" => true,
+        //             "message" => "Data saved successfully",
+        //             "data" => $this->repositoryObj->createData($input, $data)
+        //         ], 201);
+        //     } else {
+        //         return $this->responseObj->response([
+        //             "code" => 403,
+        //             "status" => false,
+        //             "message" => "Not authorized",
+        //             "error" => [
+        //                 "code" => 102403,
+        //                 "detail" => "You do not have permission to save data"
+        //             ],
+        //             "params" => $input,
+        //             "links" => [
+        //                 "self" => URL::current()
+        //             ]
+        //         ], 403);
+        //     }
+        // } else {
             return $this->responseObj->response([
                 "code" => 201,
                 "status" => true,
                 "message" => "Data saved successfully",
                 "data" => $this->repositoryObj->createData($input, $data)
             ], 201);
-        }
+        // }
     }
 
     protected function routePut($request, $namespaceOrModel, $idOrModel, $id) {
@@ -351,11 +530,11 @@ class LaravelRoute extends ARoute
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
         if($idOrModel) {
-            if(is_numeric($idOrModel)) {                
+            if(is_numeric($idOrModel)) {
                 $data = new $modelNameSpace();
-                
+
                 // in put, error if run validate if reuired fields not available
-                // $request->validate($modelNameSpace::$rules);        
+                // $request->validate($modelNameSpace::$rules);
                 $input = $this->requestObj->requestAll($request);
 
                 $data = $this->repositoryObj->findById($idOrModel, $data);
@@ -378,9 +557,9 @@ class LaravelRoute extends ARoute
                 //         ]
                 //     ], 404);
                 // }
-    
+
                 // in put, error if run validate if reuired fields not available
-                // $request->validate($modelNameSpace::$rules);        
+                // $request->validate($modelNameSpace::$rules);
                 $input = $this->requestObj->requestAll($request);
 
                 if($id && is_numeric($id)) {
@@ -407,9 +586,9 @@ class LaravelRoute extends ARoute
             //         ]
             //     ], 404);
             // }
-    
+
             // in put, error if run validate if reuired fields not available
-            // $request->validate($modelNameSpace::$rules);    
+            // $request->validate($modelNameSpace::$rules);
             $input = $this->requestObj->requestAll($request);
 
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
@@ -417,35 +596,52 @@ class LaravelRoute extends ARoute
 
         if($data) {
             $input['updated_by'] = $user->id;
-            
-            $modelName = explode('\\', $modelNameSpace);
-            $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
-            if($checkPolicy) {
-                if($user->can('update', $data)) {
-                    // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
-                    $data = $this->repositoryObj->updateData($input, $data);
-                    return $this->responseObj->response([
-                        "code" => 200,
-                        "status" => true,
-                        "message" => "Data updated successfully",
-                        "data" => $data
-                    ]);
-                } else {
+
+            if(method_exists($user, 'can')) {
+                if(!$user->can('update', $data)) {
                     return $this->responseObj->response([
                         "code" => 403,
                         "status" => false,
                         "message" => "Not authorized",
                         "error" => [
                             "code" => 102403,
-                            "detail" => "You do not have permission to update data"
+                            "detail" => "You do not have permission to access this resource"
                         ],
-                        "params" => $input,
+                        "params" => $this->requestObj->requestAll($request),
                         "links" => [
                             "self" => URL::current()
                         ]
                     ], 403);
                 }
-            } else {
+            }
+            // $modelName = explode('\\', $modelNameSpace);
+            // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
+            // if($checkPolicy) {
+            //     if($user->can('update', $data)) {
+            //         // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
+            //         $data = $this->repositoryObj->updateData($input, $data);
+            //         return $this->responseObj->response([
+            //             "code" => 200,
+            //             "status" => true,
+            //             "message" => "Data updated successfully",
+            //             "data" => $data
+            //         ]);
+            //     } else {
+            //         return $this->responseObj->response([
+            //             "code" => 403,
+            //             "status" => false,
+            //             "message" => "Not authorized",
+            //             "error" => [
+            //                 "code" => 102403,
+            //                 "detail" => "You do not have permission to update data"
+            //             ],
+            //             "params" => $input,
+            //             "links" => [
+            //                 "self" => URL::current()
+            //             ]
+            //         ], 403);
+            //     }
+            // } else {
                 // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                 $data = $this->repositoryObj->updateData($input, $data);
                 return $this->responseObj->response([
@@ -454,9 +650,9 @@ class LaravelRoute extends ARoute
                     "message" => "Data updated successfully",
                     "data" => $data
                 ]);
-            }
+            // }
         }
-        
+
         return $this->responseObj->response([
             "code" => 410,
             "status" => false,
@@ -476,13 +672,13 @@ class LaravelRoute extends ARoute
         $user = $request->user();
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
-        
+
         if($idOrModel) {
             if(is_numeric($idOrModel)) {
                 $data = new $modelNameSpace();
 
                 // in patch, error if run validate if reuired fields not available
-                // $request->validate($modelNameSpace::$rules);        
+                // $request->validate($modelNameSpace::$rules);
                 $input = $this->requestObj->requestAll($request);
 
                 $data = $this->repositoryObj->findById($idOrModel, $data);
@@ -505,9 +701,9 @@ class LaravelRoute extends ARoute
                 //         ]
                 //     ], 404);
                 // }
-    
+
                 // in patch, error if run validate if reuired fields not available
-                // $request->validate($modelNameSpace::$rules);        
+                // $request->validate($modelNameSpace::$rules);
                 $input = $this->requestObj->requestAll($request);
 
                 if($id && is_numeric($id)) {
@@ -534,9 +730,9 @@ class LaravelRoute extends ARoute
             //         ]
             //     ], 404);
             // }
-    
+
             // in patch, error if run validate if reuired fields not available
-            // $request->validate($modelNameSpace::$rules);    
+            // $request->validate($modelNameSpace::$rules);
             $input = $this->requestObj->requestAll($request);
 
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
@@ -544,37 +740,54 @@ class LaravelRoute extends ARoute
 
         if($data) {
             $input['updated_by'] = $user->id;
-            
-            $modelName = explode('\\', $modelNameSpace);
-            $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
-            if($checkPolicy) {
-                if ($user->can('update', $data)) {
-                    $this->repositoryObj->deleteData($data);
 
-                    // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
-                    $data = $this->repositoryObj->insertData($input, $data);
-                    return $this->responseObj->response([
-                        "code" => 200,
-                        "status" => true,
-                        "message" => "Data updated successfully",
-                        "data" => $data
-                    ]);
-                } else {
+            if(method_exists($user, 'can')) {
+                if(!$user->can('update', $data)) {
                     return $this->responseObj->response([
                         "code" => 403,
                         "status" => false,
                         "message" => "Not authorized",
                         "error" => [
                             "code" => 102403,
-                            "detail" => "You do not have permission to update data"
+                            "detail" => "You do not have permission to access this resource"
                         ],
-                        "params" => $input,
+                        "params" => $this->requestObj->requestAll($request),
                         "links" => [
                             "self" => URL::current()
                         ]
                     ], 403);
                 }
-            } else {
+            }
+            // $modelName = explode('\\', $modelNameSpace);
+            // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
+            // if($checkPolicy) {
+            //     if ($user->can('update', $data)) {
+            //         $this->repositoryObj->deleteData($data);
+
+            //         // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
+            //         $data = $this->repositoryObj->insertData($input, $data);
+            //         return $this->responseObj->response([
+            //             "code" => 200,
+            //             "status" => true,
+            //             "message" => "Data updated successfully",
+            //             "data" => $data
+            //         ]);
+            //     } else {
+            //         return $this->responseObj->response([
+            //             "code" => 403,
+            //             "status" => false,
+            //             "message" => "Not authorized",
+            //             "error" => [
+            //                 "code" => 102403,
+            //                 "detail" => "You do not have permission to update data"
+            //             ],
+            //             "params" => $input,
+            //             "links" => [
+            //                 "self" => URL::current()
+            //             ]
+            //         ], 403);
+            //     }
+            // } else {
                 $this->repositoryObj->deleteData($data);
 
                 // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
@@ -585,9 +798,9 @@ class LaravelRoute extends ARoute
                     "message" => "Data updated successfully",
                     "data" => $data
                 ]);
-            }
+            // }
         }
-        
+
         return $this->responseObj->response([
             "code" => 410,
             "status" => false,
@@ -607,7 +820,7 @@ class LaravelRoute extends ARoute
         $user = $request->user();
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
-        
+
         if($idOrModel) {
             if(is_numeric($idOrModel)) {
                 // TODO: check if $id exist and numeric
@@ -654,39 +867,38 @@ class LaravelRoute extends ARoute
                 // }
 
                 // tidak ada request body utk route delete
-                
-                
-                $modelName = explode('\\', $modelNameSpace);
-                $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
-                if($checkPolicy) {
-                    if($user->can('delete', $data)) {
-                        if($id && is_numeric($id)) {
-                            $data = $this->repositoryObj->findById($id, $data);
-                        } else {
-                            $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
-                        }
-                    } else {
-                        return $this->responseObj->response([
-                            "code" => 403,
-                            "status" => false,
-                            "message" => "Not authorized",
-                            "error" => [
-                                "code" => 102403,
-                                "detail" => "You do not have permission to delete data"
-                            ],
-                            "params" => $input,
-                            "links" => [
-                                "self" => URL::current()
-                            ]
-                        ], 403);
-                    }
-                } else {
+
+                // $modelName = explode('\\', $modelNameSpace);
+                // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
+                // if($checkPolicy) {
+                //     if($user->can('delete', $data)) {
+                //         if($id && is_numeric($id)) {
+                //             $data = $this->repositoryObj->findById($id, $data);
+                //         } else {
+                //             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+                //         }
+                //     } else {
+                //         return $this->responseObj->response([
+                //             "code" => 403,
+                //             "status" => false,
+                //             "message" => "Not authorized",
+                //             "error" => [
+                //                 "code" => 102403,
+                //                 "detail" => "You do not have permission to delete data"
+                //             ],
+                //             "params" => $input,
+                //             "links" => [
+                //                 "self" => URL::current()
+                //             ]
+                //         ], 403);
+                //     }
+                // } else {
                     if($id && is_numeric($id)) {
                         $data = $this->repositoryObj->findById($id, $data);
                     } else {
                         $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
                     }
-                }
+                // }
             }
         } else {
             // TODO: check if $id exist and numeric
@@ -710,38 +922,55 @@ class LaravelRoute extends ARoute
             // }
 
             // tidak ada request body utk route delete
-            
+
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
         }
 
-        if($data) {            
-            $modelName = explode('\\', $modelNameSpace);
-            $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
-            if($checkPolicy) {
-                if ($user->can('delete', $data)) {
-                    $data = $this->repositoryObj->deleteData($data);
-                    return $this->responseObj->response([
-                        "code" => 200,
-                        "status" => true,
-                        "message" => "Data deleted successfully",
-                        "data" => $data
-                    ]);
-                } else {
+        if($data) {
+            if(method_exists($user, 'can')) {
+                if(!$user->can('delete', $data)) {
                     return $this->responseObj->response([
                         "code" => 403,
                         "status" => false,
                         "message" => "Not authorized",
                         "error" => [
                             "code" => 102403,
-                            "detail" => "You do not have permission to delete data"
+                            "detail" => "You do not have permission to access this resource"
                         ],
-                        "params" => $input,
+                        "params" => $this->requestObj->requestAll($request),
                         "links" => [
                             "self" => URL::current()
                         ]
                     ], 403);
                 }
-            } else {
+            }
+            // $modelName = explode('\\', $modelNameSpace);
+            // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
+            // if($checkPolicy) {
+            //     if ($user->can('delete', $data)) {
+            //         $data = $this->repositoryObj->deleteData($data);
+            //         return $this->responseObj->response([
+            //             "code" => 200,
+            //             "status" => true,
+            //             "message" => "Data deleted successfully",
+            //             "data" => $data
+            //         ]);
+            //     } else {
+            //         return $this->responseObj->response([
+            //             "code" => 403,
+            //             "status" => false,
+            //             "message" => "Not authorized",
+            //             "error" => [
+            //                 "code" => 102403,
+            //                 "detail" => "You do not have permission to delete data"
+            //             ],
+            //             "params" => $input,
+            //             "links" => [
+            //                 "self" => URL::current()
+            //             ]
+            //         ], 403);
+            //     }
+            // } else {
                 $data = $this->repositoryObj->deleteData($data);
                 return $this->responseObj->response([
                     "code" => 200,
@@ -749,9 +978,9 @@ class LaravelRoute extends ARoute
                     "message" => "Data deleted successfully",
                     "data" => $data
                 ]);
-            }
+            // }
         }
-   
+
         // abort(404);
         return $this->responseObj->response([
             "code" => 410,
