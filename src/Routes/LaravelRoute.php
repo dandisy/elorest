@@ -58,6 +58,12 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
             // } else {
             //     return $this->responseObj->response([
             //         "message" => "Not found",
@@ -97,6 +103,12 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
             // } else {
             //     return $this->responseObj->response([
             //         "message" => "Not found",
@@ -155,6 +167,12 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
             // } else {
             //     return $this->responseObj->response([
             //         "message" => "Not found",
@@ -234,6 +252,12 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
             // } else {
             //     // throw new \Illuminate\Database\Eloquent\ModelNotFoundException('Resource not found');
             //     return $this->responseObj->response([
@@ -433,6 +457,12 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
             // } else {
             //     return $this->responseObj->response([
             //         "message" => "Not found",
@@ -452,6 +482,12 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
             // } else {
             //     return $this->responseObj->response([
             //         "message" => "Not found",
@@ -533,6 +569,12 @@ class LaravelRoute extends ARoute
             if(is_numeric($idOrModel)) {
                 $data = new $modelNameSpace();
 
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
+
                 // in put, error if run validate if reuired fields not available
                 // $request->validate($modelNameSpace::$rules);
                 $input = $this->requestObj->requestAll($request);
@@ -543,6 +585,12 @@ class LaravelRoute extends ARoute
                 // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
                 // if(class_exists($modelNameSpace)) {
                     $data = new $modelNameSpace();
+
+                    if(isset($data->elorest)) {
+                        if($data->elorest == false) {
+                            return 'restricted';
+                        }
+                    }
                 // } else {
                 //     return $this->responseObj->response([
                 //         "message" => "Not found",
@@ -572,6 +620,12 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
             // } else {
             //     return $this->responseObj->response([
             //         "message" => "Not found",
@@ -677,6 +731,12 @@ class LaravelRoute extends ARoute
             if(is_numeric($idOrModel)) {
                 $data = new $modelNameSpace();
 
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
+
                 // in patch, error if run validate if reuired fields not available
                 // $request->validate($modelNameSpace::$rules);
                 $input = $this->requestObj->requestAll($request);
@@ -687,6 +747,12 @@ class LaravelRoute extends ARoute
                 // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
                 // if(class_exists($modelNameSpace)) {
                     $data = new $modelNameSpace();
+
+                    if(isset($data->elorest)) {
+                        if($data->elorest == false) {
+                            return 'restricted';
+                        }
+                    }
                 // } else {
                 //     return $this->responseObj->response([
                 //         "message" => "Not found",
@@ -716,6 +782,12 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
             // } else {
             //     return $this->responseObj->response([
             //         "message" => "Not found",
@@ -827,6 +899,12 @@ class LaravelRoute extends ARoute
                 // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
                 // if(class_exists($modelNameSpace)) {
                     $data = new $modelNameSpace();
+
+                    if(isset($data->elorest)) {
+                        if($data->elorest == false) {
+                            return 'restricted';
+                        }
+                    }
                 // } else {
                 //     // abort(404); // todo : custom message
                 //     return $this->responseObj->response([
@@ -850,6 +928,12 @@ class LaravelRoute extends ARoute
                 // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
                 // if(class_exists($modelNameSpace)) {
                     $data = new $modelNameSpace();
+
+                    if(isset($data->elorest)) {
+                        if($data->elorest == false) {
+                            return 'restricted';
+                        }
+                    }
                 // } else {
                 //     // abort(404); // todo : custom message
                 //     return $this->responseObj->response([
@@ -905,6 +989,12 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+
+                if(isset($data->elorest)) {
+                    if($data->elorest == false) {
+                        return 'restricted';
+                    }
+                }
             // } else {
             //     // abort(404); // todo : custom message
             //     return $this->responseObj->response([
