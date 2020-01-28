@@ -29,6 +29,10 @@ abstract class AService
      */
     protected function invokeQuery($data, $key, $vals, $gValue) {
         // for "with" of eloquent command
+        if($key == 'delete') {
+            return 'method not allowed';
+        }
+
         if($key == 'with' || $key == 'whereHas' || $key == 'whereDoesntHave') {
             // $params = explode(',', $vals);
             $param = $vals;
