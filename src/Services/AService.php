@@ -82,7 +82,7 @@ abstract class AService
                 //     foreach($param as $par) {
                 //         if($par == $closureMatch[1]) {
                 //             $data = $data->$key([$closureMatch[1] => function($closureQuery) use ($closureMatch) {
-                //                 $closureParams = explode('=', trim($closureMatch[2]));
+                //                 $closureParams = explode('=', trim($closureMatch[2]), 2);
                 //                 $closureParam = $this->getQuery($closureQuery, $closureParams[0], $closureParams[1])['param'];
 
                 //                 call_user_func_array(array($closureQuery,$closureParams[0]), $closureParam);

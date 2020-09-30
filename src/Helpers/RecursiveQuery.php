@@ -43,10 +43,10 @@ class RecursiveQuery
                         //         $closureParam = $items[$idx+1];
                         //         $closure = str_replace('('.$closureParam.')', '', $val);
     
-                        //         $closureData = explode('=', trim($closure));
+                        //         $closureData = explode('=', trim($closure), 2);
     
                         //         $query = $query->$closureData[0]([$closureData[1] => function($query) use ($closureParam) {
-                        //             $closureParams = explode('=', trim($closureParam));
+                        //             $closureParams = explode('=', trim($closureParam), 2);
     
                         //             call_user_func_array(array($query,$closureParams[0]), explode(',', trim($closureParams[1])));
                         //         }]);
@@ -58,20 +58,31 @@ class RecursiveQuery
     
                     if($key == 'whereHas' || $key == 'whereDoesntHave') {
                         $data = $data->$key($param, function($query) use ($item) {
-                            $params = explode('=', trim($item));
+                            $params = explode('=', trim($item), 2);
         
                             call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
                         });
                     } else {
                         $data = $data->$key([$param => function($query) use ($item) {
-                            $params = explode('=', trim($item));
+                            $params = explode('=', trim($item), 2);
         
                             call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
                         }]);
                     }
                 }
             } else {
-                $data = call_user_func_array(array($data,$key), [$param]);
+                if($arrayParam) {
+                    foreach($arrayParam as $item) {
+                        $param = rtrim($params[0], '|');
+                        $data = $data->$key([$param => function($query) use ($item) {
+                            $params = explode('=', trim($item), 2);
+        
+                            call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                        }]);
+                    }
+                } else {
+                    $data = call_user_func_array(array($data,$key), [$param]);
+                }
             }
         }
     
@@ -94,7 +105,7 @@ class RecursiveQuery
             if($idx < count($items)-2) {
                 $closureParam = $items[$idx+1];
                 $closure = str_replace('('.$closureParam.')', '', $val);
-                $closureData = explode('=', trim($closure));
+                $closureData = explode('=', trim($closure), 2);
     
                 $query = $query->$closureData[0]([$closureData[1] => function($query) use ($items) {
                     $this->recursiveClosure($query, array_shift($items));
@@ -103,10 +114,10 @@ class RecursiveQuery
                 if($idx < count($items)-1) {
                     $closureParam = $items[$idx+1];
                     $closure = str_replace('('.$closureParam.')', '', $val);
-                    $closureData = explode('=', trim($closure));
+                    $closureData = explode('=', trim($closure), 2);
     
                     $query = $query->$closureData[0]([$closureData[1] => function($query) use ($closureParam) {
-                        $closureParams = explode('=', trim($closureParam));
+                        $closureParams = explode('=', trim($closureParam), 2);
     
                         call_user_func_array(array($query,$closureParams[0]), explode(',', trim($closureParams[1])));
                     }]);

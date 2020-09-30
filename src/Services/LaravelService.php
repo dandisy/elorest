@@ -36,7 +36,7 @@ class LaravelService extends AService
             if(substr($key, 0, 1) === "$") {
                 $k = substr($key, 1);
 
-                // todo : forach must included in processQueryRecursive() for suporting array many method, in second level like $totalCount = {...,...,......}
+                // todo : foreach must included in processQueryRecursive() for suporting array many method, in second level like $totalCount = {...,...,......}
                 // foreach($val as $q1k => $q1v) { // second level
                     $this->processQueryRecursive($model, $val, $k, $result);
                 // }
@@ -231,7 +231,33 @@ class LaravelService extends AService
 
     protected function processQuery($data, $key, $param) {
         if($key === 'paginate') {
-            $data = $this->paginate($data, $key, $param);
+            $data = $this->paginate($data, $key, [$param]);
+        } else if($key === 'sortBy') {
+            $data = $data->toArray();
+            $p = explode('.', $param);
+
+            usort($data, function (array $a, array $b) use ($p) {
+                foreach($p as $v) {
+                    $a = $a[$v];
+                    $b = $b[$v];
+                }
+
+                return $a - $b;
+            });
+        } else if($key === 'sortByDesc') {
+            $data = $data->toArray();
+            $p = explode('.', $param);
+
+            usort($data, function (array $a, array $b) use ($p) {
+                foreach($p as $v) {
+                    $a = $a[$v];
+                    $b = $b[$v];
+                }
+
+                return $a - $b;
+            });
+
+            $data = array_reverse($data);
         } else {
             if(is_array($param)) {
                 if($key === 'selectRaw' || $key === 'whereRaw' || $key === 'orWhereRaw' || $key === 'havingRaw' || $key === 'orHavingRaw') {

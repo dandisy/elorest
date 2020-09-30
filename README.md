@@ -24,6 +24,13 @@ Example queries :
     if model namespace only App 
     https://your-domain-name/api/elorest/User?paginate=10&page=1
 
+    for sortBy related field
+    https://your-domain-name/api/elorest/Models/Post?&with=author(with=city(where=name,like,%jakarta%)),comment&get=*&sortBy=category.0.name
+    https://your-domain-name/api/elorest/Models/Post?&with=author(with=city(where=name,like,%jakarta%)),comment&get=*&sortByDesc=category.0.name
+
+    for select specific field/s in clousure of "with" command don't forget to include the foreign key to resolve the relationship, otherwise you'll get zero results for your relation
+    http://localhost/gamify/public/api/elorest/Models/Character?with[]=categories.category&with[]=datasources(select=id,model_id,value)&with[]=user&get=*
+
 ### Installation
 
     composer require dandisy/elorest
