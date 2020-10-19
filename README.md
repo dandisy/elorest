@@ -205,6 +205,7 @@ Update Where
 
 ### Notes
 
+    add public property "elorest = true or false" in model class to active/inactive elorest for model
     add header Accept: application/json in request
 
 ### Refs

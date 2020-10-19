@@ -18,7 +18,7 @@ class Elorest
      * @return Object Route
      */
     protected static function routeObject() {
-        // TODO: ini seharusnya tidak hardcode buta instant dr konkrit class disini, biasa dgn DI
+        // TODO: ini seharusnya tidak hardcode buat instant dr konkrit class disini, biasa dgn DI
         return new LaravelRoute(
             new LaravelRequest(),
             new EloquentRepository(),
@@ -38,7 +38,7 @@ class Elorest
      * @return Object Route
      */
     protected static function middlewareObject() {
-        // TODO: ini seharusnya tidak hardcode buta instant dr konkrit class disini, biasa dgn DI
+        // TODO: ini seharusnya tidak hardcode buat instant dr konkrit class disini, biasa dgn DI
         return new LaravelMiddleware(self::routeObject());
 
         // This make tight coupling with Laravel Framework

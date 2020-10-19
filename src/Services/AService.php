@@ -28,44 +28,6 @@ abstract class AService
      * @return Object query result
      */
     protected function invokeQuery($data, $key, $vals, $gValue) {
-        // for "with" of eloquent command
-        if(
-            $key == 'truncate' ||
-            $key == 'delete' ||
-            $key == 'destroy' ||
-            $key == 'softDeletes' ||
-            $key == 'restore' ||
-            $key == 'forceDelete' ||
-            $key == 'save' ||
-            $key == 'create' ||
-            $key == 'fill' ||
-            $key == 'insert' ||
-            $key == 'firstOrCreate' ||
-            $key == 'firstOrNew' ||
-            $key == 'insertOrIgnore' ||
-            $key == 'insertGetId' ||
-            $key == 'update' ||
-            $key == 'updateOrInsert' ||
-            $key == 'increment' ||
-            $key == 'decrement' ||
-            $key == 'sharedLock' ||
-            $key == 'lockForUpdate' ||
-            $key == 'dd' ||
-            $key == 'dd' ||
-
-            // relationship
-            $key == 'push' ||
-            $key == 'createMany' ||
-            $key == 'attach' ||
-            $key == 'detach' ||
-            $key == 'sync' ||
-            $key == 'syncWithoutDetaching' ||
-            $key == 'toggle' ||
-            $key == 'updateExistingPivot'
-            ) {
-            return 'method not allowed';
-        }
-
         if($key == 'with' || $key == 'whereHas' || $key == 'whereDoesntHave') {
             // $params = explode(',', $vals);
             $param = $vals;

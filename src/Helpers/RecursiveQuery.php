@@ -20,6 +20,42 @@ class RecursiveQuery
      * @return Collection $data
      */
     public function invoke($data, $key, $param, $matches, $arrayParam) {
+        if(
+            $key == 'truncate' ||
+            $key == 'delete' ||
+            $key == 'destroy' ||
+            $key == 'softDeletes' ||
+            $key == 'restore' ||
+            $key == 'forceDelete' ||
+            $key == 'save' ||
+            $key == 'create' ||
+            $key == 'fill' ||
+            $key == 'insert' ||
+            $key == 'firstOrCreate' ||
+            $key == 'firstOrNew' ||
+            $key == 'insertOrIgnore' ||
+            $key == 'insertGetId' ||
+            $key == 'update' ||
+            $key == 'updateOrInsert' ||
+            $key == 'increment' ||
+            $key == 'decrement' ||
+            $key == 'sharedLock' ||
+            $key == 'lockForUpdate' ||
+            $key == 'dd' ||
+
+            // relationship
+            $key == 'push' ||
+            $key == 'createMany' ||
+            $key == 'attach' ||
+            $key == 'detach' ||
+            $key == 'sync' ||
+            $key == 'syncWithoutDetaching' ||
+            $key == 'toggle' ||
+            $key == 'updateExistingPivot'
+            ) {
+            return 'method not allowed';
+        }
+
         // $arr = [
         //     "with=phone(where=city_code,021),where=city_code,021",
         //     "where=first_name,like,%test%"
