@@ -5,7 +5,7 @@ With it we can query the restapi using the laravel eloquent commands (methods & 
 
 Borrow the laravel eloquent syntax (methodes & params), including laravel pagination.
 
-please check the laravel's eloquent documentation https://laravel.com/docs/5.8
+please check the laravel's eloquent documentation https://laravel.com/docs
 
 Example queries :
 
@@ -52,7 +52,7 @@ Example queries :
 
 ##### Exception handling 
 
-Using laravel errors handler (https://laravel.com/docs/5.8/errors)
+Using laravel errors handler (https://laravel.com/docs/8.x/errors)
 
 Publish exception hendler class to your laravel webcore project
 
@@ -60,11 +60,11 @@ Publish exception hendler class to your laravel webcore project
 
 ##### Authentication
   
-Using laravel passport (https://laravel.com/docs/5.8/passport)
+Using laravel passport (https://laravel.com/docs/8.x/passport)
 
 ##### Authorization
 
-Using laravel gates & policies (https://laravel.com/docs/5.8/authorization)
+Using laravel gates & policies (https://laravel.com/docs/8.x/authorization)
 
 ##### Formatable JSON response (Beta)
 
@@ -160,7 +160,7 @@ Update By ID
 
 Update Where
 
-    PUT /webcore/public/api/elorest/User?where=email,dandi.setiyawan@redtech.co.id&amp;select=*&amp;first= HTTP/1.1
+    PUT /webcore/public/api/elorest/User?where=email,dandi@sgdigitals.com&amp;select=*&amp;first= HTTP/1.1
     Host: localhost
     Content-Type: application/json
     Cache-Control: no-cache
@@ -185,7 +185,7 @@ Update Where
         }
     });
 
-    xhr.open("PUT", "http://localhost/webcore/public/api/elorest/User?where=email,dandi.setiyawan@redtech.co.id&select=*&first=");
+    xhr.open("PUT", "http://localhost/webcore/public/api/elorest/User?where=email,dandi@sgdigitals.com&select=*&first=");
     xhr.setRequestHeader("content-type", "application/json");
     xhr.setRequestHeader("cache-control", "no-cache");
     xhr.setRequestHeader("postman-token", "0ea7fa6a-b7d2-73e2-81e6-10ca983de686");
@@ -194,7 +194,7 @@ Update Where
 
     for
 
-    App\Models\Author::where('email', 'dandi.setiyawan@redtech.co.id')
+    App\Models\Author::where('email', 'dandi@sgdigitals.com')
         ->update(['votes' => 1]);
 
 ### Extensible
