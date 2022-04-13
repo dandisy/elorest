@@ -1,8 +1,8 @@
 <?php
 
-namespace Webcore\Elorest\Repository;
+namespace Dandisy\Elorest\Repository;
 
-// use Webcore\Elorest\Repository\IRepository;
+// use Dandisy\Elorest\Repository\IRepository;
 
 class EloquentRepository implements IRepository
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Webcore\Elorest\Http\Request;
+namespace Dandisy\Elorest\Http\Request;
 
-// use Webcore\Elorest\Http\Request\IRequest;
+// use Dandisy\Elorest\Http\Request\IRequest;
 
 class LaravelRequest implements IRequest
 {

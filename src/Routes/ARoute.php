@@ -1,11 +1,11 @@
 <?php
 
-namespace Webcore\Elorest\Route;
+namespace Dandisy\Elorest\Route;
 
-use Webcore\Elorest\Http\Request\IRequest;
-use Webcore\Elorest\Http\Response\IResponse;
-use Webcore\Elorest\Repository\IRepository;
-use Webcore\Elorest\Service\AService;
+use Dandisy\Elorest\Http\Request\IRequest;
+use Dandisy\Elorest\Http\Response\IResponse;
+use Dandisy\Elorest\Repository\IRepository;
+use Dandisy\Elorest\Service\AService;
 
 abstract class ARoute
 {

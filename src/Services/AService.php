@@ -1,9 +1,9 @@
 <?php
 
-namespace Webcore\Elorest\Service;
+namespace Dandisy\Elorest\Service;
 
-use Webcore\Elorest\Helper\RecursiveParam;
-use Webcore\Elorest\Helper\RecursiveQuery;
+use Dandisy\Elorest\Helper\RecursiveParam;
+use Dandisy\Elorest\Helper\RecursiveQuery;
 
 abstract class AService
 {

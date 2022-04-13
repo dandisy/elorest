@@ -1,8 +1,8 @@
 <?php
 
-namespace Webcore\Elorest\Service;
+namespace Dandisy\Elorest\Service;
 
-// use Webcore\Elorest\Service\AService;
+// use Dandisy\Elorest\Service\AService;
 
 class LaravelService extends AService
 {

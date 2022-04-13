@@ -1,6 +1,6 @@
 <?php
 
-namespace Webcore\Elorest\Http\Request;
+namespace Dandisy\Elorest\Http\Request;
 
 interface IRequest
 {

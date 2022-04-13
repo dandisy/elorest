@@ -1,9 +1,9 @@
 <?php
 
-namespace Webcore\Elorest\Http\Response;
+namespace Dandisy\Elorest\Http\Response;
 
 use Illuminate\Http\Response;
-// use Webcore\Elorest\Http\Response\IResponse;
+// use Dandisy\Elorest\Http\Response\IResponse;
 
 class LaravelResponse implements IResponse
 {

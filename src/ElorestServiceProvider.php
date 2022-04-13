@@ -1,18 +1,18 @@
 <?php
 
-namespace Webcore\Elorest;
+namespace Dandisy\Elorest;
 
 use Illuminate\Support\ServiceProvider;
-use Webcore\Elorest\Http\Request\IRequest;
-use Webcore\Elorest\Http\Request\LaravelRequest;
-use Webcore\Elorest\Repository\IRepository;
-use Webcore\Elorest\Repository\EloquentRepository;
-use Webcore\Elorest\Http\Middleware\LaravelMiddleware;
-use Webcore\Elorest\Http\Response\IResponse;
-use Webcore\Elorest\Http\Response\LaravelResponse;
-use Webcore\Elorest\Route\LaravelRoute;
-use Webcore\Elorest\Service\AService;
-use Webcore\Elorest\Service\LaravelService;
+use Dandisy\Elorest\Http\Request\IRequest;
+use Dandisy\Elorest\Http\Request\LaravelRequest;
+use Dandisy\Elorest\Repository\IRepository;
+use Dandisy\Elorest\Repository\EloquentRepository;
+use Dandisy\Elorest\Http\Middleware\LaravelMiddleware;
+use Dandisy\Elorest\Http\Response\IResponse;
+use Dandisy\Elorest\Http\Response\LaravelResponse;
+use Dandisy\Elorest\Route\LaravelRoute;
+use Dandisy\Elorest\Service\AService;
+use Dandisy\Elorest\Service\LaravelService;
 
 class ElorestServiceProvider extends ServiceProvider
 {

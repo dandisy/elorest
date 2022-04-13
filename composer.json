@@ -7,7 +7,7 @@
     "authors": [
         {
             "name": "dandi",
-            "email": "dandi@redbuzz.co.id"
+            "email": "dandi.webdev@gmail.com"
         }
     ],
     "minimum-stability": "dev",
@@ -16,13 +16,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Webcore\\Elorest\\": "src/"
+            "Dandisy\\Elorest\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Webcore\\Elorest\\ElorestServiceProvider"
+                "Dandisy\\Elorest\\ElorestServiceProvider"
             ]
         }
     }

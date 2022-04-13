@@ -56,7 +56,7 @@ Using laravel errors handler (https://laravel.com/docs/5.8/errors)
 
 Publish exception hendler class to your laravel webcore project
 
-    php artisan vendor:publish --provider="Webcore\Elorest\ElorestServiceProvider" --force
+    php artisan vendor:publish --provider="Dandisy\Elorest\ElorestServiceProvider" --force
 
 ##### Authentication
   

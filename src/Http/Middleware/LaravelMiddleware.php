@@ -1,8 +1,8 @@
 <?php
 
-namespace Webcore\Elorest\Http\Middleware;
+namespace Dandisy\Elorest\Http\Middleware;
 
-// use Webcore\Elorest\Http\Middleware\IMiddleware;
+// use Dandisy\Elorest\Http\Middleware\IMiddleware;
 
 class LaravelMiddleware implements IMiddleware
 {

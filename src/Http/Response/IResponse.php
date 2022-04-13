@@ -1,6 +1,6 @@
 <?php
 
-namespace Webcore\Elorest\Http\Response;
+namespace Dandisy\Elorest\Http\Response;
 
 interface IResponse
 {

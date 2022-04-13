@@ -1,6 +1,6 @@
 <?php
 
-namespace Webcore\Elorest\Http\Middleware;
+namespace Dandisy\Elorest\Http\Middleware;
 
 interface IMiddleware
 {

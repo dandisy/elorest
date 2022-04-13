@@ -1,14 +1,14 @@
 <?php
 
-namespace Webcore\Elorest;
+namespace Dandisy\Elorest;
 
 // use Illuminate\Container\Container;
-use Webcore\Elorest\Http\Middleware\LaravelMiddleware;
-use Webcore\Elorest\Http\Request\LaravelRequest;
-use Webcore\Elorest\Http\Response\LaravelResponse;
-use Webcore\Elorest\Repository\EloquentRepository;
-use Webcore\Elorest\Route\LaravelRoute;
-use Webcore\Elorest\Service\LaravelService;
+use Dandisy\Elorest\Http\Middleware\LaravelMiddleware;
+use Dandisy\Elorest\Http\Request\LaravelRequest;
+use Dandisy\Elorest\Http\Response\LaravelResponse;
+use Dandisy\Elorest\Repository\EloquentRepository;
+use Dandisy\Elorest\Route\LaravelRoute;
+use Dandisy\Elorest\Service\LaravelService;
 
 class Elorest
 {
@@ -28,7 +28,7 @@ class Elorest
 
         // This make tight coupling with Laravel Framework
         // and must register ElorestServiceProvide to Laravel config/app.php if installed manually
-        // // return resolve('Webcore\Elorest\Route\LaravelRoute');
+        // // return resolve('Dandisy\Elorest\Route\LaravelRoute');
         // return Container::getInstance()->make(LaravelRoute::class);
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webcore\Elorest\Helper;
+namespace Dandisy\Elorest\Helper;
 
 class RecursiveParam
 {
