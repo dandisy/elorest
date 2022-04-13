@@ -1,6 +1,6 @@
 <?php
 
-namespace Dandisy\Elorest\Helper;
+namespace Dandisy\Elorest\Helpers;
 
 class RecursiveParam
 {

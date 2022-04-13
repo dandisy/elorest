@@ -1,15 +1,15 @@
 <?php
 
-namespace Webcore\Elorest\Route;
+namespace Dandisy\Elorest\Routes;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
-use Webcore\Elorest\Http\Request\IRequest;
-use Webcore\Elorest\Http\Response\IResponse;
-use Webcore\Elorest\Repository\IRepository;
-// use Webcore\Elorest\Route\ARoute;
-use Webcore\Elorest\Service\AService;
+use Dandisy\Elorest\Http\Request\IRequest;
+use Dandisy\Elorest\Http\Response\IResponse;
+use Dandisy\Elorest\Repositories\IRepository;
+// use Dandisy\Elorest\Routes\ARoute;
+use Dandisy\Elorest\Services\AService;
 use Illuminate\Support\Facades\URL;
 
 class LaravelRoute extends ARoute

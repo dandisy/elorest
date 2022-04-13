@@ -1,6 +1,6 @@
 <?php
 
-namespace Webcore\Elorest\Repository;
+namespace Dandisy\Elorest\Repositories;
 
 interface IRepository
 {    

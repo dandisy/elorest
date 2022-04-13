@@ -1,8 +1,8 @@
 <?php
 
-namespace Dandisy\Elorest\Service;
+namespace Dandisy\Elorest\Services;
 
-// use Dandisy\Elorest\Service\AService;
+// use Dandisy\Elorest\Services\AService;
 
 class LaravelService extends AService
 {

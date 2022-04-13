@@ -1,11 +1,11 @@
 <?php
 
-namespace Dandisy\Elorest\Route;
+namespace Dandisy\Elorest\Routes;
 
 use Dandisy\Elorest\Http\Request\IRequest;
 use Dandisy\Elorest\Http\Response\IResponse;
-use Dandisy\Elorest\Repository\IRepository;
-use Dandisy\Elorest\Service\AService;
+use Dandisy\Elorest\Repositories\IRepository;
+use Dandisy\Elorest\Services\AService;
 
 abstract class ARoute
 {

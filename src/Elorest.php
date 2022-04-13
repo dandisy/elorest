@@ -6,9 +6,9 @@ namespace Dandisy\Elorest;
 use Dandisy\Elorest\Http\Middleware\LaravelMiddleware;
 use Dandisy\Elorest\Http\Request\LaravelRequest;
 use Dandisy\Elorest\Http\Response\LaravelResponse;
-use Dandisy\Elorest\Repository\EloquentRepository;
-use Dandisy\Elorest\Route\LaravelRoute;
-use Dandisy\Elorest\Service\LaravelService;
+use Dandisy\Elorest\Repositories\EloquentRepository;
+use Dandisy\Elorest\Routes\LaravelRoute;
+use Dandisy\Elorest\Services\LaravelService;
 
 class Elorest
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dandisy\Elorest\Service;
+namespace Dandisy\Elorest\Services;
 
-use Dandisy\Elorest\Helper\RecursiveParam;
-use Dandisy\Elorest\Helper\RecursiveQuery;
+use Dandisy\Elorest\Helpers\RecursiveParam;
+use Dandisy\Elorest\Helpers\RecursiveQuery;
 
 abstract class AService
 {

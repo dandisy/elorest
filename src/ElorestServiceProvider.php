@@ -5,14 +5,14 @@ namespace Dandisy\Elorest;
 use Illuminate\Support\ServiceProvider;
 use Dandisy\Elorest\Http\Request\IRequest;
 use Dandisy\Elorest\Http\Request\LaravelRequest;
-use Dandisy\Elorest\Repository\IRepository;
-use Dandisy\Elorest\Repository\EloquentRepository;
+use Dandisy\Elorest\Repositories\IRepository;
+use Dandisy\Elorest\Repositories\EloquentRepository;
 use Dandisy\Elorest\Http\Middleware\LaravelMiddleware;
 use Dandisy\Elorest\Http\Response\IResponse;
 use Dandisy\Elorest\Http\Response\LaravelResponse;
-use Dandisy\Elorest\Route\LaravelRoute;
-use Dandisy\Elorest\Service\AService;
-use Dandisy\Elorest\Service\LaravelService;
+use Dandisy\Elorest\Routes\LaravelRoute;
+use Dandisy\Elorest\Services\AService;
+use Dandisy\Elorest\Services\LaravelService;
 
 class ElorestServiceProvider extends ServiceProvider
 {
