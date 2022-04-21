@@ -205,6 +205,8 @@ Update Where
 
 ### Notes
 
+    create policies class and register in AuthServiceProvider boot method
+
     add public property "elorest = true or false" in model class to active/inactive elorest for model
     add header Accept: application/json in request
 
