@@ -51,6 +51,7 @@ class LaravelRoute extends ARoute
 
     protected function routeGet($request, $namespaceOrModel, $idOrModel, $id) {
         $user = $request->user();
+        $input = $this->requestObj->requestAll($request);
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
@@ -89,7 +90,7 @@ class LaravelRoute extends ARoute
                             "code" => 102403,
                             "detail" => "You do not have permission to access this resource"
                         ],
-                        "params" => $this->requestObj->requestAll($request),
+                        "params" => $input,
                         "links" => [
                             "self" => URL::current()
                         ]
@@ -135,7 +136,7 @@ class LaravelRoute extends ARoute
                         "code" => 102410,
                         "detail" => "Data not available"
                     ],
-                    "params" => $this->requestObj->requestAll($request),
+                    "params" => $input,
                     "links" => [
                         "self" => URL::current()
                     ]
@@ -152,7 +153,7 @@ class LaravelRoute extends ARoute
                             "code" => 102403,
                             "detail" => "You do not have permission to access this resource"
                         ],
-                        "params" => $this->requestObj->requestAll($request),
+                        "params" => $input,
                         "links" => [
                             "self" => URL::current()
                         ]
@@ -199,7 +200,7 @@ class LaravelRoute extends ARoute
                                 "code" => 102403,
                                 "detail" => "You do not have permission to access this resource"
                             ],
-                            "params" => $this->requestObj->requestAll($request),
+                            "params" => $input,
                             "links" => [
                                 "self" => URL::current()
                             ]
@@ -221,7 +222,7 @@ class LaravelRoute extends ARoute
                             "code" => 102410,
                             "detail" => "Data not available"
                         ],
-                        "params" => $this->requestObj->requestAll($request),
+                        "params" => $input,
                         "links" => [
                             "self" => URL::current()
                         ]
@@ -238,7 +239,7 @@ class LaravelRoute extends ARoute
                                 "code" => 102403,
                                 "detail" => "You do not have permission to access this resource"
                             ],
-                            "params" => $this->requestObj->requestAll($request),
+                            "params" => $input,
                             "links" => [
                                 "self" => URL::current()
                             ]
@@ -275,7 +276,7 @@ class LaravelRoute extends ARoute
             // }
         }
 
-        $input = $this->requestObj->requestAll($request);
+        // $input = $this->requestObj->requestAll($request);
         if(!$input) {
             return $this->repositoryObj->getAll($data);
         }
@@ -376,31 +377,25 @@ class LaravelRoute extends ARoute
     // route post hanya punya 1 atau 2 url segment saja (namesapace dan tau model), sedangkan ruote lain bs 3 url segment
     protected function routePost($request, $namespaceOrModel, $model) {
         $user = $request->user();
+        $input = $this->requestObj->requestAll($request);
         $userId = isset($user->id) ? $user->id : ($request->created_by ? : 0);
 
         if($namespaceOrModel == 'upload') {
-            // $mainDir = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
-            $mainDir = './app/public/uploads/';
-            // $dir = str_replace('./','',$mainDir).$user->id;
-            $dir = str_replace('./','',$mainDir).$userId;
+            // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
+            $savePath = './app/public/uploads/';
+            // $dir = str_replace('./','',$savePath).$user->id;
+            $dir = str_replace('./','',$savePath).$userId;
+            $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
 
-            // if (!realpath('..'.DIRECTORY_SEPARATOR.$dir)) {
-            //     mkdir('..'.DIRECTORY_SEPARATOR.$dir, 0777, true);
-            // }
             if (!storage_path($dir)) {
                 mkdir(storage_path($dir), 0777, true);
             }
 
-            $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
-            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$request->extention;
-            $name = $userId.'_'.$request->model.'_'.time().'.'.$request->extention;
-            $path = $dir.DIRECTORY_SEPARATOR.$name;
-            // $path = $dir.$name;
-            // $destinationPath = '..'.DIRECTORY_SEPARATOR.$dir;
-            $destinationPath = storage_path($dir);
-
             if($request->hasFile('file')) {
-                // if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
+                $extension = $request->file('file')->extension();
+                $name = $userId.'_'.$request->model.'_'.time().'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+
                 if (realpath(storage_path($path))) {
                     return response(json_encode([
                         "code" => 200,
@@ -411,42 +406,41 @@ class LaravelRoute extends ARoute
                 }
 
                 $file = $request->file('file');
-                $file->move($destinationPath, $name);
+                $file->move(storage_path($dir), $name);
 
-                // if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
-                if (realpath(storage_path($path))) {
+                if(realpath(storage_path($path))) {
                     return response([
                         "code" => 201,
                         "status" => true,
                         "message" => "file saved successfully",
                         // "data" => str_replace(DIRECTORY_SEPARATOR,'/',str_replace('public'.DIRECTORY_SEPARATOR,'',$path))
-                        "data" => url('/').str_replace('storage/app/public','/storage',str_replace(DIRECTORY_SEPARATOR,'/',$path))
+                        "data" => url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path))
                     ], 201)
                         ->header('Content-Type', 'application/json');
                 }
             } else {
-                if($request->file) {
-                    $data = base64_decode($request->file);
-                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),$data);
-                }
+                if(base64_decode($request->file, true) !== false) {
+                    $extension = explode('/', mime_content_type($request->file))[1];
+                    $name = $userId.'_'.$request->model.'_'.time().'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->file));
 
-                // if (realpath('..'.DIRECTORY_SEPARATOR.$path)) {
-                if (realpath(storage_path($path))) {
-                    return response([
-                        "code" => 201,
-                        "status" => true,
-                        "message" => "file saved successfully",
-                        // "data" => str_replace(DIRECTORY_SEPARATOR,'/',str_replace('public'.DIRECTORY_SEPARATOR,'',$path))
-                        "data" => url('/').str_replace('storage/app/public','/storage',str_replace(DIRECTORY_SEPARATOR,'/',$path))
-                    ], 201)
-                        ->header('Content-Type', 'application/json');
+                    if(realpath(storage_path($path))) {
+                        return response([
+                            "code" => 201,
+                            "status" => true,
+                            "message" => "file saved successfully",
+                            "data" => url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path))
+                        ], 201)
+                            ->header('Content-Type', 'application/json');
+                    }
                 }
             }
 
             return response(json_encode([
                 "code" => 200,
                 "status" => false,
-                "message" => "data input not valid"
+                "message" => "request data not valid"
             ], 200))
                 ->header('Content-Type', 'application/json');
         }
@@ -506,7 +500,7 @@ class LaravelRoute extends ARoute
 
         $request->validate($modelNameSpace::$rules);
 
-        $input = $this->requestObj->requestAll($request);
+        // $input = $this->requestObj->requestAll($request);
 
         if(method_exists($user, 'can')) {
             if(!$user->can('create', $modelNameSpace)) {
@@ -518,13 +512,61 @@ class LaravelRoute extends ARoute
                         "code" => 102403,
                         "detail" => "You do not have permission to access this resource"
                     ],
-                    "params" => $this->requestObj->requestAll($request),
+                    "params" => $input,
                     "links" => [
                         "self" => URL::current()
                     ]
                 ], 403);
             }
         }
+
+        // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
+        $savePath = './app/public/uploads/';
+        // $dir = str_replace('./','',$savePath).$user->id;
+        $dir = str_replace('./','',$savePath).$userId;
+        $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
+        
+        if (!storage_path($dir)) {
+            mkdir(storage_path($dir), 0777, true);
+        }
+
+        if($request->hasFile('image')) {
+            $extension = $request->file('image')->extension();
+            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+            $name = $userId.'_'.$request->model.'_'.time().'.'.$extension;
+            $path = $dir.DIRECTORY_SEPARATOR.$name;
+
+            if (realpath(storage_path($path))) {
+                return response(json_encode([
+                    "code" => 200,
+                    "status" => false,
+                    "message" => "file already exist"
+                ], 200))
+                    ->header('Content-Type', 'application/json');
+            }
+
+            $file = $request->file('image');
+            $file->move(storage_path($dir), $name);
+
+            if(realpath(storage_path($path))) {
+                $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+            }
+        } else {
+            if($request->image) {
+                if(base64_decode($request->image, true) !== false) {
+                    $extension = explode('/', mime_content_type($request->image))[1];
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.time().'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
+
+                    if(realpath(storage_path($path))) {
+                        $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    }
+                }
+            }
+        }
+
         // $modelName = explode('\\', $modelNameSpace);
         // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
         // if($checkPolicy) {
@@ -562,6 +604,7 @@ class LaravelRoute extends ARoute
 
     protected function routePut($request, $namespaceOrModel, $idOrModel, $id) {
         $user = $request->user();
+        $input = $this->requestObj->requestAll($request);
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
@@ -577,7 +620,7 @@ class LaravelRoute extends ARoute
 
                 // in put, error if run validate if reuired fields not available
                 // $request->validate($modelNameSpace::$rules);
-                $input = $this->requestObj->requestAll($request);
+                // $input = $this->requestObj->requestAll($request);
 
                 $data = $this->repositoryObj->findById($idOrModel, $data);
             } else {
@@ -608,7 +651,7 @@ class LaravelRoute extends ARoute
 
                 // in put, error if run validate if reuired fields not available
                 // $request->validate($modelNameSpace::$rules);
-                $input = $this->requestObj->requestAll($request);
+                // $input = $this->requestObj->requestAll($request);
 
                 if($id && is_numeric($id)) {
                     $data = $this->repositoryObj->findById($id, $data);
@@ -643,9 +686,53 @@ class LaravelRoute extends ARoute
 
             // in put, error if run validate if reuired fields not available
             // $request->validate($modelNameSpace::$rules);
-            $input = $this->requestObj->requestAll($request);
+            // $input = $this->requestObj->requestAll($request);
 
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+        }
+
+        // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
+        $savePath = './app/public/uploads/';
+        $dir = str_replace('./','',$savePath).$user->id;
+        $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
+        
+        if (!storage_path($dir)) {
+            mkdir(storage_path($dir), 0777, true);
+        }
+
+        if($request->hasFile('image')) {
+            $extension = $request->file('image')->extension();
+            $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+            $path = $dir.DIRECTORY_SEPARATOR.$name;
+
+            if (realpath(storage_path($path))) {
+                return response(json_encode([
+                    "code" => 200,
+                    "status" => false,
+                    "message" => "file already exist"
+                ], 200))
+                    ->header('Content-Type', 'application/json');
+            }
+
+            $file = $request->file('image');
+            $file->move(storage_path($dir), $name);
+
+            if(realpath(storage_path($path))) {
+                $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+            }
+        } else {
+            if($request->image) {
+                if(base64_decode($request->image, true) !== false) {
+                    $extension = explode('/', mime_content_type($request->image))[1];
+                    $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
+
+                    if(realpath(storage_path($path))) {
+                        $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    }
+                }
+            }
         }
 
         if($data) {
@@ -661,7 +748,7 @@ class LaravelRoute extends ARoute
                             "code" => 102403,
                             "detail" => "You do not have permission to access this resource"
                         ],
-                        "params" => $this->requestObj->requestAll($request),
+                        "params" => $input,
                         "links" => [
                             "self" => URL::current()
                         ]
@@ -724,6 +811,7 @@ class LaravelRoute extends ARoute
 
     protected function routePatch($request, $namespaceOrModel, $idOrModel, $id) {
         $user = $request->user();
+        $input = $this->requestObj->requestAll($request);
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
@@ -739,7 +827,7 @@ class LaravelRoute extends ARoute
 
                 // in patch, error if run validate if reuired fields not available
                 // $request->validate($modelNameSpace::$rules);
-                $input = $this->requestObj->requestAll($request);
+                // $input = $this->requestObj->requestAll($request);
 
                 $data = $this->repositoryObj->findById($idOrModel, $data);
             } else {
@@ -770,7 +858,7 @@ class LaravelRoute extends ARoute
 
                 // in patch, error if run validate if reuired fields not available
                 // $request->validate($modelNameSpace::$rules);
-                $input = $this->requestObj->requestAll($request);
+                // $input = $this->requestObj->requestAll($request);
 
                 if($id && is_numeric($id)) {
                     $data = $this->repositoryObj->findById($id, $data);
@@ -805,9 +893,53 @@ class LaravelRoute extends ARoute
 
             // in patch, error if run validate if reuired fields not available
             // $request->validate($modelNameSpace::$rules);
-            $input = $this->requestObj->requestAll($request);
+            // $input = $this->requestObj->requestAll($request);
 
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+        }
+
+        // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
+        $savePath = './app/public/uploads/';
+        $dir = str_replace('./','',$savePath).$user->id;
+        $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
+        
+        if (!storage_path($dir)) {
+            mkdir(storage_path($dir), 0777, true);
+        }
+
+        if($request->hasFile('image')) {
+            $extension = $request->file('image')->extension();
+            $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+            $path = $dir.DIRECTORY_SEPARATOR.$name;
+
+            if (realpath(storage_path($path))) {
+                return response(json_encode([
+                    "code" => 200,
+                    "status" => false,
+                    "message" => "file already exist"
+                ], 200))
+                    ->header('Content-Type', 'application/json');
+            }
+
+            $file = $request->file('image');
+            $file->move(storage_path($dir), $name);
+
+            if(realpath(storage_path($path))) {
+                $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+            }
+        } else {
+            if($request->image) {
+                if(base64_decode($request->image, true) !== false) {
+                    $extension = explode('/', mime_content_type($request->image))[1];
+                    $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
+
+                    if(realpath(storage_path($path))) {
+                        $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    }
+                }
+            }
         }
 
         if($data) {
@@ -823,7 +955,7 @@ class LaravelRoute extends ARoute
                             "code" => 102403,
                             "detail" => "You do not have permission to access this resource"
                         ],
-                        "params" => $this->requestObj->requestAll($request),
+                        "params" => $input,
                         "links" => [
                             "self" => URL::current()
                         ]
@@ -890,6 +1022,7 @@ class LaravelRoute extends ARoute
 
     protected function routeDelete($request, $namespaceOrModel, $idOrModel, $id) {
         $user = $request->user();
+        $input = $this->requestObj->requestAll($request);
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
@@ -1027,7 +1160,7 @@ class LaravelRoute extends ARoute
                             "code" => 102403,
                             "detail" => "You do not have permission to access this resource"
                         ],
-                        "params" => $this->requestObj->requestAll($request),
+                        "params" => $input,
                         "links" => [
                             "self" => URL::current()
                         ]

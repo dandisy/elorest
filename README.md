@@ -66,6 +66,44 @@ Using laravel passport (https://laravel.com/docs/8.x/passport)
 
 Using laravel gates & policies (https://laravel.com/docs/8.x/authorization)
 
+Create policy for each model
+
+    php artisan make:policy PostPolicy --model=Post
+
+Register policies
+
+    class AuthServiceProvider extends ServiceProvider
+    {
+        /**
+        * The policy mappings for the application.
+        *
+        * @var array
+        */
+        protected $policies = [
+            Post::class => PostPolicy::class,
+        ];
+    
+        /**
+        * Register any application authentication / authorization services.
+        *
+        * @return void
+        */
+        public function boot()
+        {
+            $this->registerPolicies();
+    
+            //
+        }
+    }
+
+or use Policy Auto-Discovery
+
+    use Illuminate\Support\Facades\Gate;
+ 
+    Gate::guessPolicyNamesUsing(function ($modelClass) {
+        // return policy class name...
+    });
+
 ##### Formatable JSON response (Beta)
 
 see the sample/response_format.blade.php file
@@ -205,10 +243,9 @@ Update Where
 
 ### Notes
 
-    create policies class and register in AuthServiceProvider boot method
-
     add public property "elorest = true or false" in model class to active/inactive elorest for model
     add header Accept: application/json in request
+    for PUT/PATCH request, add use Content-tyoe: application/x-www-form-urlencoded or application/json and for update file use POST with body request _method = PUT or PATCH
 
 ### Refs
 
