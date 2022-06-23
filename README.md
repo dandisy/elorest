@@ -31,6 +31,9 @@ Example queries :
     for select specific field/s in clousure of "with" command don't forget to include the foreign key to resolve the relationship, otherwise you'll get zero results for your relation
     http://localhost/gamify/public/api/elorest/Models/Character?with[]=categories.category&with[]=datasources(select=id,model_id,value)&with[]=user&get=*
 
+    upload file
+    https://your-domain-name/api/elorest/upload
+
 ### Installation
 
     composer require dandisy/elorest
