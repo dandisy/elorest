@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +13,89 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+// Todo : Client Credentials Grant Tokens for machine-to-machine authentication
+Route::post('/upload/{userId}/{model}', function(Request $request, $userId, $model) {
+    // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
+    $savePath = './app/public/uploads/';
+    // $dir = str_replace('./','',$savePath).$user->id;
+    $dir = str_replace('./','',$savePath).$userId;
+    $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
+
+    if (!storage_path($dir)) {
+        mkdir(storage_path($dir), 0777, true);
+    }
+
+    // $model = 'Backend';
+    if($request->hasFile('file')) {
+        $extension = $request->file('file')->extension();
+        $name = '1_'.$model.'_'.time().'.'.$extension;
+        $path = $dir.DIRECTORY_SEPARATOR.$name;
+
+        if (realpath(storage_path($path))) {
+            return response(json_encode([
+                "code" => 200,
+                "status" => false,
+                "message" => "file already exist"
+            ], 200))
+                ->header('Content-Type', 'application/json');
+        }
+
+        $file = $request->file('file');
+        $file->move(storage_path($dir), $name);
+
+        if(realpath(storage_path($path))) {
+            return response([
+                "code" => 201,
+                "status" => true,
+                "message" => "file saved successfully",
+                "data" => url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path))
+            ], 201)
+                ->header('Content-Type', 'application/json');
+        }
+    } else {
+        if(base64_decode($request->file, true) !== false) {
+            $extension = explode('/', mime_content_type($request->file))[1];
+            $name = $userId.'_'.$model.'_'.time().'.'.$extension;
+            $path = $dir.DIRECTORY_SEPARATOR.$name;
+            file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->file));
+
+            if(realpath(storage_path($path))) {
+                return response([
+                    "code" => 201,
+                    "status" => true,
+                    "message" => "file saved successfully",
+                    "data" => url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path))
+                ], 201)
+                    ->header('Content-Type', 'application/json');
+            }
+        }
+    }
+});
+
+Route::middleware('auth:api')->post('/selectExec/{sp}', function (Request $request, $sp) {
+    // $query = 'EXEC ' . $sp . '(' . implode(',',$request->params) . ')';
+    $query = 'EXEC ' . $sp . '(' . $request->params . ')';
+    return DB::select($query);
+});
+
+Route::middleware('auth:api')->post('/selectCall/{sp}', function (Request $request, $sp) {
+    // $query = 'CALL ' . $sp . '(' . implode(',',$request->params) . ')';
+    $query = 'CALL ' . $sp . '(' . $request->params . ')';
+    return DB::select($query);
+});
+
+Route::middleware('auth:api')->post('/statetmentExec/{sp}', function (Request $request, $sp) {
+    // $query = 'EXEC ' . $sp . '(' . implode(',',$request->params) . ')';
+    $query = 'EXEC ' . $sp . '(' . $request->params . ')';
+    return DB::statetment($query);
+});
+
+Route::middleware('auth:api')->post('/statetmentCall/{sp}', function (Request $request, $sp) {
+    // $query = 'CALL ' . $sp . '(' . implode(',',$request->params) . ')';
+    $query = 'CALL ' . $sp . '(' . $request->params . ')';
+    return DB::statetment($query);
+});
 
 Route::get('dxDatagrid/test-datagrid-service', function(Request $request) {
     $modelNS = \App\Models\Test::select('tests.*', 'categories.name as category')
