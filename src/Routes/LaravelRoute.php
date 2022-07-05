@@ -319,7 +319,7 @@ class LaravelRoute extends ARoute
 
         $data = $this->serviceObj->getQuery($input, $data);
 
-        if(!$data) {
+        if(!$data && $data !== 0) {
             return $this->responseObj->response([
                 "code" => 410,
                 "status" => false,
