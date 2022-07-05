@@ -379,6 +379,8 @@ class LaravelRoute extends ARoute
         $user = $request->user();
         $input = $this->requestObj->requestAll($request);
         $userId = isset($user->id) ? $user->id : ($request->created_by ? : 0);
+        $input['created_by'] = $userId;
+        $input['updated_by'] = $userId;
 
         if($namespaceOrModel == 'upload') {
             // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
@@ -943,6 +945,7 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
+        $input['created_by'] = $user->id;
             $input['updated_by'] = $user->id;
 
             if(method_exists($user, 'can')) {
