@@ -35,7 +35,7 @@ Example queries :
     https://your-domain-name/api/elorest/upload
     
     whereHas for where, in related clousure
-    http://localhost/gamify/public/api/elorest/Models/Character?with[]=cartItems.product.category&with[]=cartItems(where=created_by,1)&whereHas=cartItems(where=created_by,1)&get=*
+    http://localhost/online-shop/public/api/elorest/Models/Merchant?with[]=cartItems.product.category&with[]=cartItems(where=created_by,1)&whereHas=cartItems(where=created_by,1)&get=*
 
 ### Installation
 
