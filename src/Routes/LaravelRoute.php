@@ -165,6 +165,7 @@ class LaravelRoute extends ARoute
         }
         if($idOrModel) {
             $modelNameSpace .= '\\'.$idOrModel;
+
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
@@ -275,10 +276,37 @@ class LaravelRoute extends ARoute
             //     ], 404);
             // }
         }
+        
+        if(method_exists($user, 'can')) {
+            if(!$user->can('viewAny', [$modelNameSpace, $data])) {
+                return $this->responseObj->response([
+                    "code" => 403,
+                    "status" => false,
+                    "message" => "Not authorized",
+                    "error" => [
+                        "code" => 102403,
+                        "detail" => "You do not have permission to access this resource"
+                    ],
+                    "params" => $input,
+                    "links" => [
+                        "self" => URL::current()
+                    ]
+                ], 403);
+            }
+        }
 
         // $input = $this->requestObj->requestAll($request);
         if(!$input) {
-            return $this->repositoryObj->getAll($data);
+            // because laravel has weird behaviour, https://github.com/laravel/framework/issues/12894
+            if(isset($data->elorestDisableHiddenProperty)) {
+                if($data->elorestDisableHiddenProperty) {
+                    $data = $this->repositoryObj->getAll($data)->makeVisible($data->hidden);
+                }
+            } else {
+                $data = $this->repositoryObj->getAll($data);
+            }
+            
+            return $data;
         }
 
         // foreach($input as $key => $val) {
@@ -316,8 +344,61 @@ class LaravelRoute extends ARoute
         // }
 
         // return $data;
+        
+        $elorestDisableHiddenProperty = false;
+        $elorestDisableRelationHiddenProperty = null;
+        // because laravel has weird behaviour, https://github.com/laravel/framework/issues/12894
+        if(isset($data->elorestDisableHiddenProperty)) {
+            if($data->elorestDisableHiddenProperty) {
+                $elorestDisableHiddenProperty = $data->elorestDisableHiddenProperty;
+            }
+        }
+        if(isset($data->elorestDisableRelationHiddenProperty)) {
+            if($data->elorestDisableRelationHiddenProperty) {
+                $elorestDisableRelationHiddenProperty = $data->elorestDisableRelationHiddenProperty;
+            }
+        }
 
         $data = $this->serviceObj->getQuery($input, $data);
+        if(is_object($data)) {
+            if($elorestDisableHiddenProperty) {
+                if(method_exists($data, 'each')) {
+                    $data->each(function($item) use($elorestDisableHiddenProperty) {
+                        $item->makeVisible($item->hidden);
+                    });
+                } else {
+                    $data->makeVisible($data->hidden);
+                }
+            }
+
+            if($elorestDisableRelationHiddenProperty) {
+                if(method_exists($data, 'each')) {
+                    $data->each(function($value) use($elorestDisableRelationHiddenProperty) {
+                        foreach($elorestDisableRelationHiddenProperty as $item) {
+                            if($value->$item) {
+                                $value->$item->makeVisible($value->$item->hidden);
+                            }
+                        }
+                    });
+                } else {
+                    if(method_exists($data, 'items')) {
+                        $data->each(function($value) use($elorestDisableRelationHiddenProperty) {
+                            foreach($elorestDisableRelationHiddenProperty as $item) {
+                                if($value->$item) {
+                                    $value->$item->makeVisible($value->$item->hidden);
+                                }
+                            }
+                        });
+                    } else {
+                        foreach($elorestDisableRelationHiddenProperty as $item) {
+                            if($data->$item) {
+                                $data->$item->makeVisible($data->$item->hidden);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         if(!$data && $data !== 0) {
             return $this->responseObj->response([
@@ -335,42 +416,6 @@ class LaravelRoute extends ARoute
             ], 410);
         }
 
-        if(method_exists($user, 'can')) {
-            if(isset($data->id)) {
-                if(!$user->can('view', $data)) {
-                    return $this->responseObj->response([
-                        "code" => 403,
-                        "status" => false,
-                        "message" => "Not authorized",
-                        "error" => [
-                            "code" => 102403,
-                            "detail" => "You do not have permission to access this resource"
-                        ],
-                        "params" => $input,
-                        "links" => [
-                            "self" => URL::current()
-                        ]
-                    ], 403);
-                }
-            } else {
-                if(!$user->can('viewAny', $modelNameSpace)) {
-                    return $this->responseObj->response([
-                        "code" => 403,
-                        "status" => false,
-                        "message" => "Not authorized",
-                        "error" => [
-                            "code" => 102403,
-                            "detail" => "You do not have permission to access this resource"
-                        ],
-                        "params" => $input,
-                        "links" => [
-                            "self" => URL::current()
-                        ]
-                    ], 403);
-                }
-            }
-        }
-
         return $data;
     }
 
@@ -379,8 +424,6 @@ class LaravelRoute extends ARoute
         $user = $request->user();
         $input = $this->requestObj->requestAll($request);
         $userId = isset($user->id) ? $user->id : ($request->created_by ? : 0);
-        $input['created_by'] = $userId;
-        $input['updated_by'] = $userId;
 
         if($namespaceOrModel == 'upload') {
             // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
@@ -503,6 +546,15 @@ class LaravelRoute extends ARoute
         $request->validate($modelNameSpace::$rules);
 
         // $input = $this->requestObj->requestAll($request);
+        if(property_exists($modelNameSpace,'$elorestPreventSetOnCreate')) {
+            foreach($modelNameSpace::$elorestPreventSetOnCreate as $key) {
+                if(!empty($input[$key])) {
+                    unset($input[$key]);
+                }
+            }
+        }
+        $input['created_by'] = $userId;
+        $input['updated_by'] = $userId;
 
         if(method_exists($user, 'can')) {
             if(!$user->can('create', $modelNameSpace)) {
@@ -693,53 +745,7 @@ class LaravelRoute extends ARoute
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
         }
 
-        // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
-        $savePath = './app/public/uploads/';
-        $dir = str_replace('./','',$savePath).$user->id;
-        $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
-        
-        if (!storage_path($dir)) {
-            mkdir(storage_path($dir), 0777, true);
-        }
-
-        if($request->hasFile('image')) {
-            $extension = $request->file('image')->extension();
-            $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-            $path = $dir.DIRECTORY_SEPARATOR.$name;
-
-            if (realpath(storage_path($path))) {
-                return response(json_encode([
-                    "code" => 200,
-                    "status" => false,
-                    "message" => "file already exist"
-                ], 200))
-                    ->header('Content-Type', 'application/json');
-            }
-
-            $file = $request->file('image');
-            $file->move(storage_path($dir), $name);
-
-            if(realpath(storage_path($path))) {
-                $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-            }
-        } else {
-            if($request->image) {
-                if(base64_decode($request->image, true) !== false) {
-                    $extension = explode('/', mime_content_type($request->image))[1];
-                    $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                    $path = $dir.DIRECTORY_SEPARATOR.$name;
-                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
-
-                    if(realpath(storage_path($path))) {
-                        $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                    }
-                }
-            }
-        }
-
         if($data) {
-            $input['updated_by'] = $user->id;
-
             if(method_exists($user, 'can')) {
                 if(!$user->can('update', $data)) {
                     return $this->responseObj->response([
@@ -757,6 +763,66 @@ class LaravelRoute extends ARoute
                     ], 403);
                 }
             }
+
+            // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
+            $savePath = './app/public/uploads/';
+            $dir = str_replace('./','',$savePath).$user->id;
+            $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
+            
+            if (!storage_path($dir)) {
+                mkdir(storage_path($dir), 0777, true);
+            }
+    
+            if($request->hasFile('image')) {
+                $extension = $request->file('image')->extension();
+                $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+    
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+    
+                $file = $request->file('image');
+                $file->move(storage_path($dir), $name);
+    
+                if(realpath(storage_path($path))) {
+                    $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                }
+            } else {
+                if($request->image) {
+                    if(base64_decode($request->image, true) !== false) {
+                        $extension = explode('/', mime_content_type($request->image))[1];
+                        $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
+    
+                        if(realpath(storage_path($path))) {
+                            $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        }
+                    }
+                }
+            }
+
+            if(!empty($input['created_by'])) {
+                unset($input['created_by']);
+            }
+            if(!empty($input['deleted_at'])) {
+                unset($input['deleted_at']);
+            }
+            if(property_exists($modelNameSpace, 'elorestPreventSetOnUpdate')) {
+                foreach($modelNameSpace::$elorestPreventSetOnUpdate as $key) {
+                    if(!empty($input[$key])) {
+                        unset($input[$key]);
+                    }
+                }
+            }
+            $input['updated_by'] = $user->id;
+
             // $modelName = explode('\\', $modelNameSpace);
             // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
             // if($checkPolicy) {
@@ -787,6 +853,7 @@ class LaravelRoute extends ARoute
             // } else {
                 // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                 $data = $this->repositoryObj->updateData($input, $data);
+
                 return $this->responseObj->response([
                     "code" => 200,
                     "status" => true,
@@ -900,54 +967,7 @@ class LaravelRoute extends ARoute
             $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
         }
 
-        // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
-        $savePath = './app/public/uploads/';
-        $dir = str_replace('./','',$savePath).$user->id;
-        $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
-        
-        if (!storage_path($dir)) {
-            mkdir(storage_path($dir), 0777, true);
-        }
-
-        if($request->hasFile('image')) {
-            $extension = $request->file('image')->extension();
-            $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-            $path = $dir.DIRECTORY_SEPARATOR.$name;
-
-            if (realpath(storage_path($path))) {
-                return response(json_encode([
-                    "code" => 200,
-                    "status" => false,
-                    "message" => "file already exist"
-                ], 200))
-                    ->header('Content-Type', 'application/json');
-            }
-
-            $file = $request->file('image');
-            $file->move(storage_path($dir), $name);
-
-            if(realpath(storage_path($path))) {
-                $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-            }
-        } else {
-            if($request->image) {
-                if(base64_decode($request->image, true) !== false) {
-                    $extension = explode('/', mime_content_type($request->image))[1];
-                    $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                    $path = $dir.DIRECTORY_SEPARATOR.$name;
-                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
-
-                    if(realpath(storage_path($path))) {
-                        $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                    }
-                }
-            }
-        }
-
         if($data) {
-        $input['created_by'] = $user->id;
-            $input['updated_by'] = $user->id;
-
             if(method_exists($user, 'can')) {
                 if(!$user->can('update', $data)) {
                     return $this->responseObj->response([
@@ -965,6 +985,64 @@ class LaravelRoute extends ARoute
                     ], 403);
                 }
             }
+
+            // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
+            $savePath = './app/public/uploads/';
+            $dir = str_replace('./','',$savePath).$user->id;
+            $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
+            
+            if (!storage_path($dir)) {
+                mkdir(storage_path($dir), 0777, true);
+            }
+    
+            if($request->hasFile('image')) {
+                $extension = $request->file('image')->extension();
+                $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+    
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+    
+                $file = $request->file('image');
+                $file->move(storage_path($dir), $name);
+    
+                if(realpath(storage_path($path))) {
+                    $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                }
+            } else {
+                if($request->image) {
+                    if(base64_decode($request->image, true) !== false) {
+                        $extension = explode('/', mime_content_type($request->image))[1];
+                        $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
+    
+                        if(realpath(storage_path($path))) {
+                            $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        }
+                    }
+                }
+            }
+
+            if(!empty($input['deleted_at'])) {
+                unset($input['deleted_at']);
+            }
+            if(property_exists($modelNameSpace, 'elorestPreventSetOnUpdate')) {
+                foreach($modelNameSpace::$elorestPreventSetOnUpdate as $key) {
+                    if(!empty($input[$key])) {
+                        unset($input[$key]);
+                    }
+                }
+            }
+            $input['created_by'] = $user->id;
+            $input['updated_by'] = $user->id;
+
             // $modelName = explode('\\', $modelNameSpace);
             // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
             // if($checkPolicy) {
