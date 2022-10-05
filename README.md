@@ -115,18 +115,18 @@ or use Policy Auto-Discovery
     ...
 
     public static $elorestPreventSetOnCreate = [
-        'user_id', 'phone', 'id_cart',
+        'user_id', 'phone', 'id_card',
     ];
 
     public static $elorestPreventSetOnUpdate = [
-        'user_id', 'id_cart',
+        'user_id', 'id_card',
     ];
 
     ...
 
 ##### Policy
 
-    public function viewAny(User $user, Penjual $data)
+    public function viewAny(User $user, Model $data)
     {
         ...
 
