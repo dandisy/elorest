@@ -110,6 +110,33 @@ or use Policy Auto-Discovery
         // return policy class name...
     });
 
+##### Model
+
+    ...
+
+    public static $elorestPreventSetOnCreate = [
+        'user_id', 'phone', 'id_cart',
+    ];
+
+    public static $elorestPreventSetOnUpdate = [
+        'user_id', 'id_cart',
+    ];
+
+    ...
+
+##### Policy
+
+    public function viewAny(User $user, Penjual $data)
+    {
+        ...
+
+        if($user->id == $userId || $user->is_admin) {
+            $data->elorestDisableHiddenProperty = true;
+        }
+
+        ...
+    }
+
 ##### Formatable JSON response (Beta)
 
 see the sample/response_format.blade.php file
