@@ -112,6 +112,8 @@ or use Policy Auto-Discovery
 
 ##### Model
 
+to prevent set some field/s
+
     ...
 
     public static $elorestPreventSetOnCreate = [
@@ -125,6 +127,8 @@ or use Policy Auto-Discovery
     ...
 
 ##### Policy
+
+to disable hidden field/s
 
     public function viewAny(User $user, Model $data)
     {
