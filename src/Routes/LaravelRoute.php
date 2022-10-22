@@ -543,10 +543,12 @@ class LaravelRoute extends ARoute
             // }
         }
 
-        $request->validate($modelNameSpace::$rules);
+        if(property_exists($modelNameSpace, 'rules')) {
+            $request->validate($modelNameSpace::$rules);
+        }
 
         // $input = $this->requestObj->requestAll($request);
-        if(property_exists($modelNameSpace,'$elorestPreventSetOnCreate')) {
+        if(property_exists($modelNameSpace,'elorestPreventSetOnCreate')) {
             foreach($modelNameSpace::$elorestPreventSetOnCreate as $key) {
                 if(!empty($input[$key])) {
                     unset($input[$key]);
