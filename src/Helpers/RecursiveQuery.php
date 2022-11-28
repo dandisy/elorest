@@ -56,71 +56,105 @@ class RecursiveQuery
             return 'method not allowed';
         }
 
-        // $arr = [
-        //     "with=phone(where=city_code,021),where=city_code,021",
-        //     "where=first_name,like,%test%"
-        // ]
-        foreach($matches[1] as $item) {
-            $param = str_replace('('.$item.')', '|', $param); // signing using '|' for closure
-        }
-    
-        $params = explode(',', $param);
-        foreach($params as $i => $param) {
-            if (strpos($param, '|')) {
-                $param = rtrim($param, '|');
-                $items = explode('|', $arrayParam[$i]);
-    
-                if(count($items) > 1) {
-                    $data = $data->$key([$param => function($query) use ($items) {
-                        $this->recursiveClosure($query, $items);
-                        // this, only support second nested closure deep
-                        // foreach($items as $idx => $val) {
-                        //     if($idx < count($items)-1) {
-                        //         $closureParam = $items[$idx+1];
-                        //         $closure = str_replace('('.$closureParam.')', '', $val);
-    
-                        //         $closureData = explode('=', trim($closure), 2);
-    
-                        //         $query = $query->$closureData[0]([$closureData[1] => function($query) use ($closureParam) {
-                        //             $closureParams = explode('=', trim($closureParam), 2);
-    
-                        //             call_user_func_array(array($query,$closureParams[0]), explode(',', trim($closureParams[1])));
-                        //         }]);
-                        //     }
-                        // }
-                    }]);
-                } else {
-                    $item = $matches[1][$i];
-    
+        // $t = true;
+        // if($t) {
+            $p = new ParensParser();
+            $resultParams = $p->parse($param);
+            
+            if($resultParams) {
+                foreach($resultParams as $result) {
                     if($key == 'whereHas' || $key == 'whereDoesntHave') {
-                        $data = $data->$key($param, function($query) use ($item) {
-                            $params = explode('=', trim($item), 2);
-        
-                            call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                        $data = $data->$key($resultParams[0], function($query) use ($resultParams) {
+                            foreach($resultParams as $k => $item) {
+                                if($k != 0) {
+                                    $params = explode('=', trim($item[0]), 2);
+                
+                                    call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                                }
+                            }
                         });
                     } else {
-                        $data = $data->$key([$param => function($query) use ($item) {
-                            $params = explode('=', trim($item), 2);
-        
-                            call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                        $data = $data->$key([$resultParams[0] => function($query) use ($resultParams) {
+                            foreach($resultParams as $k => $item) {
+                                if($k != 0) {
+                                    $params = explode('=', trim($item[0]), 2);
+                
+                                    call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                                }
+                            }
                         }]);
                     }
                 }
             } else {
-                if($arrayParam) {
-                    foreach($arrayParam as $item) {
-                        $param = rtrim($params[0], '|');
-                        $data = $data->$key([$param => function($query) use ($item) {
-                            $params = explode('=', trim($item), 2);
-        
-                            call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
-                        }]);
-                    }
-                } else {
-                    $data = call_user_func_array(array($data,$key), [$param]);
-                }
+                $data = call_user_func_array(array($data,$key), [$param]);
             }
-        }
+        // } else {
+        //     // $arr = [
+        //     //     "with=phone(where=city_code,021),where=city_code,021",
+        //     //     "where=first_name,like,%test%"
+        //     // ]
+        //     foreach($matches[1] as $item) {
+        //         $param = str_replace('('.$item.')', '|', $param); // signing using '|' for closure
+        //     }
+
+        //     $params = explode(',', $param);
+        //     foreach($params as $i => $param) {
+        //         if (strpos($param, '|')) {
+        //             $param = rtrim($param, '|');
+        //             $items = explode('|', $arrayParam[$i]);
+
+        //             if(count($items) > 1) {
+        //                 $data = $data->$key([$param => function($query) use ($items) {
+        //                     $this->recursiveClosure($query, $items);
+        //                     // this, only support second nested closure deep
+        //                     // foreach($items as $idx => $val) {
+        //                     //     if($idx < count($items)-1) {
+        //                     //         $closureParam = $items[$idx+1];
+        //                     //         $closure = str_replace('('.$closureParam.')', '', $val);
+
+        //                     //         $closureData = explode('=', trim($closure), 2);
+
+        //                     //         $query = $query->$closureData[0]([$closureData[1] => function($query) use ($closureParam) {
+        //                     //             $closureParams = explode('=', trim($closureParam), 2);
+
+        //                     //             call_user_func_array(array($query,$closureParams[0]), explode(',', trim($closureParams[1])));
+        //                     //         }]);
+        //                     //     }
+        //                     // }
+        //                 }]);
+        //             } else {
+        //                 $item = $matches[1][$i];
+
+        //                 if($key == 'whereHas' || $key == 'whereDoesntHave') {
+        //                     $data = $data->$key($param, function($query) use ($item) {
+        //                         $params = explode('=', trim($item), 2);
+            
+        //                         call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+        //                     });
+        //                 } else {
+        //                     $data = $data->$key([$param => function($query) use ($item) {
+        //                         $params = explode('=', trim($item), 2);
+            
+        //                         call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+        //                     }]);
+        //                 }
+        //             }
+        //         } else {
+        //             if($arrayParam) {
+        //                 foreach($arrayParam as $item) {
+        //                     $param = rtrim($params[0], '|');
+        //                     $data = $data->$key([$param => function($query) use ($item) {
+        //                         $params = explode('=', trim($item), 2);
+            
+        //                         call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+        //                     }]);
+        //                 }
+        //             } else {
+        //                 $data = call_user_func_array(array($data,$key), [$param]);
+        //             }
+        //         }
+        //     }
+        // }
     
         // return [
         //     'param' => $param,
