@@ -2,6 +2,8 @@
 
 namespace Dandisy\Elorest\Helpers;
 
+use Dandisy\Elorest\Helpers\ParensParser;
+
 class RecursiveQuery
 {
     public function __construct()
