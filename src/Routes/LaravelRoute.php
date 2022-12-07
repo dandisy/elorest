@@ -438,7 +438,7 @@ class LaravelRoute extends ARoute
 
             if($request->hasFile('file')) {
                 $extension = $request->file('file')->extension();
-                $name = $userId.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                 $path = $dir.DIRECTORY_SEPARATOR.$name;
 
                 if (realpath(storage_path($path))) {
@@ -466,7 +466,7 @@ class LaravelRoute extends ARoute
             } else {
                 if(base64_decode($request->file, true) !== false) {
                     $extension = explode('/', mime_content_type($request->file))[1];
-                    $name = $userId.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                     $path = $dir.DIRECTORY_SEPARATOR.$name;
                     file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->file));
 
@@ -589,7 +589,7 @@ class LaravelRoute extends ARoute
         if($request->hasFile('image')) {
             $extension = $request->file('image')->extension();
             // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-            $name = $userId.'_'.$request->model.'_'.time().'.'.$extension;
+            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
             $path = $dir.DIRECTORY_SEPARATOR.$name;
 
             if (realpath(storage_path($path))) {
@@ -612,7 +612,7 @@ class LaravelRoute extends ARoute
                 if(base64_decode($request->image, true) !== false) {
                     $extension = explode('/', mime_content_type($request->image))[1];
                     // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                    $name = $userId.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                     $path = $dir.DIRECTORY_SEPARATOR.$name;
                     file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
 
@@ -777,7 +777,7 @@ class LaravelRoute extends ARoute
     
             if($request->hasFile('image')) {
                 $extension = $request->file('image')->extension();
-                $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $user->id.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                 $path = $dir.DIRECTORY_SEPARATOR.$name;
     
                 if (realpath(storage_path($path))) {
@@ -799,7 +799,7 @@ class LaravelRoute extends ARoute
                 if($request->image) {
                     if(base64_decode($request->image, true) !== false) {
                         $extension = explode('/', mime_content_type($request->image))[1];
-                        $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $user->id.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                         $path = $dir.DIRECTORY_SEPARATOR.$name;
                         file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
     
@@ -999,7 +999,7 @@ class LaravelRoute extends ARoute
     
             if($request->hasFile('image')) {
                 $extension = $request->file('image')->extension();
-                $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $user->id.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                 $path = $dir.DIRECTORY_SEPARATOR.$name;
     
                 if (realpath(storage_path($path))) {
@@ -1021,7 +1021,7 @@ class LaravelRoute extends ARoute
                 if($request->image) {
                     if(base64_decode($request->image, true) !== false) {
                         $extension = explode('/', mime_content_type($request->image))[1];
-                        $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $user->id.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                         $path = $dir.DIRECTORY_SEPARATOR.$name;
                         file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
     
