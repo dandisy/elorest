@@ -58,6 +58,22 @@ class RecursiveQuery
             return 'method not allowed';
         }
 
+        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - data', [
+            'data' => $data
+        ]);
+        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - key', [
+            'key' => $key
+        ]);
+        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - param', [
+            'param' => $param
+        ]);
+        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - matches', [
+            'matches' => $matches
+        ]);
+        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - arrayParam', [
+            'arrayParam' => $arrayParam
+        ]);
+
         // $t = true;
         // if($t) {
             $p = new ParensParser();
@@ -71,6 +87,12 @@ class RecursiveQuery
                                 if($k != 0) {
                                     $params = explode('=', trim($item[0]), 2);
                 
+                                    \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave query', [
+                                        'query' => $query
+                                    ]);
+                                    \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave qparams', [
+                                        'params' => $params
+                                    ]);
                                     call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
                                 }
                             }
@@ -81,6 +103,12 @@ class RecursiveQuery
                                 if($k != 0) {
                                     $params = explode('=', trim($item[0]), 2);
                 
+                                    \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - query', [
+                                        'query' => $query
+                                    ]);
+                                    \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - params', [
+                                        'params' => $params
+                                    ]);
                                     call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
                                 }
                             }
