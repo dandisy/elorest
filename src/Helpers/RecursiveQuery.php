@@ -93,11 +93,11 @@ class RecursiveQuery
                                     \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave params', [
                                         'params' => $params
                                     ]);
-                                    if(preg_match('/\[(.*?)\]/', $params, $arrParamMatch)) { // handling whereIn / whereNotIn / others with same syntax, due to whereIn params using whereIn('field', ['val_1', 'val_2', 'val_n']) syntax
+                                    if(preg_match('/\[(.*?)\]/', $params[1], $arrParamMatch)) { // handling whereIn / whereNotIn / others with same syntax, due to whereIn params using whereIn('field', ['val_1', 'val_2', 'val_n']) syntax
                                         \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arrParamMatch', [
                                             'arrParamMatch' => $arrParamMatch
                                         ]);
-                                        $params = str_replace(','.$arrParamMatch[0], '', $params);
+                                        $params = str_replace(','.$arrParamMatch[0], '', $params[1]);
                                         \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn params', [
                                             'params' => $params
                                         ]);
@@ -124,11 +124,11 @@ class RecursiveQuery
                                     \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - params', [
                                         'params' => $params
                                     ]);
-                                    if(preg_match('/\[(.*?)\]/', $params, $arrParamMatch)) { // handling whereIn / whereNotIn / others with same syntax, due to whereIn params using whereIn('field', ['val_1', 'val_2', 'val_n']) syntax
+                                    if(preg_match('/\[(.*?)\]/', $params[1], $arrParamMatch)) { // handling whereIn / whereNotIn / others with same syntax, due to whereIn params using whereIn('field', ['val_1', 'val_2', 'val_n']) syntax
                                         \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn arrParamMatch', [
                                             'arrParamMatch' => $arrParamMatch
                                         ]);
-                                        $params = str_replace(','.$arrParamMatch[0], '', $params);
+                                        $params = str_replace(','.$arrParamMatch[0], '', $params[1]);
                                         \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn params', [
                                             'params' => $params
                                         ]);
