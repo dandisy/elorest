@@ -97,32 +97,32 @@ class RecursiveQuery
                                         \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arrParamMatch', [
                                             'arrParamMatch' => $arrParamMatch
                                         ]);
-                                        $params = str_replace(','.$arrParamMatch[0], '', $params[1]);
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn params', [
-                                            'params' => $params
+                                        $prms = str_replace(','.$arrParamMatch[0], '', $params[1]);
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn prms', [
+                                            'prms' => $prms
                                         ]);
-                                        $params = explode(',', trim($params));
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn params', [
-                                            'params' => $params
+                                        $prms = explode(',', trim($prms));
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn prms', [
+                                            'prms' => $prms
                                         ]);
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arg #2', [
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arrParamMatch 0', [
                                             'arrParamMatch 0' => $arrParamMatch[0]
                                         ]);
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arg #2', [
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arrParamMatch 1', [
                                             'arrParamMatch 1' => $arrParamMatch[1]
                                         ]);
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arg #2', [
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arrParamMatch 1 explode', [
                                             'arrParamMatch 1 explode' => explode(',', trim($arrParamMatch[1]))
                                         ]);
                                         \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arg #1', [
                                             'arg #1' => array($query,$params[0])
                                         ]);
                                         \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arg #2', [
-                                            'arg #2' => array_push($params, explode(',', trim($arrParamMatch[1])))
+                                            'arg #2' => array_push($prms, explode(',', trim($arrParamMatch[1])))
                                         ]);
                                         $arr1 = explode(',', trim($arrParamMatch[1]));
-                                        // call_user_func_array(array($query,$params[0]), array_push($params, explode(',', trim($arrParamMatch[1]))));
-                                        call_user_func_array(array($query,$params[0]), array_push($params, $arr1));
+                                        // call_user_func_array(array($query,$params[0]), array_push($prms, explode(',', trim($arrParamMatch[1]))));
+                                        call_user_func_array(array($query,$params[0]), array_push($prms, $arr1));
                                     } else {
                                         call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
                                     }
@@ -145,32 +145,32 @@ class RecursiveQuery
                                         \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn arrParamMatch', [
                                             'arrParamMatch' => $arrParamMatch
                                         ]);
-                                        $params = str_replace(','.$arrParamMatch[0], '', $params[1]);
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn params', [
-                                            'params' => $params
+                                        $prms = str_replace(','.$arrParamMatch[0], '', $params[1]);
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn prms', [
+                                            'prms' => $prms
                                         ]);
-                                        $params = explode(',', trim($params));
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn params', [
-                                            'params' => $params
+                                        $prms = explode(',', trim($prms));
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn prms', [
+                                            'prms' => $prms
                                         ]);
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arg #2', [
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn arrParamMatch 0', [
                                             'arrParamMatch 0' => $arrParamMatch[0]
                                         ]);
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arg #2', [
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn arrParamMatch 1', [
                                             'arrParamMatch 1' => $arrParamMatch[1]
                                         ]);
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arg #2', [
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn arrParamMatch 1 explode', [
                                             'arrParamMatch 1 explode' => explode(',', trim($arrParamMatch[1]))
                                         ]);
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arg #1', [
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn arg #1', [
                                             'arg #1' => array($query,$params[0])
                                         ]);
-                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arg #2', [
-                                            'arg #2' => array_push($params, explode(',', trim($arrParamMatch[1])))
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn arg #2', [
+                                            'arg #2' => array_push($prms, explode(',', trim($arrParamMatch[1])))
                                         ]);
                                         $arr1 = explode(',', trim($arrParamMatch[1]));
-                                        // call_user_func_array(array($query,$params[0]), array_push($params, explode(',', trim($arrParamMatch[1]))));
-                                        call_user_func_array(array($query,$params[0]), array_push($params, $arr1));
+                                        // call_user_func_array(array($query,$params[0]), array_push($prms, explode(',', trim($arrParamMatch[1]))));
+                                        call_user_func_array(array($query,$params[0]), array_push($prms, $arr1));
                                     } else {
                                         call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
                                     }
