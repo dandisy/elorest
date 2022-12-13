@@ -90,10 +90,25 @@ class RecursiveQuery
                                     \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave query', [
                                         'query' => $query
                                     ]);
-                                    \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave qparams', [
+                                    \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave params', [
                                         'params' => $params
                                     ]);
-                                    call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                                    if(preg_match('/\[(.*?)\]/', $params, $arrParamMatch)) { // handling whereIn / whereNotIn / others with same syntax, due to whereIn params using whereIn('field', ['val_1', 'val_2', 'val_n']) syntax
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn arrParamMatch', [
+                                            'arrParamMatch' => $arrParamMatch
+                                        ]);
+                                        $params = str_replace(','.$arrParamMatch[0], '', $params);
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn params', [
+                                            'params' => $params
+                                        ]);
+                                        $params = explode(',', trim($params));
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereHas whereDoesntHave whereIn params', [
+                                            'params' => $params
+                                        ]);
+                                        call_user_func_array(array($query,$params[0]), array_push($params, explode(',', trim($arrParamMatch[1]))));
+                                    } else {
+                                        call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                                    }
                                 }
                             }
                         });
@@ -109,7 +124,22 @@ class RecursiveQuery
                                     \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - params', [
                                         'params' => $params
                                     ]);
-                                    call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                                    if(preg_match('/\[(.*?)\]/', $params, $arrParamMatch)) { // handling whereIn / whereNotIn / others with same syntax, due to whereIn params using whereIn('field', ['val_1', 'val_2', 'val_n']) syntax
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn arrParamMatch', [
+                                            'arrParamMatch' => $arrParamMatch
+                                        ]);
+                                        $params = str_replace(','.$arrParamMatch[0], '', $params);
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn params', [
+                                            'params' => $params
+                                        ]);
+                                        $params = explode(',', trim($params));
+                                        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - whereIn params', [
+                                            'params' => $params
+                                        ]);
+                                        call_user_func_array(array($query,$params[0]), array_push($params, explode(',', trim($arrParamMatch[1]))));
+                                    } else {
+                                        call_user_func_array(array($query,$params[0]), explode(',', trim($params[1])));
+                                    }
                                 }
                             }
                         }]);
