@@ -112,7 +112,7 @@ or use Policy Auto-Discovery
 
 ##### Model
 
-to prevent set some field/s
+to prevent set some field/s (for ignoring fields, not for authorization)
 
     ...
 
