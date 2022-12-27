@@ -402,9 +402,11 @@ class LaravelRoute extends ARoute
                     } else {
                         foreach($elorestDisableRelationHiddenProperty as $item) {
                             if($data->$item) {
-                                // if(isset($data->$item->hidden)) {
+                                if(isset($data->$item[0])) {
+                                    $data->$item->makeVisible($data->$item[0]->hidden);
+                                } else {
                                     $data->$item->makeVisible($data->$item->hidden);
-                                // }
+                                }
                             }
                         }
                     }
