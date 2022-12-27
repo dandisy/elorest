@@ -364,10 +364,14 @@ class LaravelRoute extends ARoute
             if($elorestDisableHiddenProperty) {
                 if(method_exists($data, 'each')) {
                     $data->each(function($item) use($elorestDisableHiddenProperty) {
-                        $item->makeVisible($item->hidden);
+                        if(isset($item->hidden)) {
+                            $item->makeVisible($item->hidden);
+                        }
                     });
                 } else {
-                    $data->makeVisible($data->hidden);
+                    if(isset($data->hidden)) {
+                        $data->makeVisible($data->hidden);
+                    }
                 }
             }
 
@@ -376,7 +380,11 @@ class LaravelRoute extends ARoute
                     $data->each(function($value) use($elorestDisableRelationHiddenProperty) {
                         foreach($elorestDisableRelationHiddenProperty as $item) {
                             if($value->$item) {
-                                $value->$item->makeVisible($value->$item->hidden);
+                                if(isset($value->$item[0])) {
+                                    $value->$item->makeVisible($value->$item[0]->hidden);
+                                } else {
+                                    $value->$item->makeVisible($value->$item->hidden);
+                                }
                             }
                         }
                     });
@@ -385,14 +393,18 @@ class LaravelRoute extends ARoute
                         $data->each(function($value) use($elorestDisableRelationHiddenProperty) {
                             foreach($elorestDisableRelationHiddenProperty as $item) {
                                 if($value->$item) {
-                                    $value->$item->makeVisible($value->$item->hidden);
+                                    // if(isset($value->$item->hidden)) {
+                                        $value->$item->makeVisible($value->$item->hidden);
+                                    // }
                                 }
                             }
                         });
                     } else {
                         foreach($elorestDisableRelationHiddenProperty as $item) {
                             if($data->$item) {
-                                $data->$item->makeVisible($data->$item->hidden);
+                                // if(isset($data->$item->hidden)) {
+                                    $data->$item->makeVisible($data->$item->hidden);
+                                // }
                             }
                         }
                     }
