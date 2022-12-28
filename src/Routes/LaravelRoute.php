@@ -383,7 +383,9 @@ class LaravelRoute extends ARoute
                                 if(isset($value->$item[0])) {
                                     $value->$item->makeVisible($value->$item[0]->hidden);
                                 } else {
-                                    $value->$item->makeVisible($value->$item->hidden);
+                                    if(isset($value->$item->hidden)) {
+                                        $value->$item->makeVisible($value->$item->hidden);
+                                    }
                                 }
                             }
                         }
@@ -396,7 +398,9 @@ class LaravelRoute extends ARoute
                                     if(isset($value->$item[0])) {
                                         $value->$item->makeVisible($value->$item[0]->hidden);
                                     } else {
-                                        $value->$item->makeVisible($value->$item->hidden);
+                                        if(isset($value->$item->hidden)) {
+                                            $value->$item->makeVisible($value->$item->hidden);
+                                        }
                                     }
                                 }
                             }
@@ -407,7 +411,9 @@ class LaravelRoute extends ARoute
                                 if(isset($data->$item[0])) {
                                     $data->$item->makeVisible($data->$item[0]->hidden);
                                 } else {
-                                    $data->$item->makeVisible($data->$item->hidden);
+                                    if(isset($data->$item->hidden)) {
+                                        $data->$item->makeVisible($data->$item->hidden);
+                                    }
                                 }
                             }
                         }
