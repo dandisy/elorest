@@ -359,6 +359,7 @@ class LaravelRoute extends ARoute
             }
         }
 
+        $filterResult = $data;
         $data = $this->serviceObj->getQuery($input, $data);
         if(is_object($data)) {
             if($elorestDisableHiddenProperty) {
@@ -436,6 +437,10 @@ class LaravelRoute extends ARoute
                     "self" => URL::current()
                 ]
             ], 410);
+        }
+
+        if(method_exists($filterResult, 'elorestViewAllFilter')) {
+            $data = $filterResult->elorestViewAllFilter($data);
         }
 
         return $data;
