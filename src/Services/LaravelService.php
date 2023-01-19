@@ -266,7 +266,16 @@ class LaravelService extends AService
             return 'method not allowed';
         }
         
-        if($key === 'paginate') {
+        $filterResult = $data;
+        if($key === 'get') {
+            if(method_exists($filterResult, 'elorestViewAllFilter')) {
+                $data = $filterResult->elorestViewAllFilter($data);
+            }
+            $data = $this->callUserFuncArray($data, $key, [$param]);
+        } else if($key === 'paginate') {
+            if(method_exists($filterResult, 'elorestViewAllFilter')) {
+                $data = $filterResult->elorestViewAllFilter($data);
+            }
             $data = $this->paginate($data, $key, [$param]);
         } else if($key === 'sortBy') {
             $data = $data->toArray();

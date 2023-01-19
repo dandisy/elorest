@@ -16,6 +16,11 @@ class EloquentRepository implements IRepository
     }
 
     public function getAll($data) {
+        $filterResult = $data;
+        if(method_exists($filterResult, 'elorestViewAllFilter')) {
+            $data = $filterResult->elorestViewAllFilter($data);
+        };
+        
         return $data->get();
     }
 
