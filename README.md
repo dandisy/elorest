@@ -126,7 +126,49 @@ to prevent set some field/s (for ignoring fields, not for authorization)
 
     ...
 
+insert additional logic to elorest add method in your Model class
+
+    ...
+
+    /**
+     * Elorest before
+     *
+     * @param Request $request
+     */
+    public function elorestBefore($request) {
+        // write your code here;
+    }
+
+    /**
+     * Elorest append
+     *
+     * @param Post $post
+     */
+    public function elorestAppend($post) {
+        // write your code here;
+    }
+
+    /**
+     * Elorest after
+     *
+     * @param Request $request
+     * @param Post $post
+     */
+    public function elorestAfter($request, $post) {
+        // write your code here;
+    }
+
+    ...
+
 ##### Policy
+
+to check user authorization
+
+    $check = false; // false first
+
+    ...
+
+    return $user->id && $check || $user->is_admin;
 
 to disable hidden field/s
 

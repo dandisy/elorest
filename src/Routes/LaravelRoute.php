@@ -295,7 +295,7 @@ class LaravelRoute extends ARoute
             }
         }
 
-        // $filterResult = $data;
+        $modelInstance = $data;
         // $input = $this->requestObj->requestAll($request);
         if(!$input) {
             // because laravel has weird behaviour, https://github.com/laravel/framework/issues/12894
@@ -307,9 +307,12 @@ class LaravelRoute extends ARoute
                 $data = $this->repositoryObj->getAll($data);
             }
 
-            // if(method_exists($filterResult, 'elorestViewAllFilter')) {
-            //     $data = $filterResult->elorestViewAllFilter($data);
-            // }
+            if(method_exists($modelInstance, 'elorestAfter')) {
+                $elorestAfter = $modelInstance->elorestAfter($request, $data);
+                if($elorestAfter || $elorestAfter === false) {
+                    return $elorestAfter;
+                }
+            }
             
             return $data;
         }
@@ -443,9 +446,12 @@ class LaravelRoute extends ARoute
             ], 410);
         }
 
-        // if(method_exists($filterResult, 'elorestViewAllFilter')) {
-        //     $data = $filterResult->elorestViewAllFilter($data);
-        // }
+        if(method_exists($modelInstance, 'elorestAfter')) {
+            $elorestAfter = $modelInstance->elorestAfter($request, $data);
+            if($elorestAfter || $elorestAfter === false) {
+                return $elorestAfter;
+            }
+        }
 
         return $data;
     }
