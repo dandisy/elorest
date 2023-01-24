@@ -268,14 +268,28 @@ class LaravelService extends AService
         
         $modelInstance = $data;
         if($key === 'get') {
-            if(method_exists($modelInstance, 'elorestAppend')) {
-                $data = $modelInstance->elorestAppend($data);
-            };
+            if(get_class($modelInstance) == 'Illuminate\Database\Eloquent\Builder') {
+                $oriModel = $modelInstance->getModel();
+                if(method_exists($oriModel, 'elorestAppend')) {
+                    $data = $oriModel->elorestAppend($data);
+                };
+            } else {
+                if(method_exists($modelInstance, 'elorestAppend')) {
+                    $data = $modelInstance->elorestAppend($data);
+                };
+            }
             $data = $this->callUserFuncArray($data, $key, [$param]);
         } else if($key === 'paginate') {
-            if(method_exists($modelInstance, 'elorestAppend')) {
-                $data = $modelInstance->elorestAppend($data);
-            };
+            if(get_class($modelInstance) == 'Illuminate\Database\Eloquent\Builder') {
+                $oriModel = $modelInstance->getModel();
+                if(method_exists($oriModel, 'elorestAppend')) {
+                    $data = $oriModel->elorestAppend($data);
+                };
+            } else {
+                if(method_exists($modelInstance, 'elorestAppend')) {
+                    $data = $modelInstance->elorestAppend($data);
+                };
+            }
             $data = $this->paginate($data, $key, [$param]);
         } else if($key === 'sortBy') {
             $data = $data->toArray();
