@@ -660,6 +660,43 @@ class LaravelRoute extends ARoute
             }
         }
 
+        if($request->hasFile('popup_image')) {
+            $extension = $request->file('popup_image')->extension();
+            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+            $path = $dir.DIRECTORY_SEPARATOR.$name;
+
+            if (realpath(storage_path($path))) {
+                return response(json_encode([
+                    "code" => 200,
+                    "status" => false,
+                    "message" => "file already exist"
+                ], 200))
+                    ->header('Content-Type', 'application/json');
+            }
+
+            $file = $request->file('popup_image');
+            $file->move(storage_path($dir), $name);
+
+            if(realpath(storage_path($path))) {
+                $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+            }
+        } else {
+            if($request->popup_image) {
+                if(base64_decode($request->popup_image, true) !== false) {
+                    $extension = explode('/', mime_content_type($request->popup_image))[1];
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->popup_image));
+
+                    if(realpath(storage_path($path))) {
+                        $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    }
+                }
+            }
+        }
+
         // $modelName = explode('\\', $modelNameSpace);
         // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
         // if($checkPolicy) {
