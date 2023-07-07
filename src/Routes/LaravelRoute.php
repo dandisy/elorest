@@ -809,6 +809,7 @@ class LaravelRoute extends ARoute
     protected function routePut($request, $namespaceOrModel, $idOrModel, $id) {
         $user = $request->user();
         $input = $this->requestObj->requestAll($request);
+        $userId = isset($user->id) ? $user->id : ($request->created_by ? : 0);
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
@@ -958,6 +959,117 @@ class LaravelRoute extends ARoute
                 }
             }
 
+            if($request->hasFile('popup_image')) {
+                $extension = $request->file('popup_image')->extension();
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+    
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+    
+                $file = $request->file('popup_image');
+                $file->move(storage_path($dir), $name);
+    
+                if(realpath(storage_path($path))) {
+                    $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                }
+            } else {
+                if($request->popup_image) {
+                    if(base64_decode($request->popup_image, true) !== false) {
+                        $extension = explode('/', mime_content_type($request->popup_image))[1];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->popup_image));
+    
+                        if(realpath(storage_path($path))) {
+                            $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        }
+                    }
+                }
+            }
+
+            if($request->hasFile('video')) {
+                $extension = $request->file('video')->extension();
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+    
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+    
+                $file = $request->file('video');
+                $file->move(storage_path($dir), $name);
+    
+                if(realpath(storage_path($path))) {
+                    $input['video'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                }
+            } else {
+                if($request->video) {
+                    if(base64_decode($request->video, true) !== false) {
+                        $extension = explode('/', mime_content_type($request->video))[1];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->video));
+    
+                        if(realpath(storage_path($path))) {
+                            $input['video'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        }
+                    }
+                }
+            }
+    
+            if($request->hasFile('video_url')) {
+                $extension = $request->file('video_url')->extension();
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+    
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+    
+                $file = $request->file('video_url');
+                $file->move(storage_path($dir), $name);
+    
+                if(realpath(storage_path($path))) {
+                    $input['video_url'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                }
+            } else {
+                if($request->video_url) {
+                    if(base64_decode($request->video_url, true) !== false) {
+                        $extension = explode('/', mime_content_type($request->video_url))[1];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->video_url));
+    
+                        if(realpath(storage_path($path))) {
+                            $input['video_url'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        }
+                    }
+                }
+            }
+
             if(!empty($input['created_by'])) {
                 unset($input['created_by']);
             }
@@ -1031,6 +1143,7 @@ class LaravelRoute extends ARoute
     protected function routePatch($request, $namespaceOrModel, $idOrModel, $id) {
         $user = $request->user();
         $input = $this->requestObj->requestAll($request);
+        $userId = isset($user->id) ? $user->id : ($request->created_by ? : 0);
 
         $modelNameSpace = 'App\\'.$namespaceOrModel;
 
@@ -1175,6 +1288,117 @@ class LaravelRoute extends ARoute
     
                         if(realpath(storage_path($path))) {
                             $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        }
+                    }
+                }
+            }
+
+            if($request->hasFile('popup_image')) {
+                $extension = $request->file('popup_image')->extension();
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+    
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+    
+                $file = $request->file('popup_image');
+                $file->move(storage_path($dir), $name);
+    
+                if(realpath(storage_path($path))) {
+                    $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                }
+            } else {
+                if($request->popup_image) {
+                    if(base64_decode($request->popup_image, true) !== false) {
+                        $extension = explode('/', mime_content_type($request->popup_image))[1];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->popup_image));
+    
+                        if(realpath(storage_path($path))) {
+                            $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        }
+                    }
+                }
+            }
+
+            if($request->hasFile('video')) {
+                $extension = $request->file('video')->extension();
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+    
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+    
+                $file = $request->file('video');
+                $file->move(storage_path($dir), $name);
+    
+                if(realpath(storage_path($path))) {
+                    $input['video'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                }
+            } else {
+                if($request->video) {
+                    if(base64_decode($request->video, true) !== false) {
+                        $extension = explode('/', mime_content_type($request->video))[1];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->video));
+    
+                        if(realpath(storage_path($path))) {
+                            $input['video'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        }
+                    }
+                }
+            }
+    
+            if($request->hasFile('video_url')) {
+                $extension = $request->file('video_url')->extension();
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+    
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+    
+                $file = $request->file('video_url');
+                $file->move(storage_path($dir), $name);
+    
+                if(realpath(storage_path($path))) {
+                    $input['video_url'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                }
+            } else {
+                if($request->video_url) {
+                    if(base64_decode($request->video_url, true) !== false) {
+                        $extension = explode('/', mime_content_type($request->video_url))[1];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->video_url));
+    
+                        if(realpath(storage_path($path))) {
+                            $input['video_url'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
                         }
                     }
                 }
