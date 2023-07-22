@@ -277,21 +277,23 @@ class LaravelRoute extends ARoute
             // }
         }
         
-        if(method_exists($user, 'can')) {
-            if(!$user->can('viewAny', [$modelNameSpace, $data])) {
-                return $this->responseObj->response([
-                    "code" => 403,
-                    "status" => false,
-                    "message" => "Not authorized",
-                    "error" => [
-                        "code" => 102403,
-                        "detail" => "You do not have permission to access this resource"
-                    ],
-                    "params" => $input,
-                    "links" => [
-                        "self" => URL::current()
-                    ]
-                ], 403);
+        if($user) {
+            if(method_exists($user, 'can')) {
+                if(!$user->can('viewAny', [$modelNameSpace, $data])) {
+                    return $this->responseObj->response([
+                        "code" => 403,
+                        "status" => false,
+                        "message" => "Not authorized",
+                        "error" => [
+                            "code" => 102403,
+                            "detail" => "You do not have permission to access this resource"
+                        ],
+                        "params" => $input,
+                        "links" => [
+                            "self" => URL::current()
+                        ]
+                    ], 403);
+                }
             }
         }
 
