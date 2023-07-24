@@ -1171,7 +1171,7 @@ class LaravelRoute extends ARoute
                     }
                 }
             }
-            $input['updated_by'] = $user->id;
+            $input['updated_by'] = $userId;
 
             // $modelName = explode('\\', $modelNameSpace);
             // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
