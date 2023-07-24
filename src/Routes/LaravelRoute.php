@@ -80,21 +80,23 @@ class LaravelRoute extends ARoute
             //     ], 404);
             // }
 
-            if(method_exists($user, 'can')) {
-                if(!$user->can('viewAny', $modelNameSpace)) {
-                    return $this->responseObj->response([
-                        "code" => 403,
-                        "status" => false,
-                        "message" => "Not authorized",
-                        "error" => [
-                            "code" => 102403,
-                            "detail" => "You do not have permission to access this resource"
-                        ],
-                        "params" => $input,
-                        "links" => [
-                            "self" => URL::current()
-                        ]
-                    ], 403);
+            if($user) {
+                if(method_exists($user, 'can')) {
+                    if(!$user->can('viewAny', $modelNameSpace)) {
+                        return $this->responseObj->response([
+                            "code" => 403,
+                            "status" => false,
+                            "message" => "Not authorized",
+                            "error" => [
+                                "code" => 102403,
+                                "detail" => "You do not have permission to access this resource"
+                            ],
+                            "params" => $input,
+                            "links" => [
+                                "self" => URL::current()
+                            ]
+                        ], 403);
+                    }
                 }
             }
 
@@ -143,21 +145,23 @@ class LaravelRoute extends ARoute
                 ], 410);
             }
 
-            if(method_exists($user, 'can')) {
-                if(!$user->can('view', $data)) {
-                    return $this->responseObj->response([
-                        "code" => 403,
-                        "status" => false,
-                        "message" => "Not authorized",
-                        "error" => [
-                            "code" => 102403,
-                            "detail" => "You do not have permission to access this resource"
-                        ],
-                        "params" => $input,
-                        "links" => [
-                            "self" => URL::current()
-                        ]
-                    ], 403);
+            if($user) {
+                if(method_exists($user, 'can')) {
+                    if(!$user->can('view', $data)) {
+                        return $this->responseObj->response([
+                            "code" => 403,
+                            "status" => false,
+                            "message" => "Not authorized",
+                            "error" => [
+                                "code" => 102403,
+                                "detail" => "You do not have permission to access this resource"
+                            ],
+                            "params" => $input,
+                            "links" => [
+                                "self" => URL::current()
+                            ]
+                        ], 403);
+                    }
                 }
             }
 
@@ -191,21 +195,23 @@ class LaravelRoute extends ARoute
             // }
 
             if($id == 'columns') {
-                if(method_exists($user, 'can')) {
-                    if(!$user->can('viewAny', $modelNameSpace)) {
-                        return $this->responseObj->response([
-                            "code" => 403,
-                            "status" => false,
-                            "message" => "Not authorized",
-                            "error" => [
-                                "code" => 102403,
-                                "detail" => "You do not have permission to access this resource"
-                            ],
-                            "params" => $input,
-                            "links" => [
-                                "self" => URL::current()
-                            ]
-                        ], 403);
+                if($user) {
+                    if(method_exists($user, 'can')) {
+                        if(!$user->can('viewAny', $modelNameSpace)) {
+                            return $this->responseObj->response([
+                                "code" => 403,
+                                "status" => false,
+                                "message" => "Not authorized",
+                                "error" => [
+                                    "code" => 102403,
+                                    "detail" => "You do not have permission to access this resource"
+                                ],
+                                "params" => $input,
+                                "links" => [
+                                    "self" => URL::current()
+                                ]
+                            ], 403);
+                        }
                     }
                 }
 
@@ -230,21 +236,23 @@ class LaravelRoute extends ARoute
                     ], 410);
                 }
 
-                if(method_exists($user, 'can')) {
-                    if(!$user->can('view', $data)) {
-                        return $this->responseObj->response([
-                            "code" => 403,
-                            "status" => false,
-                            "message" => "Not authorized",
-                            "error" => [
-                                "code" => 102403,
-                                "detail" => "You do not have permission to access this resource"
-                            ],
-                            "params" => $input,
-                            "links" => [
-                                "self" => URL::current()
-                            ]
-                        ], 403);
+                if($user) {
+                    if(method_exists($user, 'can')) {
+                        if(!$user->can('view', $data)) {
+                            return $this->responseObj->response([
+                                "code" => 403,
+                                "status" => false,
+                                "message" => "Not authorized",
+                                "error" => [
+                                    "code" => 102403,
+                                    "detail" => "You do not have permission to access this resource"
+                                ],
+                                "params" => $input,
+                                "links" => [
+                                    "self" => URL::current()
+                                ]
+                            ], 403);
+                        }
                     }
                 }
 
@@ -597,21 +605,23 @@ class LaravelRoute extends ARoute
         $input['created_by'] = $userId;
         $input['updated_by'] = $userId;
 
-        if(method_exists($user, 'can')) {
-            if(!$user->can('create', $modelNameSpace)) {
-                return $this->responseObj->response([
-                    "code" => 403,
-                    "status" => false,
-                    "message" => "Not authorized",
-                    "error" => [
-                        "code" => 102403,
-                        "detail" => "You do not have permission to access this resource"
-                    ],
-                    "params" => $input,
-                    "links" => [
-                        "self" => URL::current()
-                    ]
-                ], 403);
+        if($user) {
+            if(method_exists($user, 'can')) {
+                if(!$user->can('create', $modelNameSpace)) {
+                    return $this->responseObj->response([
+                        "code" => 403,
+                        "status" => false,
+                        "message" => "Not authorized",
+                        "error" => [
+                            "code" => 102403,
+                            "detail" => "You do not have permission to access this resource"
+                        ],
+                        "params" => $input,
+                        "links" => [
+                            "self" => URL::current()
+                        ]
+                    ], 403);
+                }
             }
         }
 
@@ -623,6 +633,59 @@ class LaravelRoute extends ARoute
         
         if (!storage_path($dir)) {
             mkdir(storage_path($dir), 0777, true);
+        }
+
+        if($request->hasFile('file')) {
+            $originName = $request->file('file')->getClientOriginalName();
+            $extension = $request->file('file')->extension();
+            $size = $request->file('file')->getSize();
+            $mimeType = $request->file('file')->getMimeType();
+            $type = explode('/', $mimeType)[0];
+            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+            $path = $dir.DIRECTORY_SEPARATOR.$name;
+
+            if (realpath(storage_path($path))) {
+                return response(json_encode([
+                    "code" => 200,
+                    "status" => false,
+                    "message" => "file already exist"
+                ], 200))
+                    ->header('Content-Type', 'application/json');
+            }
+
+            $file = $request->file('file');
+            $file->move(storage_path($dir), $name);
+
+            if(realpath(storage_path($path))) {
+                $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                $input['origin_name'] = $originName;
+                $input['file_size'] = $size/1000;
+                $input['file_type'] = $mimeType;
+                $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                $input['file_value'] = $name;
+                $input['type'] = $type;
+            }
+        } else {
+            if($request->file) {
+                if(base64_decode($request->file, true) !== false) {
+                    $mimeType = mime_content_type($request->file);
+                    $extension = explode('/', $mimeType)[1];
+                    $type = explode('/', $mimeType)[0];
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->file));
+
+                    if(realpath(storage_path($path))) {
+                        $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        $input['file_type'] = $mimeType;
+                        $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                        $input['file_value'] = $name;
+                        $input['type'] = $type;
+                    }
+                }
+            }
         }
 
         if($request->hasFile('image')) {
@@ -657,43 +720,6 @@ class LaravelRoute extends ARoute
 
                     if(realpath(storage_path($path))) {
                         $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                    }
-                }
-            }
-        }
-
-        if($request->hasFile('popup_image')) {
-            $extension = $request->file('popup_image')->extension();
-            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-            $path = $dir.DIRECTORY_SEPARATOR.$name;
-
-            if (realpath(storage_path($path))) {
-                return response(json_encode([
-                    "code" => 200,
-                    "status" => false,
-                    "message" => "file already exist"
-                ], 200))
-                    ->header('Content-Type', 'application/json');
-            }
-
-            $file = $request->file('popup_image');
-            $file->move(storage_path($dir), $name);
-
-            if(realpath(storage_path($path))) {
-                $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-            }
-        } else {
-            if($request->popup_image) {
-                if(base64_decode($request->popup_image, true) !== false) {
-                    $extension = explode('/', mime_content_type($request->popup_image))[1];
-                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                    $path = $dir.DIRECTORY_SEPARATOR.$name;
-                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->popup_image));
-
-                    if(realpath(storage_path($path))) {
-                        $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
                     }
                 }
             }
@@ -736,38 +762,56 @@ class LaravelRoute extends ARoute
             }
         }
 
-        if($request->hasFile('video_url')) {
-            $extension = $request->file('video_url')->extension();
-            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-            $path = $dir.DIRECTORY_SEPARATOR.$name;
+        foreach($modelNameSpace::$elorestFileFields as $file) {
+            if($request->hasFile($file)) {
+                $originName = $request->file('file')->getClientOriginalName();
+                $extension = $request->file('file')->extension();
+                $size = $request->file('file')->getSize();
+                $mimeType = $request->file('file')->getMimeType();
+                $type = explode('/', $mimeType)[0];
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
 
-            if (realpath(storage_path($path))) {
-                return response(json_encode([
-                    "code" => 200,
-                    "status" => false,
-                    "message" => "file already exist"
-                ], 200))
-                    ->header('Content-Type', 'application/json');
-            }
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
 
-            $file = $request->file('video_url');
-            $file->move(storage_path($dir), $name);
+                $file = $request->file($file);
+                $file->move(storage_path($dir), $name);
 
-            if(realpath(storage_path($path))) {
-                $input['video_url'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-            }
-        } else {
-            if($request->video_url) {
-                if(base64_decode($request->video_url, true) !== false) {
-                    $extension = explode('/', mime_content_type($request->video_url))[1];
-                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                    $path = $dir.DIRECTORY_SEPARATOR.$name;
-                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->video_url));
+                if(realpath(storage_path($path))) {
+                    $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    $input['origin_name'] = $originName;
+                    $input['file_size'] = $size/1000;
+                    $input['file_type'] = $mimeType;
+                    $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                    $input['file_value'] = $name;
+                    $input['type'] = $type;
+                }
+            } else {
+                if($request->$file) {
+                    if(base64_decode($request->$file, true) !== false) {
+                        $mimeType = mime_content_type($request->file);
+                        $extension = explode('/', $mimeType)[1];
+                        $type = explode('/', $mimeType)[0];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->$file));
 
-                    if(realpath(storage_path($path))) {
-                        $input['video_url'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        if(realpath(storage_path($path))) {
+                            $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                            $input['file_type'] = $mimeType;
+                            $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                            $input['file_value'] = $name;
+                            $input['type'] = $type;
+                        }
                     }
                 }
             }
@@ -899,36 +943,92 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
-            if(method_exists($user, 'can')) {
-                if(!$user->can('update', $data)) {
-                    return $this->responseObj->response([
-                        "code" => 403,
-                        "status" => false,
-                        "message" => "Not authorized",
-                        "error" => [
-                            "code" => 102403,
-                            "detail" => "You do not have permission to access this resource"
-                        ],
-                        "params" => $input,
-                        "links" => [
-                            "self" => URL::current()
-                        ]
-                    ], 403);
+            if($user) {
+                if(method_exists($user, 'can')) {
+                    if(!$user->can('update', $data)) {
+                        return $this->responseObj->response([
+                            "code" => 403,
+                            "status" => false,
+                            "message" => "Not authorized",
+                            "error" => [
+                                "code" => 102403,
+                                "detail" => "You do not have permission to access this resource"
+                            ],
+                            "params" => $input,
+                            "links" => [
+                                "self" => URL::current()
+                            ]
+                        ], 403);
+                    }
                 }
             }
 
             // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
             $savePath = './app/public/uploads/';
-            $dir = str_replace('./','',$savePath).$user->id;
+            $dir = str_replace('./','',$savePath).$userId;
             $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
             
             if (!storage_path($dir)) {
                 mkdir(storage_path($dir), 0777, true);
             }
+
+            if($request->hasFile('file')) {
+                $originName = $request->file('file')->getClientOriginalName();
+                $extension = $request->file('file')->extension();
+                $size = $request->file('file')->getSize();
+                $mimeType = $request->file('file')->getMimeType();
+                $type = explode('/', $mimeType)[0];
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+    
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+    
+                $file = $request->file('file');
+                $file->move(storage_path($dir), $name);
+    
+                if(realpath(storage_path($path))) {
+                    $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    $input['origin_name'] = $originName;
+                    $input['file_size'] = $size/1000;
+                    $input['file_type'] = $mimeType;
+                    $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                    $input['file_value'] = $name;
+                    $input['type'] = $type;
+                }
+            } else {
+                if($request->file) {
+                    if(base64_decode($request->file, true) !== false) {
+                        $mimeType = mime_content_type($request->file);
+                        $extension = explode('/', $mimeType)[1];
+                        $type = explode('/', $mimeType)[0];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->file));
+    
+                        if(realpath(storage_path($path))) {
+                            $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                            $input['file_type'] = $mimeType;
+                            $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                            $input['file_value'] = $name;
+                            $input['type'] = $type;
+                        }
+                    }
+                }
+            }
     
             if($request->hasFile('image')) {
                 $extension = $request->file('image')->extension();
-                $name = $user->id.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                 $path = $dir.DIRECTORY_SEPARATOR.$name;
     
                 if (realpath(storage_path($path))) {
@@ -950,7 +1050,8 @@ class LaravelRoute extends ARoute
                 if($request->image) {
                     if(base64_decode($request->image, true) !== false) {
                         $extension = explode('/', mime_content_type($request->image))[1];
-                        $name = $user->id.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                         $path = $dir.DIRECTORY_SEPARATOR.$name;
                         file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
     
@@ -960,44 +1061,7 @@ class LaravelRoute extends ARoute
                     }
                 }
             }
-
-            if($request->hasFile('popup_image')) {
-                $extension = $request->file('popup_image')->extension();
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
     
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
-    
-                $file = $request->file('popup_image');
-                $file->move(storage_path($dir), $name);
-    
-                if(realpath(storage_path($path))) {
-                    $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                }
-            } else {
-                if($request->popup_image) {
-                    if(base64_decode($request->popup_image, true) !== false) {
-                        $extension = explode('/', mime_content_type($request->popup_image))[1];
-                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                        $path = $dir.DIRECTORY_SEPARATOR.$name;
-                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->popup_image));
-    
-                        if(realpath(storage_path($path))) {
-                            $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                        }
-                    }
-                }
-            }
-
             if($request->hasFile('video')) {
                 $extension = $request->file('video')->extension();
                 // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
@@ -1035,38 +1099,56 @@ class LaravelRoute extends ARoute
                 }
             }
     
-            if($request->hasFile('video_url')) {
-                $extension = $request->file('video_url')->extension();
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
+            foreach($modelNameSpace::$elorestFileFields as $file) {
+                if($request->hasFile($file)) {
+                    $originName = $request->file('file')->getClientOriginalName();
+                    $extension = $request->file('file')->extension();
+                    $size = $request->file('file')->getSize();
+                    $mimeType = $request->file('file')->getMimeType();
+                    $type = explode('/', $mimeType)[0];
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
     
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
+                    if (realpath(storage_path($path))) {
+                        return response(json_encode([
+                            "code" => 200,
+                            "status" => false,
+                            "message" => "file already exist"
+                        ], 200))
+                            ->header('Content-Type', 'application/json');
+                    }
     
-                $file = $request->file('video_url');
-                $file->move(storage_path($dir), $name);
+                    $file = $request->file($file);
+                    $file->move(storage_path($dir), $name);
     
-                if(realpath(storage_path($path))) {
-                    $input['video_url'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                }
-            } else {
-                if($request->video_url) {
-                    if(base64_decode($request->video_url, true) !== false) {
-                        $extension = explode('/', mime_content_type($request->video_url))[1];
-                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                        $path = $dir.DIRECTORY_SEPARATOR.$name;
-                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->video_url));
+                    if(realpath(storage_path($path))) {
+                        $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        $input['origin_name'] = $originName;
+                        $input['file_size'] = $size/1000;
+                        $input['file_type'] = $mimeType;
+                        $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                        $input['file_value'] = $name;
+                        $input['type'] = $type;
+                    }
+                } else {
+                    if($request->$file) {
+                        if(base64_decode($request->$file, true) !== false) {
+                            $mimeType = mime_content_type($request->file);
+                            $extension = explode('/', $mimeType)[1];
+                            $type = explode('/', $mimeType)[0];
+                            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                            $path = $dir.DIRECTORY_SEPARATOR.$name;
+                            file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->$file));
     
-                        if(realpath(storage_path($path))) {
-                            $input['video_url'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                            if(realpath(storage_path($path))) {
+                                $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                                $input['file_type'] = $mimeType;
+                                $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                                $input['file_value'] = $name;
+                                $input['type'] = $type;
+                            }
                         }
                     }
                 }
@@ -1233,36 +1315,92 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
-            if(method_exists($user, 'can')) {
-                if(!$user->can('update', $data)) {
-                    return $this->responseObj->response([
-                        "code" => 403,
-                        "status" => false,
-                        "message" => "Not authorized",
-                        "error" => [
-                            "code" => 102403,
-                            "detail" => "You do not have permission to access this resource"
-                        ],
-                        "params" => $input,
-                        "links" => [
-                            "self" => URL::current()
-                        ]
-                    ], 403);
+            if($user) {
+                if(method_exists($user, 'can')) {
+                    if(!$user->can('update', $data)) {
+                        return $this->responseObj->response([
+                            "code" => 403,
+                            "status" => false,
+                            "message" => "Not authorized",
+                            "error" => [
+                                "code" => 102403,
+                                "detail" => "You do not have permission to access this resource"
+                            ],
+                            "params" => $input,
+                            "links" => [
+                                "self" => URL::current()
+                            ]
+                        ], 403);
+                    }
                 }
             }
 
             // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
             $savePath = './app/public/uploads/';
-            $dir = str_replace('./','',$savePath).$user->id;
+            $dir = str_replace('./','',$savePath).$userId;
             $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
             
             if (!storage_path($dir)) {
                 mkdir(storage_path($dir), 0777, true);
             }
+
+            if($request->hasFile('file')) {
+                $originName = $request->file('file')->getClientOriginalName();
+                $extension = $request->file('file')->extension();
+                $size = $request->file('file')->getSize();
+                $mimeType = $request->file('file')->getMimeType();
+                $type = explode('/', $mimeType)[0];
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+    
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+    
+                $file = $request->file('file');
+                $file->move(storage_path($dir), $name);
+    
+                if(realpath(storage_path($path))) {
+                    $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    $input['origin_name'] = $originName;
+                    $input['file_size'] = $size/1000;
+                    $input['file_type'] = $mimeType;
+                    $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                    $input['file_value'] = $name;
+                    $input['type'] = $type;
+                }
+            } else {
+                if($request->file) {
+                    if(base64_decode($request->file, true) !== false) {
+                        $mimeType = mime_content_type($request->file);
+                        $extension = explode('/', $mimeType)[1];
+                        $type = explode('/', $mimeType)[0];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->file));
+    
+                        if(realpath(storage_path($path))) {
+                            $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                            $input['file_type'] = $mimeType;
+                            $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                            $input['file_value'] = $name;
+                            $input['type'] = $type;
+                        }
+                    }
+                }
+            }
     
             if($request->hasFile('image')) {
                 $extension = $request->file('image')->extension();
-                $name = $user->id.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                 $path = $dir.DIRECTORY_SEPARATOR.$name;
     
                 if (realpath(storage_path($path))) {
@@ -1284,7 +1422,8 @@ class LaravelRoute extends ARoute
                 if($request->image) {
                     if(base64_decode($request->image, true) !== false) {
                         $extension = explode('/', mime_content_type($request->image))[1];
-                        $name = $user->id.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                         $path = $dir.DIRECTORY_SEPARATOR.$name;
                         file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->image));
     
@@ -1294,44 +1433,7 @@ class LaravelRoute extends ARoute
                     }
                 }
             }
-
-            if($request->hasFile('popup_image')) {
-                $extension = $request->file('popup_image')->extension();
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
     
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
-    
-                $file = $request->file('popup_image');
-                $file->move(storage_path($dir), $name);
-    
-                if(realpath(storage_path($path))) {
-                    $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                }
-            } else {
-                if($request->popup_image) {
-                    if(base64_decode($request->popup_image, true) !== false) {
-                        $extension = explode('/', mime_content_type($request->popup_image))[1];
-                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                        $path = $dir.DIRECTORY_SEPARATOR.$name;
-                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->popup_image));
-    
-                        if(realpath(storage_path($path))) {
-                            $input['popup_image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                        }
-                    }
-                }
-            }
-
             if($request->hasFile('video')) {
                 $extension = $request->file('video')->extension();
                 // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
@@ -1369,38 +1471,56 @@ class LaravelRoute extends ARoute
                 }
             }
     
-            if($request->hasFile('video_url')) {
-                $extension = $request->file('video_url')->extension();
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
+            foreach($modelNameSpace::$elorestFileFields as $file) {
+                if($request->hasFile($file)) {
+                    $originName = $request->file('file')->getClientOriginalName();
+                    $extension = $request->file('file')->extension();
+                    $size = $request->file('file')->getSize();
+                    $mimeType = $request->file('file')->getMimeType();
+                    $type = explode('/', $mimeType)[0];
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
     
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
+                    if (realpath(storage_path($path))) {
+                        return response(json_encode([
+                            "code" => 200,
+                            "status" => false,
+                            "message" => "file already exist"
+                        ], 200))
+                            ->header('Content-Type', 'application/json');
+                    }
     
-                $file = $request->file('video_url');
-                $file->move(storage_path($dir), $name);
+                    $file = $request->file($file);
+                    $file->move(storage_path($dir), $name);
     
-                if(realpath(storage_path($path))) {
-                    $input['video_url'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                }
-            } else {
-                if($request->video_url) {
-                    if(base64_decode($request->video_url, true) !== false) {
-                        $extension = explode('/', mime_content_type($request->video_url))[1];
-                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                        $path = $dir.DIRECTORY_SEPARATOR.$name;
-                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->video_url));
+                    if(realpath(storage_path($path))) {
+                        $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        $input['origin_name'] = $originName;
+                        $input['file_size'] = $size/1000;
+                        $input['file_type'] = $mimeType;
+                        $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                        $input['file_value'] = $name;
+                        $input['type'] = $type;
+                    }
+                } else {
+                    if($request->$file) {
+                        if(base64_decode($request->$file, true) !== false) {
+                            $mimeType = mime_content_type($request->file);
+                            $extension = explode('/', $mimeType)[1];
+                            $type = explode('/', $mimeType)[0];
+                            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                            $path = $dir.DIRECTORY_SEPARATOR.$name;
+                            file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->$file));
     
-                        if(realpath(storage_path($path))) {
-                            $input['video_url'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                            if(realpath(storage_path($path))) {
+                                $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                                $input['file_type'] = $mimeType;
+                                $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                                $input['file_value'] = $name;
+                                $input['type'] = $type;
+                            }
                         }
                     }
                 }
@@ -1416,8 +1536,8 @@ class LaravelRoute extends ARoute
                     }
                 }
             }
-            $input['created_by'] = $user->id;
-            $input['updated_by'] = $user->id;
+            $input['created_by'] = $userId;
+            $input['updated_by'] = $userId;
 
             // $modelName = explode('\\', $modelNameSpace);
             // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
@@ -1607,21 +1727,23 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
-            if(method_exists($user, 'can')) {
-                if(!$user->can('delete', $data)) {
-                    return $this->responseObj->response([
-                        "code" => 403,
-                        "status" => false,
-                        "message" => "Not authorized",
-                        "error" => [
-                            "code" => 102403,
-                            "detail" => "You do not have permission to access this resource"
-                        ],
-                        "params" => $input,
-                        "links" => [
-                            "self" => URL::current()
-                        ]
-                    ], 403);
+            if($user) {
+                if(method_exists($user, 'can')) {
+                    if(!$user->can('delete', $data)) {
+                        return $this->responseObj->response([
+                            "code" => 403,
+                            "status" => false,
+                            "message" => "Not authorized",
+                            "error" => [
+                                "code" => 102403,
+                                "detail" => "You do not have permission to access this resource"
+                            ],
+                            "params" => $input,
+                            "links" => [
+                                "self" => URL::current()
+                            ]
+                        ], 403);
+                    }
                 }
             }
             // $modelName = explode('\\', $modelNameSpace);
