@@ -762,55 +762,57 @@ class LaravelRoute extends ARoute
             }
         }
 
-        foreach($modelNameSpace::$elorestFileFields as $file) {
-            if($request->hasFile($file)) {
-                $originName = $request->file('file')->getClientOriginalName();
-                $extension = $request->file('file')->extension();
-                $size = $request->file('file')->getSize();
-                $mimeType = $request->file('file')->getMimeType();
-                $type = explode('/', $mimeType)[0];
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
+        if(property_exists($modelNameSpace, 'elorestFileFields')) {
+            foreach($modelNameSpace::$elorestFileFields as $file) {
+                if($request->hasFile($file)) {
+                    $originName = $request->file('file')->getClientOriginalName();
+                    $extension = $request->file('file')->extension();
+                    $size = $request->file('file')->getSize();
+                    $mimeType = $request->file('file')->getMimeType();
+                    $type = explode('/', $mimeType)[0];
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
 
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
+                    if (realpath(storage_path($path))) {
+                        return response(json_encode([
+                            "code" => 200,
+                            "status" => false,
+                            "message" => "file already exist"
+                        ], 200))
+                            ->header('Content-Type', 'application/json');
+                    }
 
-                $file = $request->file($file);
-                $file->move(storage_path($dir), $name);
+                    $file = $request->file($file);
+                    $file->move(storage_path($dir), $name);
 
-                if(realpath(storage_path($path))) {
-                    $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                    $input['origin_name'] = $originName;
-                    $input['file_size'] = $size/1000;
-                    $input['file_type'] = $mimeType;
-                    $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
-                    $input['file_value'] = $name;
-                    $input['type'] = $type;
-                }
-            } else {
-                if($request->$file) {
-                    if(base64_decode($request->$file, true) !== false) {
-                        $mimeType = mime_content_type($request->file);
-                        $extension = explode('/', $mimeType)[1];
-                        $type = explode('/', $mimeType)[0];
-                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                        $path = $dir.DIRECTORY_SEPARATOR.$name;
-                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->$file));
+                    if(realpath(storage_path($path))) {
+                        $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        $input['origin_name'] = $originName;
+                        $input['file_size'] = $size/1000;
+                        $input['file_type'] = $mimeType;
+                        $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                        $input['file_value'] = $name;
+                        $input['type'] = $type;
+                    }
+                } else {
+                    if($request->$file) {
+                        if(base64_decode($request->$file, true) !== false) {
+                            $mimeType = mime_content_type($request->file);
+                            $extension = explode('/', $mimeType)[1];
+                            $type = explode('/', $mimeType)[0];
+                            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                            $path = $dir.DIRECTORY_SEPARATOR.$name;
+                            file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->$file));
 
-                        if(realpath(storage_path($path))) {
-                            $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                            $input['file_type'] = $mimeType;
-                            $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
-                            $input['file_value'] = $name;
-                            $input['type'] = $type;
+                            if(realpath(storage_path($path))) {
+                                $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                                $input['file_type'] = $mimeType;
+                                $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                                $input['file_value'] = $name;
+                                $input['type'] = $type;
+                            }
                         }
                     }
                 }
@@ -1099,55 +1101,57 @@ class LaravelRoute extends ARoute
                 }
             }
     
-            foreach($modelNameSpace::$elorestFileFields as $file) {
-                if($request->hasFile($file)) {
-                    $originName = $request->file('file')->getClientOriginalName();
-                    $extension = $request->file('file')->extension();
-                    $size = $request->file('file')->getSize();
-                    $mimeType = $request->file('file')->getMimeType();
-                    $type = explode('/', $mimeType)[0];
-                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                    $path = $dir.DIRECTORY_SEPARATOR.$name;
-    
-                    if (realpath(storage_path($path))) {
-                        return response(json_encode([
-                            "code" => 200,
-                            "status" => false,
-                            "message" => "file already exist"
-                        ], 200))
-                            ->header('Content-Type', 'application/json');
-                    }
-    
-                    $file = $request->file($file);
-                    $file->move(storage_path($dir), $name);
-    
-                    if(realpath(storage_path($path))) {
-                        $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                        $input['origin_name'] = $originName;
-                        $input['file_size'] = $size/1000;
-                        $input['file_type'] = $mimeType;
-                        $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
-                        $input['file_value'] = $name;
-                        $input['type'] = $type;
-                    }
-                } else {
-                    if($request->$file) {
-                        if(base64_decode($request->$file, true) !== false) {
-                            $mimeType = mime_content_type($request->file);
-                            $extension = explode('/', $mimeType)[1];
-                            $type = explode('/', $mimeType)[0];
-                            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                            $path = $dir.DIRECTORY_SEPARATOR.$name;
-                            file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->$file));
-    
-                            if(realpath(storage_path($path))) {
-                                $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                                $input['file_type'] = $mimeType;
-                                $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
-                                $input['file_value'] = $name;
-                                $input['type'] = $type;
+            if(property_exists($modelNameSpace, 'elorestFileFields')) {
+                foreach($modelNameSpace::$elorestFileFields as $file) {
+                    if($request->hasFile($file)) {
+                        $originName = $request->file('file')->getClientOriginalName();
+                        $extension = $request->file('file')->extension();
+                        $size = $request->file('file')->getSize();
+                        $mimeType = $request->file('file')->getMimeType();
+                        $type = explode('/', $mimeType)[0];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+        
+                        if (realpath(storage_path($path))) {
+                            return response(json_encode([
+                                "code" => 200,
+                                "status" => false,
+                                "message" => "file already exist"
+                            ], 200))
+                                ->header('Content-Type', 'application/json');
+                        }
+        
+                        $file = $request->file($file);
+                        $file->move(storage_path($dir), $name);
+        
+                        if(realpath(storage_path($path))) {
+                            $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                            $input['origin_name'] = $originName;
+                            $input['file_size'] = $size/1000;
+                            $input['file_type'] = $mimeType;
+                            $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                            $input['file_value'] = $name;
+                            $input['type'] = $type;
+                        }
+                    } else {
+                        if($request->$file) {
+                            if(base64_decode($request->$file, true) !== false) {
+                                $mimeType = mime_content_type($request->file);
+                                $extension = explode('/', $mimeType)[1];
+                                $type = explode('/', $mimeType)[0];
+                                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                                $path = $dir.DIRECTORY_SEPARATOR.$name;
+                                file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->$file));
+        
+                                if(realpath(storage_path($path))) {
+                                    $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                                    $input['file_type'] = $mimeType;
+                                    $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                                    $input['file_value'] = $name;
+                                    $input['type'] = $type;
+                                }
                             }
                         }
                     }
@@ -1470,56 +1474,58 @@ class LaravelRoute extends ARoute
                     }
                 }
             }
-    
-            foreach($modelNameSpace::$elorestFileFields as $file) {
-                if($request->hasFile($file)) {
-                    $originName = $request->file('file')->getClientOriginalName();
-                    $extension = $request->file('file')->extension();
-                    $size = $request->file('file')->getSize();
-                    $mimeType = $request->file('file')->getMimeType();
-                    $type = explode('/', $mimeType)[0];
-                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                    $path = $dir.DIRECTORY_SEPARATOR.$name;
-    
-                    if (realpath(storage_path($path))) {
-                        return response(json_encode([
-                            "code" => 200,
-                            "status" => false,
-                            "message" => "file already exist"
-                        ], 200))
-                            ->header('Content-Type', 'application/json');
-                    }
-    
-                    $file = $request->file($file);
-                    $file->move(storage_path($dir), $name);
-    
-                    if(realpath(storage_path($path))) {
-                        $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                        $input['origin_name'] = $originName;
-                        $input['file_size'] = $size/1000;
-                        $input['file_type'] = $mimeType;
-                        $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
-                        $input['file_value'] = $name;
-                        $input['type'] = $type;
-                    }
-                } else {
-                    if($request->$file) {
-                        if(base64_decode($request->$file, true) !== false) {
-                            $mimeType = mime_content_type($request->file);
-                            $extension = explode('/', $mimeType)[1];
-                            $type = explode('/', $mimeType)[0];
-                            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                            $path = $dir.DIRECTORY_SEPARATOR.$name;
-                            file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->$file));
-    
-                            if(realpath(storage_path($path))) {
-                                $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
-                                $input['file_type'] = $mimeType;
-                                $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
-                                $input['file_value'] = $name;
-                                $input['type'] = $type;
+
+            if(property_exists($modelNameSpace, 'elorestFileFields')) {
+                foreach($modelNameSpace::$elorestFileFields as $file) {
+                    if($request->hasFile($file)) {
+                        $originName = $request->file('file')->getClientOriginalName();
+                        $extension = $request->file('file')->extension();
+                        $size = $request->file('file')->getSize();
+                        $mimeType = $request->file('file')->getMimeType();
+                        $type = explode('/', $mimeType)[0];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+        
+                        if (realpath(storage_path($path))) {
+                            return response(json_encode([
+                                "code" => 200,
+                                "status" => false,
+                                "message" => "file already exist"
+                            ], 200))
+                                ->header('Content-Type', 'application/json');
+                        }
+        
+                        $file = $request->file($file);
+                        $file->move(storage_path($dir), $name);
+        
+                        if(realpath(storage_path($path))) {
+                            $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                            $input['origin_name'] = $originName;
+                            $input['file_size'] = $size/1000;
+                            $input['file_type'] = $mimeType;
+                            $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                            $input['file_value'] = $name;
+                            $input['type'] = $type;
+                        }
+                    } else {
+                        if($request->$file) {
+                            if(base64_decode($request->$file, true) !== false) {
+                                $mimeType = mime_content_type($request->file);
+                                $extension = explode('/', $mimeType)[1];
+                                $type = explode('/', $mimeType)[0];
+                                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                                $path = $dir.DIRECTORY_SEPARATOR.$name;
+                                file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->$file));
+        
+                                if(realpath(storage_path($path))) {
+                                    $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                                    $input['file_type'] = $mimeType;
+                                    $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                                    $input['file_value'] = $name;
+                                    $input['type'] = $type;
+                                }
                             }
                         }
                     }
