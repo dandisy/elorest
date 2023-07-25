@@ -80,7 +80,7 @@ class LaravelRoute extends ARoute
             //     ], 404);
             // }
 
-            if($user) {
+            // if($user) {
                 if(method_exists($user, 'can')) {
                     if(!$user->can('viewAny', $modelNameSpace)) {
                         return $this->responseObj->response([
@@ -98,7 +98,7 @@ class LaravelRoute extends ARoute
                         ], 403);
                     }
                 }
-            }
+            // }
 
             return $this->repositoryObj->getTableColumns($data);
         }
@@ -145,7 +145,7 @@ class LaravelRoute extends ARoute
                 ], 410);
             }
 
-            if($user) {
+            // if($user) {
                 if(method_exists($user, 'can')) {
                     if(!$user->can('view', $data)) {
                         return $this->responseObj->response([
@@ -163,7 +163,7 @@ class LaravelRoute extends ARoute
                         ], 403);
                     }
                 }
-            }
+            // }
 
             return $data;
         }
@@ -195,7 +195,7 @@ class LaravelRoute extends ARoute
             // }
 
             if($id == 'columns') {
-                if($user) {
+                // if($user) {
                     if(method_exists($user, 'can')) {
                         if(!$user->can('viewAny', $modelNameSpace)) {
                             return $this->responseObj->response([
@@ -213,7 +213,7 @@ class LaravelRoute extends ARoute
                             ], 403);
                         }
                     }
-                }
+                // }
 
                 return $this->repositoryObj->getTableColumns($data);
             }
@@ -236,7 +236,7 @@ class LaravelRoute extends ARoute
                     ], 410);
                 }
 
-                if($user) {
+                // if($user) {
                     if(method_exists($user, 'can')) {
                         if(!$user->can('view', $data)) {
                             return $this->responseObj->response([
@@ -254,7 +254,7 @@ class LaravelRoute extends ARoute
                             ], 403);
                         }
                     }
-                }
+                // }
 
                 return $data;
             }
@@ -285,7 +285,7 @@ class LaravelRoute extends ARoute
             // }
         }
         
-        if($user) {
+        // if($user) {
             if(method_exists($user, 'can')) {
                 if(!$user->can('viewAny', [$modelNameSpace, $data])) {
                     return $this->responseObj->response([
@@ -303,7 +303,7 @@ class LaravelRoute extends ARoute
                     ], 403);
                 }
             }
-        }
+        // }
 
         $modelInstance = $data;
         // $input = $this->requestObj->requestAll($request);
@@ -605,7 +605,7 @@ class LaravelRoute extends ARoute
         $input['created_by'] = $userId;
         $input['updated_by'] = $userId;
 
-        if($user) {
+        // if($user) {
             if(method_exists($user, 'can')) {
                 if(!$user->can('create', $modelNameSpace)) {
                     return $this->responseObj->response([
@@ -623,7 +623,7 @@ class LaravelRoute extends ARoute
                     ], 403);
                 }
             }
-        }
+        // }
 
         // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
         $savePath = './app/public/uploads/';
@@ -945,7 +945,7 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
-            if($user) {
+            // if($user) {
                 if(method_exists($user, 'can')) {
                     if(!$user->can('update', $data)) {
                         return $this->responseObj->response([
@@ -963,7 +963,7 @@ class LaravelRoute extends ARoute
                         ], 403);
                     }
                 }
-            }
+            // }
 
             // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
             $savePath = './app/public/uploads/';
@@ -1319,7 +1319,7 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
-            if($user) {
+            // if($user) {
                 if(method_exists($user, 'can')) {
                     if(!$user->can('update', $data)) {
                         return $this->responseObj->response([
@@ -1337,7 +1337,7 @@ class LaravelRoute extends ARoute
                         ], 403);
                     }
                 }
-            }
+            // }
 
             // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
             $savePath = './app/public/uploads/';
@@ -1733,7 +1733,7 @@ class LaravelRoute extends ARoute
         }
 
         if($data) {
-            if($user) {
+            // if($user) {
                 if(method_exists($user, 'can')) {
                     if(!$user->can('delete', $data)) {
                         return $this->responseObj->response([
@@ -1751,7 +1751,7 @@ class LaravelRoute extends ARoute
                         ], 403);
                     }
                 }
-            }
+            // }
             // $modelName = explode('\\', $modelNameSpace);
             // $checkPolicy = class_exists('App\Policies\\'.(isset($modelName[2]) ? $modelName[2] : $modelName[1]).'Policy');
             // if($checkPolicy) {
