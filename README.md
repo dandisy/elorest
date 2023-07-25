@@ -131,6 +131,14 @@ insert additional logic to elorest add method in your Model class
     ...
 
     /**
+     * Elorest file fields
+     *
+     */
+    public static elorestFileFields = [
+        'file_url', 'video_url'
+    ]
+
+    /**
      * Elorest before
      *
      * @param Request $request
@@ -275,7 +283,7 @@ Update By ID
         console.log(response);
     });
 
-Update Where
+Update Where (* For laravel 10, only work without trailing get or first function)
 
     PUT /webcore/public/api/elorest/User?where=email,dandi@sgdigitals.com&amp;select=*&amp;first= HTTP/1.1
     Host: localhost
