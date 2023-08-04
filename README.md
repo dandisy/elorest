@@ -9,22 +9,22 @@ please check the laravel's eloquent documentation https://laravel.com/docs
 
 Example queries :
 
-    if model namespace is App\Models
+    if the model namespace is "App\Models"
     https://your-domain-name/api/elorest/Models/Post?leftJoin=comments,posts.id,comments.post_id&whereIn=category_id,[2,4,5]&select=*&get=
     https://your-domain-name/api/elorest/Models/Post?join[]=authors,posts.id,authors.author_id&join[]=comments,posts.id,comments.post_id&whereIn=category_id,[2,4,5]&select=posts.*,authors.name as author_name,comments.title as comment_title&get=
     https://your-domain-name/api/elorest/Models/Post?&with=author,comment&get=*
     https://your-domain-name/api/elorest/Models/Post?&with=author(where=name,like,%dandisy%),comment&get=*
-    multi first nested closure deep
+    multiple first level of nested closure deep
     https://your-domain-name/api/elorest/Models/Post?&with=author(where=name,like,%dandisy%)(where=nick,like,%dandisy%),comment&get=*
-    second nested closure deep
+    the second level of nested closure deep
     https://your-domain-name/api/elorest/Models/Post?&with=author(with=city(where=name,like,%jakarta%)),comment&get=*
     https://your-domain-name/api/elorest/Models/Post?&with[]=author(where=name,like,%dandisy%)&with[]=comment(where=title,like,%test%)&get=*
     https://your-domain-name/api/elorest/Models/Post?paginate=10&page=1
 
-    if model namespace only App 
+    if the model namespace only "App"
     https://your-domain-name/api/elorest/User?paginate=10&page=1
 
-    for sortBy related field
+    for sortBy by related field
     https://your-domain-name/api/elorest/Models/Post?&with=author(with=city(where=name,like,%jakarta%)),comment&get=*&sortBy=category.0.name
     https://your-domain-name/api/elorest/Models/Post?&with=author(with=city(where=name,like,%jakarta%)),comment&get=*&sortByDesc=category.0.name
 
@@ -34,7 +34,7 @@ Example queries :
     upload file
     https://your-domain-name/api/elorest/upload
     
-    whereHas for where, in related clousure
+    whereHas for where query in related clousure
     http://localhost/online-shop/public/api/elorest/Models/Merchant?with[]=cartItems.product.category&with[]=cartItems(where=created_by,1)&whereHas=cartItems(where=created_by,1)&get=*
 
 ### Installation
@@ -112,7 +112,7 @@ or use Policy Auto-Discovery
 
 ##### Model
 
-to prevent set some field/s (for ignoring fields, not for authorization)
+to prevent some field/s being set (for ignoring fields, not for authorization)
 
     ...
 
@@ -126,7 +126,7 @@ to prevent set some field/s (for ignoring fields, not for authorization)
 
     ...
 
-insert additional logic to elorest add method in your Model class
+insert additional logic to the "Elorest" add this methods and property in your Model class if you need
 
     ...
 
@@ -283,7 +283,7 @@ Update By ID
         console.log(response);
     });
 
-Update Where (* For laravel 10, only work without trailing get or first function)
+Update Where (* in laravel 10, this will only work without trailing 'get' or 'first' function)
 
     PUT /webcore/public/api/elorest/User?where=email,dandi@sgdigitals.com&amp;select=*&amp;first= HTTP/1.1
     Host: localhost
@@ -330,9 +330,9 @@ Update Where (* For laravel 10, only work without trailing get or first function
 
 ### Notes
 
-    add public property "elorest = true or false" in model class to active/inactive elorest for model
-    add header Accept: application/json in request
-    for PUT/PATCH request, add use Content-tyoe: application/x-www-form-urlencoded or application/json and for update file use POST with body request _method = PUT or PATCH
+    add a public property "elorest = true or false" to the model class to enable or disable Elorest for that model
+    include the header Accept: application/json in the http request
+    for PUT/PATCH requests, use Content-type: application/x-www-form-urlencoded or application/json and for updating file, use POST with request body containing _method = PUT or PATCH
 
 ### Refs
 

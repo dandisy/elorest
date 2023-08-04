@@ -909,7 +909,8 @@ class LaravelRoute extends ARoute
                 if($id && is_numeric($id)) {
                     $data = $this->repositoryObj->findById($id, $data);
                 } else {
-                    $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+                    // $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first(); // laravel 10 will update many rows
+                    $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data);
                 }
             }
         } else {
@@ -941,7 +942,8 @@ class LaravelRoute extends ARoute
             // $request->validate($modelNameSpace::$rules);
             // $input = $this->requestObj->requestAll($request);
 
-            $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first();
+            // $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data)->first(); // laravel 10 will update many rows
+            $data = $this->serviceObj->getQuery($this->requestObj->requestParamAll($request), $data);
         }
 
         if($data) {
