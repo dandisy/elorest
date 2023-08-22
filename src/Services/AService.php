@@ -70,6 +70,8 @@ abstract class AService
                     $data = $this->processQuery($data, $key, $param);
                 }
             // }
+        } else if($key == 'whereRaw' || $key == 'orWhereRaw') {
+            $data = $this->processQuery($data, $key, $vals);
         } else {
             if(preg_match('/\[(.*?)\]/', $vals, $arrParamMatch)) { // handling whereIn / whereNotIn / others with same syntax, due to whereIn params using whereIn('field', ['val_1', 'val_2', 'val_n']) syntax
                 $params = str_replace(','.$arrParamMatch[0], '', $vals);

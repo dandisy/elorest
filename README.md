@@ -37,6 +37,9 @@ Example queries :
     whereHas for where query in related clousure
     http://localhost/online-shop/public/api/elorest/Models/Merchant?with[]=cartItems.product.category&with[]=cartItems(where=created_by,1)&whereHas=cartItems(where=created_by,1)&get=*
 
+    whereRaw
+    http://localhost/online-shop/public/api/elorest/Models/Merchant?whereNotNull=label_id&whereRaw=find_in_set('3',label_id)&orWhereRaw=find_in_set('19',label_id)&get=*
+
 ### Installation
 
     composer require dandisy/elorest
