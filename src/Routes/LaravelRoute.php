@@ -765,10 +765,10 @@ class LaravelRoute extends ARoute
         if(property_exists($modelNameSpace, 'elorestFileFields')) {
             foreach($modelNameSpace::$elorestFileFields as $file) {
                 if($request->hasFile($file)) {
-                    $originName = $request->file('file')->getClientOriginalName();
-                    $extension = $request->file('file')->extension();
-                    $size = $request->file('file')->getSize();
-                    $mimeType = $request->file('file')->getMimeType();
+                    $originName = $request->file($file)->getClientOriginalName();
+                    $extension = $request->file($file)->extension();
+                    $size = $request->file($file)->getSize();
+                    $mimeType = $request->file($file)->getMimeType();
                     $type = explode('/', $mimeType)[0];
                     // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
                     $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
@@ -798,7 +798,7 @@ class LaravelRoute extends ARoute
                 } else {
                     if($request->$file) {
                         if(base64_decode($request->$file, true) !== false) {
-                            $mimeType = mime_content_type($request->file);
+                            $mimeType = mime_content_type($request->$file);
                             $extension = explode('/', $mimeType)[1];
                             $type = explode('/', $mimeType)[0];
                             // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
@@ -1106,10 +1106,10 @@ class LaravelRoute extends ARoute
             if(property_exists($modelNameSpace, 'elorestFileFields')) {
                 foreach($modelNameSpace::$elorestFileFields as $file) {
                     if($request->hasFile($file)) {
-                        $originName = $request->file('file')->getClientOriginalName();
-                        $extension = $request->file('file')->extension();
-                        $size = $request->file('file')->getSize();
-                        $mimeType = $request->file('file')->getMimeType();
+                        $originName = $request->file($file)->getClientOriginalName();
+                        $extension = $request->file($file)->extension();
+                        $size = $request->file($file)->getSize();
+                        $mimeType = $request->file($file)->getMimeType();
                         $type = explode('/', $mimeType)[0];
                         // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
                         $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
@@ -1139,7 +1139,7 @@ class LaravelRoute extends ARoute
                     } else {
                         if($request->$file) {
                             if(base64_decode($request->$file, true) !== false) {
-                                $mimeType = mime_content_type($request->file);
+                                $mimeType = mime_content_type($request->$file);
                                 $extension = explode('/', $mimeType)[1];
                                 $type = explode('/', $mimeType)[0];
                                 // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
@@ -1486,10 +1486,10 @@ class LaravelRoute extends ARoute
             if(property_exists($modelNameSpace, 'elorestFileFields')) {
                 foreach($modelNameSpace::$elorestFileFields as $file) {
                     if($request->hasFile($file)) {
-                        $originName = $request->file('file')->getClientOriginalName();
-                        $extension = $request->file('file')->extension();
-                        $size = $request->file('file')->getSize();
-                        $mimeType = $request->file('file')->getMimeType();
+                        $originName = $request->file($file)->getClientOriginalName();
+                        $extension = $request->file($file)->extension();
+                        $size = $request->file($file)->getSize();
+                        $mimeType = $request->file($file)->getMimeType();
                         $type = explode('/', $mimeType)[0];
                         // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
                         $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
@@ -1519,7 +1519,7 @@ class LaravelRoute extends ARoute
                     } else {
                         if($request->$file) {
                             if(base64_decode($request->$file, true) !== false) {
-                                $mimeType = mime_content_type($request->file);
+                                $mimeType = mime_content_type($request->$file);
                                 $extension = explode('/', $mimeType)[1];
                                 $type = explode('/', $mimeType)[0];
                                 // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
