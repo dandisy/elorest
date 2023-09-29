@@ -1205,9 +1205,11 @@ class LaravelRoute extends ARoute
             // } else {
                 // TODO: use $this->serviceObj->getFormData() instead $input for responseFormatable REST API
                 $fillableFields = (new $modelNameSpace())->fillable;  
-                foreach($input as $k => $v) {
-                    if(!in_array($k, $fillableFields)) {
-                        unset($input[$k]);
+                if(is_array($fillableFields)) {
+                    foreach($input as $k => $v) {
+                        if(!in_array($k, $fillableFields)) {
+                            unset($input[$k]);
+                        }
                     }
                 }
                 $data = $this->repositoryObj->updateData($input, $data);
