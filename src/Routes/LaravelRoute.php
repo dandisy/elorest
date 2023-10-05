@@ -1789,6 +1789,26 @@ class LaravelRoute extends ARoute
             //         ], 403);
             //     }
             // } else {
+                $modelInstance = $data;
+                if(method_exists($modelInstance, 'elorestBefore')) {
+                    $elorestBefore = $modelInstance->elorestBefore($request, $data);
+                    if(!$elorestBefore) {
+                        return $this->responseObj->response([
+                            "code" => 410,
+                            "status" => false,
+                            "message" => "Not Allowed",
+                            "error" => [
+                                "code" => 102403,
+                                "detail" => "You not allowed to delete this resource"
+                            ],
+                            "params" => $input,
+                            "links" => [
+                                "self" => URL::current()
+                            ]
+                        ], 410);
+                    }
+                }
+
                 $data = $this->repositoryObj->deleteData($data);
                 return $this->responseObj->response([
                     "code" => 200,
