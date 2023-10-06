@@ -50,6 +50,14 @@ class LaravelRoute extends ARoute
     }
 
     protected function routeGet($request, $namespaceOrModel, $idOrModel, $id) {
+        if(method_exists($modelInstance, 'elorestBefore')) {
+            $elorestBefore = $modelInstance->elorestBefore($request);
+
+            if($elorestBefore || $elorestBefore == false) {
+                return $elorestBefore;
+            }
+        }
+
         $user = $request->user();
         $input = $this->requestObj->requestAll($request);
 
@@ -319,7 +327,8 @@ class LaravelRoute extends ARoute
 
             if(method_exists($modelInstance, 'elorestAfter')) {
                 $elorestAfter = $modelInstance->elorestAfter($request, $data);
-                if($elorestAfter || $elorestAfter === false) {
+                
+                if($elorestAfter || $elorestAfter == false) {
                     return $elorestAfter;
                 }
             }
@@ -458,7 +467,7 @@ class LaravelRoute extends ARoute
 
         if(method_exists($modelInstance, 'elorestAfter')) {
             $elorestAfter = $modelInstance->elorestAfter($request, $data);
-            if($elorestAfter || $elorestAfter === false) {
+            if($elorestAfter || $elorestAfter == false) {
                 return $elorestAfter;
             }
         }
@@ -468,6 +477,14 @@ class LaravelRoute extends ARoute
 
     // route post hanya punya 1 atau 2 url segment saja (namesapace dan tau model), sedangkan ruote lain bs 3 url segment
     protected function routePost($request, $namespaceOrModel, $model) {
+        if(method_exists($modelInstance, 'elorestBefore')) {
+            $elorestBefore = $modelInstance->elorestBefore($request);
+
+            if($elorestBefore || $elorestBefore == false) {
+                return $elorestBefore;
+            }
+        }
+
         $user = $request->user();
         $input = $this->requestObj->requestAll($request);
         $userId = isset($user->id) ? $user->id : ($request->created_by ? : 0);
@@ -855,6 +872,14 @@ class LaravelRoute extends ARoute
     }
 
     protected function routePut($request, $namespaceOrModel, $idOrModel, $id) {
+        if(method_exists($modelInstance, 'elorestBefore')) {
+            $elorestBefore = $modelInstance->elorestBefore($request);
+
+            if($elorestBefore || $elorestBefore == false) {
+                return $elorestBefore;
+            }
+        }
+
         $user = $request->user();
         $input = $this->requestObj->requestAll($request);
         $userId = isset($user->id) ? $user->id : ($request->created_by ? : 0);
@@ -1239,6 +1264,14 @@ class LaravelRoute extends ARoute
     }
 
     protected function routePatch($request, $namespaceOrModel, $idOrModel, $id) {
+        if(method_exists($modelInstance, 'elorestBefore')) {
+            $elorestBefore = $modelInstance->elorestBefore($request);
+
+            if($elorestBefore || $elorestBefore == false) {
+                return $elorestBefore;
+            }
+        }
+
         $user = $request->user();
         $input = $this->requestObj->requestAll($request);
         $userId = isset($user->id) ? $user->id : ($request->created_by ? : 0);
@@ -1614,6 +1647,14 @@ class LaravelRoute extends ARoute
     }
 
     protected function routeDelete($request, $namespaceOrModel, $idOrModel, $id) {
+        if(method_exists($modelInstance, 'elorestBefore')) {
+            $elorestBefore = $modelInstance->elorestBefore($request);
+
+            if($elorestBefore || $elorestBefore == false) {
+                return $elorestBefore;
+            }
+        }
+
         $user = $request->user();
         $input = $this->requestObj->requestAll($request);
 
@@ -1790,9 +1831,9 @@ class LaravelRoute extends ARoute
             //     }
             // } else {
                 $modelInstance = $data;
-                if(method_exists($modelInstance, 'elorestBefore')) {
-                    $elorestBefore = $modelInstance->elorestBefore($request, $data);
-                    if(!$elorestBefore) {
+                if(method_exists($modelInstance, 'elorestAfter')) {
+                    $elorestAfter = $modelInstance->elorestAfter($request, $data);
+                    if(!$elorestAfter) {
                         return $this->responseObj->response([
                             "code" => 410,
                             "status" => false,
