@@ -63,7 +63,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforeGetQuery')) {
                     $elorestBeforeGetQuery = $modelInstance->elorestBeforeGetQuery($request);
-                    if($elorestBeforeGetQuery || !$elorestBeforeGetQuery) {
+                    if($elorestBeforeGetQuery || $elorestBeforeGetQuery === false) {
                         return $elorestBeforeGetQuery;
                     }
                 }
@@ -118,7 +118,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforeGetQuery')) {
                     $elorestBeforeGetQuery = $modelInstance->elorestBeforeGetQuery($request);
-                    if($elorestBeforeGetQuery || !$elorestBeforeGetQuery) {
+                    if($elorestBeforeGetQuery || $elorestBeforeGetQuery === false) {
                         return $elorestBeforeGetQuery;
                     }
                 }
@@ -193,7 +193,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforeGetQuery')) {
                     $elorestBeforeGetQuery = $modelInstance->elorestBeforeGetQuery($request);
-                    if($elorestBeforeGetQuery || !$elorestBeforeGetQuery) {
+                    if($elorestBeforeGetQuery || $elorestBeforeGetQuery === false) {
                         return $elorestBeforeGetQuery;
                     }
                 }
@@ -290,7 +290,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforeGetQuery')) {
                     $elorestBeforeGetQuery = $modelInstance->elorestBeforeGetQuery($request);
-                    if($elorestBeforeGetQuery || !$elorestBeforeGetQuery) {
+                    if($elorestBeforeGetQuery || $elorestBeforeGetQuery === false) {
                         return $elorestBeforeGetQuery;
                     }
                 }
@@ -351,7 +351,7 @@ class LaravelRoute extends ARoute
 
             if(method_exists($modelInstance, 'elorestAfterGetQuery')) {
                 $elorestAfterGetQuery = $modelInstance->elorestAfterGetQuery($request, $data);
-                if($elorestAfterGetQuery || !$elorestAfterGetQuery) {
+                if($elorestAfterGetQuery || $elorestAfterGetQuery === false) {
                     return $elorestAfterGetQuery;
                 }
             }
@@ -490,7 +490,7 @@ class LaravelRoute extends ARoute
 
         if(method_exists($modelInstance, 'elorestAfterGetQuery')) {
             $elorestAfterGetQuery = $modelInstance->elorestAfterGetQuery($request, $data);
-            if($elorestAfterGetQuery || !$elorestAfterGetQuery) {
+            if($elorestAfterGetQuery || $elorestAfterGetQuery === false) {
                 return $elorestAfterGetQuery;
             }
         }
@@ -579,7 +579,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforePostQuery')) {
                     $elorestBeforePostQuery = $modelInstance->elorestBeforePostQuery($request);
-                    if($elorestBeforePostQuery || !$elorestBeforePostQuery) {
+                    if($elorestBeforePostQuery || $elorestBeforePostQuery === false) {
                         return $elorestBeforePostQuery;
                     }
                 }
@@ -612,7 +612,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforePostQuery')) {
                     $elorestBeforePostQuery = $modelInstance->elorestBeforePostQuery($request);
-                    if($elorestBeforePostQuery || !$elorestBeforePostQuery) {
+                    if($elorestBeforePostQuery || $elorestBeforePostQuery === false) {
                         return $elorestBeforePostQuery;
                     }
                 }
@@ -897,7 +897,7 @@ class LaravelRoute extends ARoute
             $modelInstance = $data;
             if(method_exists($modelInstance, 'elorestAfterPostQuery')) {
                 $elorestAfterPostQuery = $modelInstance->elorestAfterPostQuery($request, $data);
-                if($elorestAfterPostQuery || !$elorestAfterPostQuery) {
+                if($elorestAfterPostQuery || $elorestAfterPostQuery === false) {
                     return $elorestAfterPostQuery;
                 }
             }
@@ -925,7 +925,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforePutQuery')) {
                     $elorestBeforePutQuery = $modelInstance->elorestBeforePutQuery($request);
-                    if($elorestBeforePutQuery || !$elorestBeforePutQuery) {
+                    if($elorestBeforePutQuery || $elorestBeforePutQuery === false) {
                         return $elorestBeforePutQuery;
                     }
                 }
@@ -950,7 +950,7 @@ class LaravelRoute extends ARoute
                     $modelInstance = $data;
                     if(method_exists($modelInstance, 'elorestBeforePutQuery')) {
                         $elorestBeforePutQuery = $modelInstance->elorestBeforePutQuery($request);
-                        if($elorestBeforePutQuery || !$elorestBeforePutQuery) {
+                        if($elorestBeforePutQuery || $elorestBeforePutQuery === false) {
                             return $elorestBeforePutQuery;
                         }
                     }
@@ -994,7 +994,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforePutQuery')) {
                     $elorestBeforePutQuery = $modelInstance->elorestBeforePutQuery($request);
-                    if($elorestBeforePutQuery || !$elorestBeforePutQuery) {
+                    if($elorestBeforePutQuery || $elorestBeforePutQuery === false) {
                         return $elorestBeforePutQuery;
                     }
                 }
@@ -1297,7 +1297,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestAfterPutQuery')) {
                     $elorestAfterPutQuery = $modelInstance->elorestAfterPutQuery($request, $data);
-                    if($elorestAfterPutQuery || !$elorestAfterPutQuery) {
+                    if($elorestAfterPutQuery || $elorestAfterPutQuery === false) {
                         return $elorestAfterPutQuery;
                     }
                 }
@@ -1342,7 +1342,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforePatchQuery')) {
                     $elorestBeforePatchQuery = $modelInstance->elorestBeforePatchQuery($request);
-                    if($elorestBeforePatchQuery || !$elorestBeforePatchQuery) {
+                    if($elorestBeforePatchQuery || $elorestBeforePatchQuery === false) {
                         return $elorestBeforePatchQuery;
                     }
                 }
@@ -1367,7 +1367,7 @@ class LaravelRoute extends ARoute
                     $modelInstance = $data;
                     if(method_exists($modelInstance, 'elorestBeforePatchQuery')) {
                         $elorestBeforePatchQuery = $modelInstance->elorestBeforePatchQuery($request);
-                        if($elorestBeforePatchQuery || !$elorestBeforePatchQuery) {
+                        if($elorestBeforePatchQuery || $elorestBeforePatchQuery === false) {
                             return $elorestBeforePatchQuery;
                         }
                     }
@@ -1410,7 +1410,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforePatchQuery')) {
                     $elorestBeforePatchQuery = $modelInstance->elorestBeforePatchQuery($request);
-                    if($elorestBeforePatchQuery || !$elorestBeforePatchQuery) {
+                    if($elorestBeforePatchQuery || $elorestBeforePatchQuery === false) {
                         return $elorestBeforePatchQuery;
                     }
                 }
@@ -1703,7 +1703,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestAfterPatchQuery')) {
                     $elorestAfterPatchQuery = $modelInstance->elorestAfterPatchQuery($request, $data);
-                    if($elorestAfterPatchQuery || !$elorestAfterPatchQuery) {
+                    if($elorestAfterPatchQuery || $elorestAfterPatchQuery === false) {
                         return $elorestAfterPatchQuery;
                     }
                 }
@@ -1752,7 +1752,7 @@ class LaravelRoute extends ARoute
                     $modelInstance = $data;
                     if(method_exists($modelInstance, 'elorestBeforeDeleteQuery')) {
                         $elorestBeforeDeleteQuery = $modelInstance->elorestBeforeDeleteQuery($request);
-                        if($elorestBeforeDeleteQuery || !$elorestBeforeDeleteQuery) {
+                        if($elorestBeforeDeleteQuery || $elorestBeforeDeleteQuery === false) {
                             return $elorestBeforeDeleteQuery;
                         }
                     }
@@ -1789,7 +1789,7 @@ class LaravelRoute extends ARoute
                     $modelInstance = $data;
                     if(method_exists($modelInstance, 'elorestBeforeDeleteQuery')) {
                         $elorestBeforeDeleteQuery = $modelInstance->elorestBeforeDeleteQuery($request);
-                        if($elorestBeforeDeleteQuery || !$elorestBeforeDeleteQuery) {
+                        if($elorestBeforeDeleteQuery || $elorestBeforeDeleteQuery === false) {
                             return $elorestBeforeDeleteQuery;
                         }
                     }
@@ -1858,7 +1858,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforeDeleteQuery')) {
                     $elorestBeforeDeleteQuery = $modelInstance->elorestBeforeDeleteQuery($request);
-                    if($elorestBeforeDeleteQuery || !$elorestBeforeDeleteQuery) {
+                    if($elorestBeforeDeleteQuery || $elorestBeforeDeleteQuery === false) {
                         return $elorestBeforeDeleteQuery;
                     }
                 }
@@ -1939,7 +1939,7 @@ class LaravelRoute extends ARoute
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestAfterDeleteQuery')) {
                     $elorestAfterDeleteQuery = $modelInstance->elorestAfterDeleteQuery($request, $data);
-                    if($elorestAfterDeleteQuery || !$elorestAfterDeleteQuery) {
+                    if($elorestAfterDeleteQuery || $elorestAfterDeleteQuery === false) {
                         return $elorestAfterDeleteQuery;
                     }
                 }
