@@ -50,6 +50,8 @@ class LaravelRoute extends ARoute
     }
 
     protected function routeGet($request, $namespaceOrModel, $idOrModel, $id) {
+        \Illuminate\Support\Facades\Log::info('Elorest - query url - ' . $request->fullUrl());
+        \Illuminate\Support\Facades\Log::info('Elorest - query params', $request->all());
         $user = $request->user();
         $input = $this->requestObj->requestAll($request);
 

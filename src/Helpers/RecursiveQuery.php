@@ -58,9 +58,6 @@ class RecursiveQuery
             return 'method not allowed';
         }
 
-        \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - data', [
-            'data' => $data
-        ]);
         \Illuminate\Support\Facades\Log::info('Elorest - Recursive Query - key', [
             'key' => $key
         ]);
