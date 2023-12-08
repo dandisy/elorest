@@ -59,6 +59,7 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+                $data->setConnection(env('ELOREST_DB_GET', 'mysql'));
 
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforeGetQuery')) {
@@ -114,6 +115,7 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+                $data->setConnection(env('ELOREST_DB_GET', 'mysql'));
 
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforeGetQuery')) {
@@ -189,6 +191,7 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+                $data->setConnection(env('ELOREST_DB_GET', 'mysql'));
 
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforeGetQuery')) {
@@ -286,6 +289,7 @@ class LaravelRoute extends ARoute
             // TODO: error handling ini di-comment supaya digunakan default error dr framework-nya
             // if(class_exists($modelNameSpace)) {
                 $data = new $modelNameSpace();
+                $data->setConnection(env('ELOREST_DB_GET', 'mysql'));
 
                 $modelInstance = $data;
                 if(method_exists($modelInstance, 'elorestBeforeGetQuery')) {
