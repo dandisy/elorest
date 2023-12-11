@@ -511,58 +511,77 @@ class LaravelRoute extends ARoute
         $userId = isset($user->id) ? $user->id : ($request->created_by ? : 0);
 
         if($namespaceOrModel == 'upload') {
-            // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
-            $savePath = './app/public/uploads/';
-            // $dir = str_replace('./','',$savePath).$user->id;
-            $dir = str_replace('./','',$savePath).$userId;
-            $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
+            if(config('elorest.storage') == 'minio') {
+                $dir = $userId;
 
-            if (!storage_path($dir)) {
-                mkdir(storage_path($dir), 0777, true);
-            }
+                $timestamp = time();
+                $extension = $request->file('file')->getClientOriginalExtension();
+                $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
 
-            if($request->hasFile('file')) {
-                $extension = $request->file('file')->extension();
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
+                $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                $path = $disk->putFileAs($dir, $request->file('file'), $name);
 
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
-
-                $file = $request->file('file');
-                $file->move(storage_path($dir), $name);
-
-                if(realpath(storage_path($path))) {
-                    return response([
-                        "code" => 201,
-                        "status" => true,
-                        "message" => "file saved successfully",
-                        // "data" => str_replace(DIRECTORY_SEPARATOR,'/',str_replace('public'.DIRECTORY_SEPARATOR,'',$path))
-                        "data" => url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path))
-                    ], 201)
-                        ->header('Content-Type', 'application/json');
-                }
+                return response([
+                    "code" => 201,
+                    "status" => true,
+                    "message" => "file saved successfully",
+                    "data" => $disk->url($path)
+                ], 201)
+                    ->header('Content-Type', 'application/json');
             } else {
-                if(base64_decode($request->file, true) !== false) {
-                    $extension = explode('/', mime_content_type($request->file))[1];
+                // $savePath = env('SAVE_PATH'); // SAVE_PATH=./app/public/uploads/
+                $savePath = './app/public/uploads/';
+                // $dir = str_replace('./','',$savePath).$user->id;
+                $dir = str_replace('./','',$savePath).$userId;
+                $dir = str_replace('/',DIRECTORY_SEPARATOR,$dir);
+
+                if (!storage_path($dir)) {
+                    mkdir(storage_path($dir), 0777, true);
+                }
+
+                if($request->hasFile('file')) {
+                    $extension = $request->file('file')->extension();
                     $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
                     $path = $dir.DIRECTORY_SEPARATOR.$name;
-                    file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->file));
+
+                    if (realpath(storage_path($path))) {
+                        return response(json_encode([
+                            "code" => 200,
+                            "status" => false,
+                            "message" => "file already exist"
+                        ], 200))
+                            ->header('Content-Type', 'application/json');
+                    }
+
+                    $file = $request->file('file');
+                    $file->move(storage_path($dir), $name);
 
                     if(realpath(storage_path($path))) {
                         return response([
                             "code" => 201,
                             "status" => true,
                             "message" => "file saved successfully",
+                            // "data" => str_replace(DIRECTORY_SEPARATOR,'/',str_replace('public'.DIRECTORY_SEPARATOR,'',$path))
                             "data" => url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path))
                         ], 201)
                             ->header('Content-Type', 'application/json');
+                    }
+                } else {
+                    if(base64_decode($request->file, true) !== false) {
+                        $extension = explode('/', mime_content_type($request->file))[1];
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+                        file_put_contents(str_replace('public'.DIRECTORY_SEPARATOR,'',$path),base64_decode($request->file));
+
+                        if(realpath(storage_path($path))) {
+                            return response([
+                                "code" => 201,
+                                "status" => true,
+                                "message" => "file saved successfully",
+                                "data" => url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path))
+                            ], 201)
+                                ->header('Content-Type', 'application/json');
+                        }
                     }
                 }
             }
@@ -690,35 +709,60 @@ class LaravelRoute extends ARoute
         }
 
         if($request->hasFile('file')) {
-            $originName = $request->file('file')->getClientOriginalName();
-            $extension = $request->file('file')->extension();
-            $size = $request->file('file')->getSize();
-            $mimeType = $request->file('file')->getMimeType();
-            $type = explode('/', $mimeType)[0];
-            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-            $path = $dir.DIRECTORY_SEPARATOR.$name;
+            if(config('elorest.storage') == 'minio') {
+                $originName = $request->file('file')->getClientOriginalName();
+                $extension = $request->file('file')->extension();
+                $size = $request->file('file')->getSize();
+                $mimeType = $request->file('file')->getMimeType();
+                $type = explode('/', $mimeType)[0];
 
-            if (realpath(storage_path($path))) {
-                return response(json_encode([
-                    "code" => 200,
-                    "status" => false,
-                    "message" => "file already exist"
-                ], 200))
-                    ->header('Content-Type', 'application/json');
-            }
+                $dir = $userId;
 
-            $file = $request->file('file');
-            $file->move(storage_path($dir), $name);
+                $timestamp = time();
+                $extension = $request->file('file')->getClientOriginalExtension();
+                $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
 
-            if(realpath(storage_path($path))) {
-                $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                $path = $disk->putFileAs($dir, $request->file('file'), $name);
+
+                $input['file'] = $disk->url($path);
                 $input['origin_name'] = $originName;
                 $input['file_size'] = $size/1000;
                 $input['file_type'] = $mimeType;
                 $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
                 $input['file_value'] = $name;
                 $input['type'] = $type;
+            } else {
+                $originName = $request->file('file')->getClientOriginalName();
+                $extension = $request->file('file')->extension();
+                $size = $request->file('file')->getSize();
+                $mimeType = $request->file('file')->getMimeType();
+                $type = explode('/', $mimeType)[0];
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+
+                $file = $request->file('file');
+                $file->move(storage_path($dir), $name);
+
+                if(realpath(storage_path($path))) {
+                    $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    $input['origin_name'] = $originName;
+                    $input['file_size'] = $size/1000;
+                    $input['file_type'] = $mimeType;
+                    $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                    $input['file_value'] = $name;
+                    $input['type'] = $type;
+                }
             }
         } else {
             if($request->file) {
@@ -743,25 +787,38 @@ class LaravelRoute extends ARoute
         }
 
         if($request->hasFile('image')) {
-            $extension = $request->file('image')->extension();
-            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-            $path = $dir.DIRECTORY_SEPARATOR.$name;
+            if(config('elorest.storage') == 'minio') {
+                $dir = $userId;
 
-            if (realpath(storage_path($path))) {
-                return response(json_encode([
-                    "code" => 200,
-                    "status" => false,
-                    "message" => "file already exist"
-                ], 200))
-                    ->header('Content-Type', 'application/json');
-            }
+                $timestamp = time();
+                $extension = $request->file('image')->getClientOriginalExtension();
+                $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
 
-            $file = $request->file('image');
-            $file->move(storage_path($dir), $name);
+                $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                $path = $disk->putFileAs($dir, $request->file('image'), $name);
 
-            if(realpath(storage_path($path))) {
-                $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                $input['image'] = $disk->url($path);
+            } else {
+                $extension = $request->file('image')->extension();
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+
+                $file = $request->file('image');
+                $file->move(storage_path($dir), $name);
+
+                if(realpath(storage_path($path))) {
+                    $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                }
             }
         } else {
             if($request->image) {
@@ -780,25 +837,38 @@ class LaravelRoute extends ARoute
         }
 
         if($request->hasFile('video')) {
-            $extension = $request->file('video')->extension();
-            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-            $path = $dir.DIRECTORY_SEPARATOR.$name;
+            if(config('elorest.storage') == 'minio') {
+                $dir = $userId;
 
-            if (realpath(storage_path($path))) {
-                return response(json_encode([
-                    "code" => 200,
-                    "status" => false,
-                    "message" => "file already exist"
-                ], 200))
-                    ->header('Content-Type', 'application/json');
-            }
+                $timestamp = time();
+                $extension = $request->file('video')->getClientOriginalExtension();
+                $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
 
-            $file = $request->file('video');
-            $file->move(storage_path($dir), $name);
+                $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                $path = $disk->putFileAs($dir, $request->file('video'), $name);
 
-            if(realpath(storage_path($path))) {
-                $input['video'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                $input['video'] = $disk->url($path);
+            } else {
+                $extension = $request->file('video')->extension();
+                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                $path = $dir.DIRECTORY_SEPARATOR.$name;
+
+                if (realpath(storage_path($path))) {
+                    return response(json_encode([
+                        "code" => 200,
+                        "status" => false,
+                        "message" => "file already exist"
+                    ], 200))
+                        ->header('Content-Type', 'application/json');
+                }
+
+                $file = $request->file('video');
+                $file->move(storage_path($dir), $name);
+
+                if(realpath(storage_path($path))) {
+                    $input['video'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                }
             }
         } else {
             if($request->video) {
@@ -819,35 +889,60 @@ class LaravelRoute extends ARoute
         if(property_exists($modelNameSpace, 'elorestFileFields')) {
             foreach($modelNameSpace::$elorestFileFields as $file) {
                 if($request->hasFile($file)) {
-                    $originName = $request->file($file)->getClientOriginalName();
-                    $extension = $request->file($file)->extension();
-                    $size = $request->file($file)->getSize();
-                    $mimeType = $request->file($file)->getMimeType();
-                    $type = explode('/', $mimeType)[0];
-                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                    $path = $dir.DIRECTORY_SEPARATOR.$name;
-
-                    if (realpath(storage_path($path))) {
-                        return response(json_encode([
-                            "code" => 200,
-                            "status" => false,
-                            "message" => "file already exist"
-                        ], 200))
-                            ->header('Content-Type', 'application/json');
-                    }
-
-                    $file = $request->file($file);
-                    $file->move(storage_path($dir), $name);
-
-                    if(realpath(storage_path($path))) {
-                        $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    if(config('elorest.storage') == 'minio') {
+                        $originName = $request->file($file)->getClientOriginalName();
+                        $extension = $request->file($file)->extension();
+                        $size = $request->file($file)->getSize();
+                        $mimeType = $request->file($file)->getMimeType();
+                        $type = explode('/', $mimeType)[0];
+        
+                        $dir = $userId;
+        
+                        $timestamp = time();
+                        $extension = $request->file($file)->getClientOriginalExtension();
+                        $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
+        
+                        $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                        $path = $disk->putFileAs($dir, $request->file($file), $name);
+        
+                        $input[$file] = $disk->url($path);
                         $input['origin_name'] = $originName;
                         $input['file_size'] = $size/1000;
                         $input['file_type'] = $mimeType;
                         $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
                         $input['file_value'] = $name;
                         $input['type'] = $type;
+                    } else {
+                        $originName = $request->file($file)->getClientOriginalName();
+                        $extension = $request->file($file)->extension();
+                        $size = $request->file($file)->getSize();
+                        $mimeType = $request->file($file)->getMimeType();
+                        $type = explode('/', $mimeType)[0];
+                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                        $path = $dir.DIRECTORY_SEPARATOR.$name;
+
+                        if (realpath(storage_path($path))) {
+                            return response(json_encode([
+                                "code" => 200,
+                                "status" => false,
+                                "message" => "file already exist"
+                            ], 200))
+                                ->header('Content-Type', 'application/json');
+                        }
+
+                        $file = $request->file($file);
+                        $file->move(storage_path($dir), $name);
+
+                        if(realpath(storage_path($path))) {
+                            $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                            $input['origin_name'] = $originName;
+                            $input['file_size'] = $size/1000;
+                            $input['file_type'] = $mimeType;
+                            $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                            $input['file_value'] = $name;
+                            $input['type'] = $type;
+                        }
                     }
                 } else {
                     if($request->$file) {
@@ -1064,35 +1159,60 @@ class LaravelRoute extends ARoute
             }
 
             if($request->hasFile('file')) {
-                $originName = $request->file('file')->getClientOriginalName();
-                $extension = $request->file('file')->extension();
-                $size = $request->file('file')->getSize();
-                $mimeType = $request->file('file')->getMimeType();
-                $type = explode('/', $mimeType)[0];
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
+                if(config('elorest.storage') == 'minio') {
+                    $originName = $request->file('file')->getClientOriginalName();
+                    $extension = $request->file('file')->extension();
+                    $size = $request->file('file')->getSize();
+                    $mimeType = $request->file('file')->getMimeType();
+                    $type = explode('/', $mimeType)[0];
     
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
+                    $dir = $userId;
     
-                $file = $request->file('file');
-                $file->move(storage_path($dir), $name);
+                    $timestamp = time();
+                    $extension = $request->file('file')->getClientOriginalExtension();
+                    $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
     
-                if(realpath(storage_path($path))) {
-                    $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                    $path = $disk->putFileAs($dir, $request->file('file'), $name);
+    
+                    $input['file'] = $disk->url($path);
                     $input['origin_name'] = $originName;
                     $input['file_size'] = $size/1000;
                     $input['file_type'] = $mimeType;
                     $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
                     $input['file_value'] = $name;
                     $input['type'] = $type;
+                } else {
+                    $originName = $request->file('file')->getClientOriginalName();
+                    $extension = $request->file('file')->extension();
+                    $size = $request->file('file')->getSize();
+                    $mimeType = $request->file('file')->getMimeType();
+                    $type = explode('/', $mimeType)[0];
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+        
+                    if (realpath(storage_path($path))) {
+                        return response(json_encode([
+                            "code" => 200,
+                            "status" => false,
+                            "message" => "file already exist"
+                        ], 200))
+                            ->header('Content-Type', 'application/json');
+                    }
+        
+                    $file = $request->file('file');
+                    $file->move(storage_path($dir), $name);
+        
+                    if(realpath(storage_path($path))) {
+                        $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        $input['origin_name'] = $originName;
+                        $input['file_size'] = $size/1000;
+                        $input['file_type'] = $mimeType;
+                        $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                        $input['file_value'] = $name;
+                        $input['type'] = $type;
+                    }
                 }
             } else {
                 if($request->file) {
@@ -1117,25 +1237,38 @@ class LaravelRoute extends ARoute
             }
     
             if($request->hasFile('image')) {
-                $extension = $request->file('image')->extension();
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
+                if(config('elorest.storage') == 'minio') {
+                    $dir = $userId;
     
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
+                    $timestamp = time();
+                    $extension = $request->file('image')->getClientOriginalExtension();
+                    $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
     
-                $file = $request->file('image');
-                $file->move(storage_path($dir), $name);
+                    $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                    $path = $disk->putFileAs($dir, $request->file('image'), $name);
     
-                if(realpath(storage_path($path))) {
-                    $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    $input['image'] = $disk->url($path);
+                } else {
+                    $extension = $request->file('image')->extension();
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+        
+                    if (realpath(storage_path($path))) {
+                        return response(json_encode([
+                            "code" => 200,
+                            "status" => false,
+                            "message" => "file already exist"
+                        ], 200))
+                            ->header('Content-Type', 'application/json');
+                    }
+        
+                    $file = $request->file('image');
+                    $file->move(storage_path($dir), $name);
+        
+                    if(realpath(storage_path($path))) {
+                        $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    }
                 }
             } else {
                 if($request->image) {
@@ -1154,25 +1287,38 @@ class LaravelRoute extends ARoute
             }
     
             if($request->hasFile('video')) {
-                $extension = $request->file('video')->extension();
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
+                if(config('elorest.storage') == 'minio') {
+                    $dir = $userId;
     
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
+                    $timestamp = time();
+                    $extension = $request->file('video')->getClientOriginalExtension();
+                    $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
     
-                $file = $request->file('video');
-                $file->move(storage_path($dir), $name);
+                    $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                    $path = $disk->putFileAs($dir, $request->file('video'), $name);
     
-                if(realpath(storage_path($path))) {
-                    $input['video'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    $input['video'] = $disk->url($path);
+                } else {
+                    $extension = $request->file('video')->extension();
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+        
+                    if (realpath(storage_path($path))) {
+                        return response(json_encode([
+                            "code" => 200,
+                            "status" => false,
+                            "message" => "file already exist"
+                        ], 200))
+                            ->header('Content-Type', 'application/json');
+                    }
+        
+                    $file = $request->file('video');
+                    $file->move(storage_path($dir), $name);
+        
+                    if(realpath(storage_path($path))) {
+                        $input['video'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    }
                 }
             } else {
                 if($request->video) {
@@ -1193,35 +1339,60 @@ class LaravelRoute extends ARoute
             if(property_exists($modelNameSpace, 'elorestFileFields')) {
                 foreach($modelNameSpace::$elorestFileFields as $file) {
                     if($request->hasFile($file)) {
-                        $originName = $request->file($file)->getClientOriginalName();
-                        $extension = $request->file($file)->extension();
-                        $size = $request->file($file)->getSize();
-                        $mimeType = $request->file($file)->getMimeType();
-                        $type = explode('/', $mimeType)[0];
-                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                        $path = $dir.DIRECTORY_SEPARATOR.$name;
-        
-                        if (realpath(storage_path($path))) {
-                            return response(json_encode([
-                                "code" => 200,
-                                "status" => false,
-                                "message" => "file already exist"
-                            ], 200))
-                                ->header('Content-Type', 'application/json');
-                        }
-        
-                        $file = $request->file($file);
-                        $file->move(storage_path($dir), $name);
-        
-                        if(realpath(storage_path($path))) {
-                            $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        if(config('elorest.storage') == 'minio') {
+                            $originName = $request->file($file)->getClientOriginalName();
+                            $extension = $request->file($file)->extension();
+                            $size = $request->file($file)->getSize();
+                            $mimeType = $request->file($file)->getMimeType();
+                            $type = explode('/', $mimeType)[0];
+            
+                            $dir = $userId;
+            
+                            $timestamp = time();
+                            $extension = $request->file($file)->getClientOriginalExtension();
+                            $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
+            
+                            $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                            $path = $disk->putFileAs($dir, $request->file($file), $name);
+            
+                            $input[$file] = $disk->url($path);
                             $input['origin_name'] = $originName;
                             $input['file_size'] = $size/1000;
                             $input['file_type'] = $mimeType;
                             $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
                             $input['file_value'] = $name;
                             $input['type'] = $type;
+                        } else {
+                            $originName = $request->file($file)->getClientOriginalName();
+                            $extension = $request->file($file)->extension();
+                            $size = $request->file($file)->getSize();
+                            $mimeType = $request->file($file)->getMimeType();
+                            $type = explode('/', $mimeType)[0];
+                            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                            $path = $dir.DIRECTORY_SEPARATOR.$name;
+            
+                            if (realpath(storage_path($path))) {
+                                return response(json_encode([
+                                    "code" => 200,
+                                    "status" => false,
+                                    "message" => "file already exist"
+                                ], 200))
+                                    ->header('Content-Type', 'application/json');
+                            }
+            
+                            $file = $request->file($file);
+                            $file->move(storage_path($dir), $name);
+            
+                            if(realpath(storage_path($path))) {
+                                $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                                $input['origin_name'] = $originName;
+                                $input['file_size'] = $size/1000;
+                                $input['file_type'] = $mimeType;
+                                $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                                $input['file_value'] = $name;
+                                $input['type'] = $type;
+                            }
                         }
                     } else {
                         if($request->$file) {
@@ -1479,35 +1650,60 @@ class LaravelRoute extends ARoute
             }
 
             if($request->hasFile('file')) {
-                $originName = $request->file('file')->getClientOriginalName();
-                $extension = $request->file('file')->extension();
-                $size = $request->file('file')->getSize();
-                $mimeType = $request->file('file')->getMimeType();
-                $type = explode('/', $mimeType)[0];
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
+                if(config('elorest.storage') == 'minio') {
+                    $originName = $request->file('file')->getClientOriginalName();
+                    $extension = $request->file('file')->extension();
+                    $size = $request->file('file')->getSize();
+                    $mimeType = $request->file('file')->getMimeType();
+                    $type = explode('/', $mimeType)[0];
     
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
+                    $dir = $userId;
     
-                $file = $request->file('file');
-                $file->move(storage_path($dir), $name);
+                    $timestamp = time();
+                    $extension = $request->file('file')->getClientOriginalExtension();
+                    $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
     
-                if(realpath(storage_path($path))) {
-                    $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                    $path = $disk->putFileAs($dir, $request->file('file'), $name);
+    
+                    $input['file'] = $disk->url($path);
                     $input['origin_name'] = $originName;
                     $input['file_size'] = $size/1000;
                     $input['file_type'] = $mimeType;
                     $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
                     $input['file_value'] = $name;
                     $input['type'] = $type;
+                } else {
+                    $originName = $request->file('file')->getClientOriginalName();
+                    $extension = $request->file('file')->extension();
+                    $size = $request->file('file')->getSize();
+                    $mimeType = $request->file('file')->getMimeType();
+                    $type = explode('/', $mimeType)[0];
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+        
+                    if (realpath(storage_path($path))) {
+                        return response(json_encode([
+                            "code" => 200,
+                            "status" => false,
+                            "message" => "file already exist"
+                        ], 200))
+                            ->header('Content-Type', 'application/json');
+                    }
+        
+                    $file = $request->file('file');
+                    $file->move(storage_path($dir), $name);
+        
+                    if(realpath(storage_path($path))) {
+                        $input['file'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        $input['origin_name'] = $originName;
+                        $input['file_size'] = $size/1000;
+                        $input['file_type'] = $mimeType;
+                        $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                        $input['file_value'] = $name;
+                        $input['type'] = $type;
+                    }
                 }
             } else {
                 if($request->file) {
@@ -1532,25 +1728,38 @@ class LaravelRoute extends ARoute
             }
     
             if($request->hasFile('image')) {
-                $extension = $request->file('image')->extension();
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
+                if(config('elorest.storage') == 'minio') {
+                    $dir = $userId;
     
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
+                    $timestamp = time();
+                    $extension = $request->file('image')->getClientOriginalExtension();
+                    $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
     
-                $file = $request->file('image');
-                $file->move(storage_path($dir), $name);
+                    $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                    $path = $disk->putFileAs($dir, $request->file('image'), $name);
     
-                if(realpath(storage_path($path))) {
-                    $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    $input['image'] = $disk->url($path);
+                } else {
+                    $extension = $request->file('image')->extension();
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+        
+                    if (realpath(storage_path($path))) {
+                        return response(json_encode([
+                            "code" => 200,
+                            "status" => false,
+                            "message" => "file already exist"
+                        ], 200))
+                            ->header('Content-Type', 'application/json');
+                    }
+        
+                    $file = $request->file('image');
+                    $file->move(storage_path($dir), $name);
+        
+                    if(realpath(storage_path($path))) {
+                        $input['image'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    }
                 }
             } else {
                 if($request->image) {
@@ -1569,25 +1778,38 @@ class LaravelRoute extends ARoute
             }
     
             if($request->hasFile('video')) {
-                $extension = $request->file('video')->extension();
-                // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                $path = $dir.DIRECTORY_SEPARATOR.$name;
+                if(config('elorest.storage') == 'minio') {
+                    $dir = $userId;
     
-                if (realpath(storage_path($path))) {
-                    return response(json_encode([
-                        "code" => 200,
-                        "status" => false,
-                        "message" => "file already exist"
-                    ], 200))
-                        ->header('Content-Type', 'application/json');
-                }
+                    $timestamp = time();
+                    $extension = $request->file('video')->getClientOriginalExtension();
+                    $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
     
-                $file = $request->file('video');
-                $file->move(storage_path($dir), $name);
+                    $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                    $path = $disk->putFileAs($dir, $request->file('video'), $name);
     
-                if(realpath(storage_path($path))) {
-                    $input['video'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    $input['video'] = $disk->url($path);
+                } else {
+                    $extension = $request->file('video')->extension();
+                    // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                    $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                    $path = $dir.DIRECTORY_SEPARATOR.$name;
+        
+                    if (realpath(storage_path($path))) {
+                        return response(json_encode([
+                            "code" => 200,
+                            "status" => false,
+                            "message" => "file already exist"
+                        ], 200))
+                            ->header('Content-Type', 'application/json');
+                    }
+        
+                    $file = $request->file('video');
+                    $file->move(storage_path($dir), $name);
+        
+                    if(realpath(storage_path($path))) {
+                        $input['video'] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                    }
                 }
             } else {
                 if($request->video) {
@@ -1608,35 +1830,60 @@ class LaravelRoute extends ARoute
             if(property_exists($modelNameSpace, 'elorestFileFields')) {
                 foreach($modelNameSpace::$elorestFileFields as $file) {
                     if($request->hasFile($file)) {
-                        $originName = $request->file($file)->getClientOriginalName();
-                        $extension = $request->file($file)->extension();
-                        $size = $request->file($file)->getSize();
-                        $mimeType = $request->file($file)->getMimeType();
-                        $type = explode('/', $mimeType)[0];
-                        // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
-                        $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
-                        $path = $dir.DIRECTORY_SEPARATOR.$name;
-        
-                        if (realpath(storage_path($path))) {
-                            return response(json_encode([
-                                "code" => 200,
-                                "status" => false,
-                                "message" => "file already exist"
-                            ], 200))
-                                ->header('Content-Type', 'application/json');
-                        }
-        
-                        $file = $request->file($file);
-                        $file->move(storage_path($dir), $name);
-        
-                        if(realpath(storage_path($path))) {
-                            $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                        if(config('elorest.storage') == 'minio') {
+                            $originName = $request->file($file)->getClientOriginalName();
+                            $extension = $request->file($file)->extension();
+                            $size = $request->file($file)->getSize();
+                            $mimeType = $request->file($file)->getMimeType();
+                            $type = explode('/', $mimeType)[0];
+            
+                            $dir = $userId;
+            
+                            $timestamp = time();
+                            $extension = $request->file($file)->getClientOriginalExtension();
+                            $name = "{$userId}_{config('elorest.namespace','elorest')}_{$timestamp}.{$extension}";
+            
+                            $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+                            $path = $disk->putFileAs($dir, $request->file($file), $name);
+            
+                            $input[$file] = $disk->url($path);
                             $input['origin_name'] = $originName;
                             $input['file_size'] = $size/1000;
                             $input['file_type'] = $mimeType;
                             $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
                             $input['file_value'] = $name;
                             $input['type'] = $type;
+                        } else {
+                            $originName = $request->file($file)->getClientOriginalName();
+                            $extension = $request->file($file)->extension();
+                            $size = $request->file($file)->getSize();
+                            $mimeType = $request->file($file)->getMimeType();
+                            $type = explode('/', $mimeType)[0];
+                            // $name = $user->id.'_'.$request->model.'_'.time().'.'.$extension;
+                            $name = $userId.'_'.$request->model.'_'.preg_replace("/(\W)+/", '', microtime()).'.'.$extension;
+                            $path = $dir.DIRECTORY_SEPARATOR.$name;
+            
+                            if (realpath(storage_path($path))) {
+                                return response(json_encode([
+                                    "code" => 200,
+                                    "status" => false,
+                                    "message" => "file already exist"
+                                ], 200))
+                                    ->header('Content-Type', 'application/json');
+                            }
+            
+                            $file = $request->file($file);
+                            $file->move(storage_path($dir), $name);
+            
+                            if(realpath(storage_path($path))) {
+                                $input[$file] = url('/storage').str_replace('app/public','',str_replace(DIRECTORY_SEPARATOR,'/',$path));
+                                $input['origin_name'] = $originName;
+                                $input['file_size'] = $size/1000;
+                                $input['file_type'] = $mimeType;
+                                $input['file_path'] = $dir.DIRECTORY_SEPARATOR;
+                                $input['file_value'] = $name;
+                                $input['type'] = $type;
+                            }
                         }
                     } else {
                         if($request->$file) {

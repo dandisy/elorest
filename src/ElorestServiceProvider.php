@@ -26,6 +26,10 @@ class ElorestServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'../Exceptions' => app_path('Exceptions'),
         ]);
+
+        $this->publishes([
+            __DIR__.'../config/elorest.php' => config_path('elorest.php'),
+        ]);
     }
 
     /**
