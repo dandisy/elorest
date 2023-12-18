@@ -516,8 +516,7 @@ class LaravelRoute extends ARoute
 
                 $timestamp = time();
                 $extension = $request->file('file')->getClientOriginalExtension();
-                $namespace = config('elorest.namespace','elorest');
-                $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
 
                 $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                 $path = $disk->putFileAs($dir, $request->file('file'), $name);
@@ -722,7 +721,7 @@ class LaravelRoute extends ARoute
                 $timestamp = time();
                 $extension = $request->file('file')->getClientOriginalExtension();
                 $namespace = config('elorest.namespace','elorest');
-                $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
 
                 $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                 $path = $disk->putFileAs($dir, $request->file('file'), $name);
@@ -795,7 +794,7 @@ class LaravelRoute extends ARoute
                 $timestamp = time();
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $namespace = config('elorest.namespace','elorest');
-                $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
 
                 $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                 $path = $disk->putFileAs($dir, $request->file('image'), $name);
@@ -846,7 +845,7 @@ class LaravelRoute extends ARoute
                 $timestamp = time();
                 $extension = $request->file('video')->getClientOriginalExtension();
                 $namespace = config('elorest.namespace','elorest');
-                $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
 
                 $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                 $path = $disk->putFileAs($dir, $request->file('video'), $name);
@@ -905,7 +904,7 @@ class LaravelRoute extends ARoute
                         $timestamp = time();
                         $extension = $request->file($file)->getClientOriginalExtension();
                         $namespace = config('elorest.namespace','elorest');
-                        $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                        $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
         
                         $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                         $path = $disk->putFileAs($dir, $request->file($file), $name);
@@ -1176,7 +1175,7 @@ class LaravelRoute extends ARoute
                     $timestamp = time();
                     $extension = $request->file('file')->getClientOriginalExtension();
                     $namespace = config('elorest.namespace','elorest');
-                    $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                    $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
     
                     $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                     $path = $disk->putFileAs($dir, $request->file('file'), $name);
@@ -1249,7 +1248,7 @@ class LaravelRoute extends ARoute
                     $timestamp = time();
                     $extension = $request->file('image')->getClientOriginalExtension();
                     $namespace = config('elorest.namespace','elorest');
-                    $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                    $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
     
                     $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                     $path = $disk->putFileAs($dir, $request->file('image'), $name);
@@ -1300,7 +1299,7 @@ class LaravelRoute extends ARoute
                     $timestamp = time();
                     $extension = $request->file('video')->getClientOriginalExtension();
                     $namespace = config('elorest.namespace','elorest');
-                    $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                    $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
     
                     $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                     $path = $disk->putFileAs($dir, $request->file('video'), $name);
@@ -1359,7 +1358,7 @@ class LaravelRoute extends ARoute
                             $timestamp = time();
                             $extension = $request->file($file)->getClientOriginalExtension();
                             $namespace = config('elorest.namespace','elorest');
-                            $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                            $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
             
                             $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                             $path = $disk->putFileAs($dir, $request->file($file), $name);
@@ -1671,7 +1670,7 @@ class LaravelRoute extends ARoute
                     $timestamp = time();
                     $extension = $request->file('file')->getClientOriginalExtension();
                     $namespace = config('elorest.namespace','elorest');
-                    $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                    $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
     
                     $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                     $path = $disk->putFileAs($dir, $request->file('file'), $name);
@@ -1744,7 +1743,7 @@ class LaravelRoute extends ARoute
                     $timestamp = time();
                     $extension = $request->file('image')->getClientOriginalExtension();
                     $namespace = config('elorest.namespace','elorest');
-                    $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                    $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
     
                     $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                     $path = $disk->putFileAs($dir, $request->file('image'), $name);
@@ -1795,7 +1794,7 @@ class LaravelRoute extends ARoute
                     $timestamp = time();
                     $extension = $request->file('video')->getClientOriginalExtension();
                     $namespace = config('elorest.namespace','elorest');
-                    $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                    $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
     
                     $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                     $path = $disk->putFileAs($dir, $request->file('video'), $name);
@@ -1854,7 +1853,7 @@ class LaravelRoute extends ARoute
                             $timestamp = time();
                             $extension = $request->file($file)->getClientOriginalExtension();
                             $namespace = config('elorest.namespace','elorest');
-                            $name = "{$userId}_{$namespace}_{$timestamp}.{$extension}";
+                            $name = "{$userId}_{$request->model}_{$timestamp}.{$extension}";
             
                             $disk = \Illuminate\Support\Facades\Storage::disk('minio');
                             $path = $disk->putFileAs($dir, $request->file($file), $name);
